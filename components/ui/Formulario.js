@@ -35,6 +35,8 @@ export const Campo = styled.div`
     input{
         flex: 1;
         padding: 1rem;
+        background-color: #F7FAFC;
+        border: 1px solid var(--gray-1)
     }
 
 `;

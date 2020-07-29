@@ -36,6 +36,19 @@ const GlobalStyle = createGlobalStyle`
         line-height: 1.5;
         margin: 0px 0px 2rem;
     }
+    footer{
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 40px;
+        background-color: black;
+        a{
+            color: white;
+        }
+    }
 `;
 
 const Layout = props => {

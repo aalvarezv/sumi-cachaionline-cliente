@@ -1,4 +1,8 @@
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, Slide, Zoom, Flip, Bounce } from 'react-toastify';
 import Head from 'next/head';
+import AuthState from '../context/auth/AuthState';
+
 
 function MyApp({ Component, pageProps }) {
 
@@ -13,9 +17,26 @@ function MyApp({ Component, pageProps }) {
             crossOrigin="anonymous" 
         />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"/>
-        <link href="/static/css/app.css" rel="stylesheet"/>
       </Head>
-      <Component {...pageProps} />
+
+      <AuthState>
+        <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            transition={Slide}
+            enableMultiContainer 
+            containerId={'A'}
+        />
+        <Component {...pageProps} />
+      </AuthState>
+      
     </>
   );
 }
