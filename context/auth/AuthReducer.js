@@ -1,8 +1,7 @@
 import {
-    LOGIN_INIT,
-    LOGIN_EXITOSO,
+    LOGIN_EXITO,
     LOGIN_ERROR,
-  
+    CERRAR_SESION
 } from '../types';
 
 //localStorage.setItem('token', action.payload.token)
@@ -12,15 +11,26 @@ const AuthReducer = (state, action) => {
 
     switch (action.type) {
 
-        case LOGIN_INIT:
+        case LOGIN_EXITO:
             return{
                 ...state,
-                cargando: action.payload
+                usuario: action.payload,
+                autenticado: true,
+                mensaje: null
             }
         case LOGIN_ERROR:
             return{
                 ...state,
-                notificacion: action.payload
+                usuario: null,
+                autenticado: false,
+                mensaje: action.payload,
+            }
+        case CERRAR_SESION:
+            return{
+                ...state,
+                usuario: null,
+                autenticado: false,
+                mensaje: null
             }
       
         default:

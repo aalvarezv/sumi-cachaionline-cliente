@@ -1,8 +1,11 @@
 import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, Slide, Zoom, Flip, Bounce } from 'react-toastify';
 import Head from 'next/head';
 import AuthState from '../context/auth/AuthState';
-
+import MateriaState from '../context/materias/MateriaState';
+import UnidadState from '../context/unidades/UnidadState';
+import NivelAcademicoState from '../context/niveles_academicos/NivelAcademicoState';
 
 function MyApp({ Component, pageProps }) {
 
@@ -16,10 +19,9 @@ function MyApp({ Component, pageProps }) {
             integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU="
             crossOrigin="anonymous" 
         />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"
+        />
       </Head>
-
-      <AuthState>
         <ToastContainer
             position="top-right"
             autoClose={3000}
@@ -32,11 +34,17 @@ function MyApp({ Component, pageProps }) {
             pauseOnHover
             transition={Slide}
             enableMultiContainer 
-            containerId={'A'}
+            containerId={'sys_msg'}
         />
-        <Component {...pageProps} />
-      </AuthState>
-      
+        <AuthState>
+          <MateriaState>
+            <UnidadState>
+              <NivelAcademicoState>
+               <Component {...pageProps} />
+              </NivelAcademicoState>
+            </UnidadState>
+          </MateriaState>
+        </AuthState>
     </>
   );
 }

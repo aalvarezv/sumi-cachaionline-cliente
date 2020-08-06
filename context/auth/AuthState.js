@@ -1,111 +1,83 @@
-import React, { useReducer } from 'react'
-import { toast } from 'react-toastify';
+import React, { useReducer } from 'react';
 import { 
-    LOGIN_INIT,
-    LOGIN_EXITOSO,
+    LOGIN_EXITO,
     LOGIN_ERROR,
-} from '../types'
-import AuthContext from './AuthContext'
-import AuthReducer from './AuthReducer'
+    CERRAR_SESION
+} from '../types';
+import {handleError} from '../../helpers';
 
-import clienteAxios from '../../config/axios'
-import tokenAuth from '../../config/token'
+import AuthContext from './AuthContext';
+import AuthReducer from './AuthReducer';
+
+import clienteAxios from '../../config/axios';
+import tokenAuth from '../../config/token';
 
 const AuthState = (props) => {
 
     const initialState = {
-        usuario: null, //objeto {}
-        cargando: false, //boolean
-        notificacion: null  
+        usuario: null,
+        autenticado: false,
+        mensaje: null
     }
 
-    const [state, dispatch] = useReducer(AuthReducer, initialState) 
+    const [state, dispatch] = useReducer(AuthReducer, initialState);
  
-
     const iniciarSesion = async datos => {
         
-        console.log('Iniciando sesion', datos);
-        dispatch({
-            type: LOGIN_INIT,
-            payload: true
-        })
-
         try {
 
-            const resp = await clienteAxios.post('/api/auth/', datos)
-    
-            dispatch({
-                type: LOGIN_EXITOSO,
-                payload: resp.data
-            })
+            let resp = await clienteAxios.post('/api/auth/', datos);
+            //obtiene el token de la respuesta
+            const token = resp.data.token;
+
+            if(token){
+                //almacena el token en el localstorage.
+                localStorage.setItem('token', token);
+                //agrega el token al request de axios.
+                tokenAuth(token);
+                resp = await clienteAxios.get('/api/auth/datos/');
+
+                dispatch({
+                    type: LOGIN_EXITO,
+                    payload: resp.data.usuario
+                });
+            
+            }else{
+
+                const mensaje = handleError(e);
+                dispatch({
+                    type: LOGIN_ERROR,
+                    payload: mensaje
+                });
+
+            }
 
         } catch (e) {
-            const {msg} = e.response.data;
-            const notificacion = {
-                tipo: "error",
-                msg: msg,
-            }
-            toast.error(notificacion.msg, {containerId: 'A'})
-
+            
+            const mensaje = handleError(e);
+            
             dispatch({
                 type: LOGIN_ERROR,
-                payload: notificacion
-            })
+                payload: mensaje
+            });
             
         }
        
     }
 
-    //trae los datos del usuario autenticado, cuando se genera el token, en su payload se agrega el usuario id y con eso se rescatan los datos del usuario de la base 
-    const usuarioAutenticado = async () =>{
-
-        /*
-        const token = localStorage.getItem('token')
-        if(token){
-            //funcion para enviar el token por headers
-            tokenAuth(token)
-        }
-
-        try {
-
-            const respuesta = await clienteAxios.get('/api/auth/')
-            //console.log(respuesta)
-            dispatch({
-                type: OBTENER_USUARIO,
-                payload: respuesta.data.usuario
-            })
-
-        } catch (error) {
-
-            const alerta = {
-                msg: error.response.data.msg,
-                categoria: 'alerta-error'
-            }
-
-            dispatch({
-                type: LOGIN_ERROR,
-                payload: alerta
-            })
-        }
-        */
-    }  
-
     const cerrarSesion = () => {
-        /*
         dispatch({
             type: CERRAR_SESION
         })
-        */
     }
 
     return (
         <AuthContext.Provider
             value={{
                 usuario: state.usuario,
-                cargando: state.cargando,
-                notificacion: state.notificacion,
+                autenticado: state.autenticado,
+                mensaje: state.mensaje,
                 iniciarSesion,
-                usuarioAutenticado,
                 cerrarSesion
             }}
         >
