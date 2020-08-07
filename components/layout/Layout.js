@@ -23,11 +23,10 @@ const Layout = props => {
                 /*background-color: #f1f2f5;*/
             }
             footer{
-                position: fixed;
-                bottom: 0;
                 width: 100%;
                 background-color: black;
                 text-align:center;
+                margin-top: 1rem;
             }
             footer > a{
                 color:white;

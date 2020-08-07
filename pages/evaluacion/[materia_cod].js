@@ -8,46 +8,67 @@ import { Container, Row, Col, Form, Badge,
         Button, ListGroup, Card, Accordion, useAccordionToggle } from 'react-bootstrap';
 
 const EvaluacionFiltros = () => {
- 
-    const {unidades_materia, listarUnidadesMateriaNA} = useContext(UnidadContext);
-    const {materia_select, seleccionarMateria} = useContext(MateriaContext);
-     
-    const {niveles_academicos, listarNievelesAcademicos, seleccionaFiltroNA} = useContext(NievelAcademicoContext);
+    
+    const router = useRouter();
+    const { materia_cod } = router.query;
 
-    const [filtro_modulos, setFiltroModulos] = useState([]);
+    const {unidades_materia, listarUnidadesMateriaNA} = useContext(UnidadContext);
+    const {materia_select} = useContext(MateriaContext);
+     
+    const {niveles_academicos, listarNievelesAcademicos} = useContext(NievelAcademicoContext);
+
+    const [filtro_modulo, setFiltroModulo] = useState([]);
     const [filtro_nivel_academico, setFiltroNivelAcademico] = useState([]);
+    const [select_filtro_nivel_academico, setSelectFiltroNivelAcademico] = useState(false);
     const [toggle, setToggle] = useState([]);
     const [filtro_tiempo, setFiltroTiempo] = useState(null);
     const [filtro_cantidad_preguntas, setFiltroCantidadPreguntas] = useState(0);
 
-    const router = useRouter();
-    const { materia_cod } = router.query;
+    
 
-   
     useEffect(() => {
         //pobla los niveles academicos al iniciar.
         if(!niveles_academicos){
             listarNievelesAcademicos();
         }
-
+        //si tengo el codigo de la materia y los niveles academicos.
         if(materia_cod && niveles_academicos){
-      
+            //obtengo los códigos de los niveles academicos
             const niveles = niveles_academicos.map(nivel => {
                 return nivel.codigo;
             });
-            
+            //seteo los filtros de nivel academico en el state.
             setFiltroNivelAcademico(niveles);
+            //lista las unidades de materia por nivel academico.
             listarUnidadesMateriaNA(materia_cod, niveles);
         }
       
-
     }, [materia_cod, niveles_academicos]);
 
+    //si cambia el state del filtro_nivel_academico, actualiza las unidades_materia.
     useEffect(() => {
-
-        listarUnidadesMateriaNA(materia_cod, filtro_nivel_academico);
-
+        if(materia_cod && niveles_academicos){
+            listarUnidadesMateriaNA(materia_cod, filtro_nivel_academico);
+        }
     }, [filtro_nivel_academico]);
+
+    
+    useEffect(() => {
+        //si hizo click en el filtro nivel academico
+        if(select_filtro_nivel_academico){
+            //obtengo los módulos disponibles según los niveles académicos seleccionados.
+            let modulos = [];
+            unidades_materia.forEach(unidad => {
+                unidad.modulos.forEach(modulo => {
+                    modulos.push(modulo.codigo);
+                });
+            });
+            //muta el filtro_modulo para dejar solo aquellos que existen en .
+            const new_filtro_modulo = filtro_modulo.filter(item => modulos.includes(item.codigo_modulo));
+            setFiltroModulo(new_filtro_modulo);
+        }
+
+    }, [unidades_materia]);
 
 
     function CustomToggle({ children, eventKey }) {
@@ -58,7 +79,7 @@ const EvaluacionFiltros = () => {
       
         return (
           <Button
-            variant="light"
+            variant="info"
             size="sm"
            //style={{ backgroundColor: 'pink' }}
             onClick={decoratedOnClick}
@@ -68,21 +89,6 @@ const EvaluacionFiltros = () => {
         );
     }
 
-    const handleCheckUnidad = e => {
-
-    }
-    const handleCheckModulo = e => {
-        if(e.target.checked){
-            const modulo = unidades_materia.map(unidad => unidad.modulos.filter(modulo => modulo.codigo === e.target.name)).filter(res => res.length > 0)[0];
-            setFiltroModulos([
-                ...filtro_modulos,
-                modulo[0]
-            ]);
-        }else{
-            const filtro_modulos_new = filtro_modulos.filter(modulo => modulo.codigo !== e.target.name);
-            setFiltroModulos(filtro_modulos_new);
-        }
-    }
     //NA = NIVEL ACADEMICO
     const handleClickNA = codigo_nivel_academico => {
         //revisa si el item de niveles academicos existe en el arreglo, 
@@ -100,6 +106,28 @@ const EvaluacionFiltros = () => {
                 codigo_nivel_academico
             ]);
         }
+
+        setSelectFiltroNivelAcademico(true);
+
+    }
+
+    const handleClickModulo = (codigo_modulo, codigo_unidad) => {
+        
+        const is_select = filtro_modulo.some(item => item.codigo_modulo === codigo_modulo)
+
+        if(is_select){
+            const new_filtro = filtro_modulo.filter(item => item.codigo_modulo !== codigo_modulo);
+            setFiltroModulo(new_filtro);
+        }else{
+            setFiltroModulo([
+                ...filtro_modulo,
+                {
+                    codigo_modulo,
+                    codigo_unidad
+                }
+            ]);
+        }
+      
     }
 
     return ( 
@@ -121,13 +149,13 @@ const EvaluacionFiltros = () => {
                 </Card>
                 <Row>
                     <Col lg="4">
-                        <Accordion>
+                        <Accordion defaultActiveKey={`NA_${materia_cod}`}>
                         <Card>
                             <Card.Header className="bg-info">
                                 <div className="d-flex justify-content-between">   
-                                    <h5 className="text-light">Nivel Académico</h5>
+                                    <span className="text-light">NIVEL ACADÉMICO</span>
                                     <CustomToggle
-                                        eventKey={`NA_${materia_cod}`}><h6>+</h6></CustomToggle>
+                                        eventKey={`NA_${materia_cod}`}>+</CustomToggle>
                                 </div>
                             </Card.Header>
                             <Accordion.Collapse eventKey={`NA_${materia_cod}`}>
@@ -141,7 +169,7 @@ const EvaluacionFiltros = () => {
                                     variant={filtro_nivel_academico.includes(nivel_academico.codigo) ? "info"
                                     : "light"}
                                 >
-                                    <h6>{nivel_academico.descripcion}</h6>
+                                    <span>{nivel_academico.descripcion}</span>
                                 </ListGroup.Item>
                                 )
                             })}
@@ -154,7 +182,7 @@ const EvaluacionFiltros = () => {
                         <Accordion>
                         <Card>
                             <Card.Header className="bg-info">
-                                <h5 className="text-light text-center">Unidades</h5>
+                                <span className="text-light">UNIDADES</span>
                             </Card.Header>
                             {unidades_materia && unidades_materia.map(unidad => {
                             return(
@@ -162,14 +190,12 @@ const EvaluacionFiltros = () => {
                                     key={unidad.codigo}
                                 >
                                 <Card.Header>
-                                    <Form.Check 
-                                        type="checkbox"
-                                        id={unidad.codigo}
-                                        name={unidad.codigo}
-                                        label={unidad.descripcion}
-                                        onChange={handleCheckUnidad}
-                                    />
-                                    <CustomToggle  eventKey={`UN_${unidad.codigo}`}>+</CustomToggle>
+                                    <div className="d-flex justify-content-between align-items-center">   
+                                    <span className="text-dark">{unidad.descripcion}</span>
+                                        <CustomToggle  
+                                            eventKey={`UN_${unidad.codigo}`}
+                                        >+</CustomToggle>
+                                    </div>
                                 </Card.Header>
                                 <Accordion.Collapse eventKey={`UN_${unidad.codigo}`}>
                                     <ListGroup>
@@ -177,14 +203,11 @@ const EvaluacionFiltros = () => {
                                             return (
                                                 <ListGroup.Item
                                                     key={modulo.codigo}
+                                                    onClick={() => { handleClickModulo(modulo.codigo, unidad.codigo)}}
+                                                    variant={filtro_modulo.some(item => item.codigo_modulo === modulo.codigo) ? "info"
+                                                    : "light"}
                                                 >
-                                                    <Form.Check 
-                                                        type="checkbox"
-                                                        id={modulo.codigo}
-                                                        name={modulo.codigo}
-                                                        label={modulo.descripcion}
-                                                        onChange={handleCheckModulo}
-                                                    />
+                                                    <span>{modulo.descripcion}</span>
                                                 </ListGroup.Item>
                                             )
                                         })}
