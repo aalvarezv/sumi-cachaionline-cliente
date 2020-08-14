@@ -6,7 +6,7 @@ const UsuarioForm = () => {
     <Container>
        <Form>
             <Form.Group>
-                <Form.Label>RUT</Form.Label>
+                <Form.Label>Rut</Form.Label>
                 <Form.Control 
                     id="rut"
                     name="rut"
@@ -17,10 +17,10 @@ const UsuarioForm = () => {
             <Form.Group>
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
-                    id="rut"
-                    name="rut"
+                    id="nombre"
+                    name="nombre"
                     type="text" 
-                    placeholder="Nombre Completo" 
+                    placeholder="NOMBRE COMPLETO" 
                 />
             </Form.Group>
             <Form.Group>
@@ -29,7 +29,7 @@ const UsuarioForm = () => {
                     id="email"
                     name="email"
                     type="email" 
-                    placeholder="tu.email@ejemplo.com" 
+                    placeholder="TU.EMAIL@GMAIL.COM" 
                 />
             </Form.Group>
             <Form.Group>
@@ -38,17 +38,20 @@ const UsuarioForm = () => {
                     id="telefono"
                     name="telefono"
                     type="tel" 
-                    placeholder="" 
+                    placeholder="(+56)945678323" 
                 />
             </Form.Group>
             <Form.Group>
-            <Form.Label>ROL</Form.Label>
+            <Form.Label>Rol</Form.Label>
                 <Form.Control
                     id="rol"
                     name="rol"
                     as="select"
                 >
-                    <option>1</option>
+                    <option>SELECCIONE UN ROL</option>
+                    <option>ADMINISTRADOR</option>
+                    <option>ALUMNO</option>
+                    <option>PROFESOR</option>
                 </Form.Control>
             </Form.Group>
             <Form.Check 
