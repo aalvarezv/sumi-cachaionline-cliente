@@ -27,6 +27,9 @@ const Header = () => {
                 <Link href="/" passHref>
                     <Nav.Link href="/materias">Materias</Nav.Link>
                 </Link>
+                <Link href="/test" passHref>
+                    <Nav.Link href="/test">Test</Nav.Link>
+                </Link>
             </Nav>
             <Nav>
                 {autenticado

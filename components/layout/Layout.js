@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import Header from './Header';
+import AuthContext from '../../context/auth/AuthContext';
 
 
 const Layout = props => {
+
+    const {autenticado, usuarioAuth} = useContext(AuthContext);
+
+    useEffect(() => {
+      usuarioAuth();
+      if(autenticado){
+        console.log('Mandar al home, está autenticado...');
+      }
+    },[] );
+
+
     return ( 
         <>
         <Header />
