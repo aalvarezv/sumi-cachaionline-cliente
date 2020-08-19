@@ -57,7 +57,6 @@ const AuthState = (props) => {
         } catch (e) {
             
             const mensaje = handleError(e);
-            
             dispatch({
                 type: LOGIN_ERROR,
                 payload: mensaje
@@ -84,18 +83,22 @@ const AuthState = (props) => {
             }
 
         } catch (e) {
+
             const mensaje = handleError(e);
             dispatch({
                 type: USUARIO_AUTH_ERROR,
                 payload: mensaje
             });
+
         }
     }
 
     const cerrarSesion = () => {
+
         dispatch({
             type: CERRAR_SESION
-        })
+        });
+
     }
 
     return (

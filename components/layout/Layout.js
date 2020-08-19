@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import Head from 'next/head';
 import Header from './Header';
 import AuthContext from '../../context/auth/AuthContext';
 
@@ -17,33 +18,23 @@ const Layout = props => {
 
     return ( 
         <>
+        <Head>
+        <title>CachaiOnline</title>
+        <link 
+            rel="stylesheet" 
+            href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" 
+            integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU="
+            crossOrigin="anonymous" 
+        />
+        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"
+        />
+        </Head>
         <Header />
         <main>
             {props.children}
         </main>
-        {<footer> 
-            <a
-            href="https://www.cachaionline.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            >
-            CachaiOnline
-            </a>
-        </footer>}
-        <style jsx global>{`
-            body {
-                /*background-color: #f1f2f5;*/
-            }
-            footer{
-                width: 100%;
-                background-color: black;
-                text-align:center;
-                margin-top: 1rem;
-            }
-            footer > a{
-                color:white;
-            }
-      `}</style>
+         <style jsx global>{`
+        `}</style>  
         </>
      );
 }

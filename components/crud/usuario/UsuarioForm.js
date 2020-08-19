@@ -1,22 +1,37 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useRouter } from 'next/router';
 import { Container, Form, Button } from 'react-bootstrap';
-import { debounce, handleError } from '../../../helpers';
+import AuthContext from '../../../context/auth/AuthContext';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
+import InputSelectRol from '../../ui/InputSelectRol';
+
 
 const UsuarioForm = () => {
+
+    const { autenticado } = useContext(AuthContext);
+    const router = useRouter();
 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
+    const [formulario, setFormulario] = useState({
+        rut: '',
+        nombre: '',
+        email: '',
+        telefono: '',
+        codigo_rol: '',
+        inactivo: false
+    });
 
+    const buscarUsuario = async () => {
+        const resp = await clienteAxios.get(`/api/usuarios/busqueda/${filtro_busqueda}`);
+        setResultBusqueda(resp.data.usuarios);
+    }
+
+    //cuando cambia el filtro de búsqueda.
     useEffect(() => {
-       
-        const buscarUsuario = async () => {
-            console.log('consulta...',filtro_busqueda);
-            const resp = await clienteAxios.get(`/api/usuarios/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.usuarios);
-        }
+
         //si tengo un filtro de búsqueda y no hay un usuario seleccionado, entonces busca.
         if(filtro_busqueda.trim() !== '' && !result_select){
             buscarUsuario();
@@ -24,8 +39,35 @@ const UsuarioForm = () => {
             setResultBusqueda([]);
         }
 
-    }, [filtro_busqueda]);
-    
+        //cuando se selecciona o cambia el result_select
+        if(result_select){
+            setFormulario({
+                rut: result_select.rut,
+                nombre: result_select.nombre,
+                email: result_select.email,
+                telefono: result_select.telefono,
+                codigo_rol: result_select.codigo_rol,
+                inactivo: result_select.inactivo
+            });
+        }else{
+            setFormulario({
+                rut: '',
+                nombre: '',
+                email: '',
+                telefono: '',
+                codigo_rol: '',
+                inactivo: false
+            });
+        }
+
+    }, [filtro_busqueda, result_select]);
+
+     //verifica si está autenticado o no.
+     if(!autenticado){
+        router.push('/login');
+        return null;
+    }
+  
     return ( 
     <Container>
 
@@ -33,6 +75,8 @@ const UsuarioForm = () => {
             setFilter={setFiltroBusqueda}
             results={result_busqueda}
             setResultSelect={setResultSelect}
+            id="rut"
+            label="nombre"
         />
 
         <Form>
@@ -44,6 +88,12 @@ const UsuarioForm = () => {
                     type="text" 
                     placeholder="RUT" 
                     autoComplete="off"
+                    value={formulario.rut}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value,
+                    })}
+                    readOnly={result_select}
                 />
             </Form.Group>
             <Form.Group>
@@ -53,6 +103,11 @@ const UsuarioForm = () => {
                     name="nombre"
                     type="text" 
                     placeholder="NOMBRE COMPLETO" 
+                    value={formulario.nombre}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value,
+                    })}
                 />
             </Form.Group>
             <Form.Group>
@@ -61,7 +116,12 @@ const UsuarioForm = () => {
                     id="email"
                     name="email"
                     type="email" 
-                    placeholder="TU.EMAIL@GMAIL.COM" 
+                    placeholder="TU.EMAIL@GMAIL.COM"
+                    value={formulario.email}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value,
+                    })}
                 />
             </Form.Group>
             <Form.Group>
@@ -70,21 +130,26 @@ const UsuarioForm = () => {
                     id="telefono"
                     name="telefono"
                     type="tel" 
-                    placeholder="(+56)945678323" 
+                    placeholder="(+56)945678323"
+                    value={formulario.telefono}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value,
+                    })}
                 />
             </Form.Group>
             <Form.Group>
-            <Form.Label>Rol</Form.Label>
-                <Form.Control
-                    id="rol"
-                    name="rol"
+                <Form.Label>Rol</Form.Label>
+                <InputSelectRol
+                    id="codigo_rol"
+                    name="codigo_rol"
                     as="select"
-                >
-                    <option>SELECCIONE UN ROL</option>
-                    <option>ADMINISTRADOR</option>
-                    <option>ALUMNO</option>
-                    <option>PROFESOR</option>
-                </Form.Control>
+                    value={formulario.codigo_rol}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value
+                    })}
+                />
             </Form.Group>
             <Form.Check 
                 id="inactivo"
@@ -92,10 +157,22 @@ const UsuarioForm = () => {
                 type="checkbox"
                 label="Inactivo"
                 className="mb-3"
+                checked={formulario.inactivo}
+                onChange={e => setFormulario({
+                    ...formulario,
+                    [e.target.name]: e.target.checked,
+                })}
             />
-            <Button 
-                variant="info"
-            >Crear</Button>
+            {result_select
+            ?
+                <Button 
+                    variant="outline-info"
+                >Actualizar</Button>
+            :
+                <Button 
+                    variant="info"
+                >Crear</Button>
+            }
        </Form>
     </Container> );
 }

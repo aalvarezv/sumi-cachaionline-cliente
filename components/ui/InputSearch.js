@@ -2,7 +2,7 @@ import React, {useState, useCallback} from 'react';
 import { Form } from 'react-bootstrap';
 import { debounce } from 'lodash';
 
-const InputSearch = ({setFilter, results, setResultSelect}) => {
+const InputSearch = ({setFilter, results, setResultSelect, id, label}) => {
     //state del campo de texto, cuando una opción sea seleccionada,
     //el valor será seteado en el campo.
     const [text, setText]    =  useState('');
@@ -40,33 +40,48 @@ const InputSearch = ({setFilter, results, setResultSelect}) => {
     }
  
     return (
-        <>
+        <div
+            className="mb-3"
+        >
         <Form.Control 
             type="text"
             size="lg" 
             placeholder="Búsqueda..."
             value={text}
             autoComplete="off"
-            className="mb-3" 
             onChange={handleChange}
         />
-        {
-
-
-        }
         <ul>
             {(!item_select && results) && results.map(item => {
                 return (
                 <li 
-                    key={item.rut}
+                    key={item[id]}
                     onClick={e => handleClickOption(e, item)}
                 >
-                    {`${item.nombre}`}  
+                    {`${item[label]}`}  
                 </li>
                 );
             })}
         </ul> 
-        </>
+        <style jsx>{`
+            ul {
+                margin-bottom: 1rem;
+                position: absolute;
+                
+            }
+            li {
+                list-style-type: none;
+                background-color: #FFF;
+                padding: 6px 20px;
+                border: 1px solid #c0c0c0;
+                cursor: pointer;
+            }  
+            li:hover {
+                background-color: #298496;
+                color: #ffffff;
+            }
+        `}</style>
+        </div>
     )
 };
 

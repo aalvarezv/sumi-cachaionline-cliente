@@ -5,9 +5,8 @@ import {
     USUARIO_AUTH_EXITO,
     USUARIO_AUTH_ERROR
 } from '../types';
+import tokenAuth from '../../config/token';
 
-//localStorage.setItem('token', action.payload.token)
-//localStorage.removeItem('token')
 
 const AuthReducer = (state, action) => {
    
@@ -23,7 +22,7 @@ const AuthReducer = (state, action) => {
             }
         case LOGIN_ERROR:
         case USUARIO_AUTH_ERROR:
-            console.log('aqui, remueve el token');
+            tokenAuth(null);
             localStorage.removeItem('token');
             return{
                 ...state,
@@ -32,6 +31,7 @@ const AuthReducer = (state, action) => {
                 mensaje: action.payload,
             } 
         case CERRAR_SESION:
+            tokenAuth(null);
             localStorage.removeItem('token');
             return{
                 ...state,
