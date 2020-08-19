@@ -16,8 +16,8 @@ const RolForm = () => {
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
-        inactivo: ''
-    })
+        inactivo: false
+    });
 
 
     const busquedaRol = async () => {
