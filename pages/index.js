@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import Link from 'next/link';
 import MateriaContext from '../context/materias/MateriaContext';
 import Layout from '../components/layout/Layout';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Image } from 'react-bootstrap';
 
 
 const Home = () => {
@@ -22,7 +22,7 @@ const Home = () => {
                 <Row>
                     <Col lg={3}>
                       <Row>
-                         <Card.Img className= "img-fluid mx-auto" style={{ width: '200px' }} variant="top" src={materia.imagen} />
+                         <Image className= "img-fluid mx-auto" style={{ width: '300px' }} variant="top" src={materia.imagen}/>
                       </Row>
                     </Col>
                     <Col className="mt-3 mt-lg-0" lg={6}>

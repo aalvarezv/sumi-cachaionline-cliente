@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
-import AuthContext from '../../../context/auth/AuthContext';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
 import InputSelectRol from '../../ui/InputSelectRol';
@@ -9,9 +7,6 @@ import InputSelectRol from '../../ui/InputSelectRol';
 
 
 const MateriaForm = () => {
-
-    const { autenticado } = useContext(AuthContext);
-    const router = useRouter();
 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
@@ -56,11 +51,6 @@ const MateriaForm = () => {
         }
 
     }, [filtro_busqueda, result_select])
-
-    if(!autenticado){
-        router.push('/login');
-        return null;
-    }
 
     return ( 
         <Container>
@@ -110,7 +100,8 @@ const MateriaForm = () => {
                     <Form.Control 
                         id="descripcion"
                         name="descripcion"
-                        type="text" 
+                        as="textarea" 
+                        rows="5"
                         placeholder="DESCRIPCIÓN"
                         value={formulario.descripcion}
                         onChange={e => {

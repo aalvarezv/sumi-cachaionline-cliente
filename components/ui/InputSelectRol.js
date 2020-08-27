@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Form } from 'react-bootstrap';
+import AuthContext from '../../context/auth/AuthContext';
 import  clienteAxios from '../../config/axios';
 
 
@@ -7,7 +8,7 @@ const InputSelectRol = props => {
 
     const [roles, setRoles] = useState([]);
 
-    useEffect(  () => {
+    useEffect(() => {
       
         const listarRoles = async () => {
             const resp = await clienteAxios.get('/api/roles/listar');
@@ -21,7 +22,7 @@ const InputSelectRol = props => {
         <Form.Control
             {...props}
         >
-            <option>SELECCIONE UN ROL</option>
+            <option key="0" value="0">SELECCIONE UN ROL</option>
             {roles.map(rol => <option key={rol.codigo} value={rol.codigo}>{rol.descripcion}</option>)}
         </Form.Control>
       );

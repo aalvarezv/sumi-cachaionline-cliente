@@ -29,8 +29,7 @@ const Login = () => {
                             validationSchema={LoginSchema}
                             onSubmit={ async (values, {resetForm}) => {
                                 await new Promise(resolve => setTimeout(resolve, 1000));
-                                await iniciarSesion(values);
-                                resetForm({});                    
+                                await iniciarSesion(values);               
                             }}
                         >
                         {({
@@ -77,7 +76,7 @@ const Login = () => {
                                         onBlur={handleBlur}
                                         value={values.clave}
                                         autoComplete="off"
-                                        isInvalid={!!errors.rut}
+                                        isInvalid={!!errors.clave}
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.clave}

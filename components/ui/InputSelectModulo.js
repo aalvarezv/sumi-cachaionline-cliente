@@ -7,7 +7,7 @@ const InputSelectModulo = props => {
 
     const [modulos, setModulos] = useState([]);
 
-    useEffect(  () => {
+    useEffect(() => {
       
         const listarModulos = async () => {
             const resp = await clienteAxios.get('/api/modulos/listar');
@@ -21,7 +21,7 @@ const InputSelectModulo = props => {
         <Form.Control
             {...props}
         >
-            <option>SELECCIONE UN MODULO</option>
+            <option key="0" value="0">SELECCIONE UN MODULO</option>
             {modulos.map(modulo => <option key={modulo.codigo} value={modulo.codigo}>{modulo.descripcion}</option>)}
         </Form.Control>
       );

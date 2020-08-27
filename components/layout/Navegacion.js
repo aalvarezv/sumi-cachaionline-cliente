@@ -1,9 +1,9 @@
 import React,{ useContext, useEffect } from 'react';
 import Link from 'next/link';
 import AuthContext from '../../context/auth/AuthContext';
-import { Navbar, Nav, Button } from 'react-bootstrap';
+import { Navbar, Nav, Button, NavDropdown } from 'react-bootstrap';
 
-const Header = () => {
+const Navegacion = () => {
 
     const { usuario, autenticado, cerrarSesion } = useContext(AuthContext); 
     
@@ -27,15 +27,36 @@ const Header = () => {
                 <Link href="/" passHref>
                     <Nav.Link href="/materias">Materias</Nav.Link>
                 </Link>
-                <Link href="/test" passHref>
-                    <Nav.Link href="/test">Test</Nav.Link>
-                </Link>
+                {autenticado
+                &&
+                    <NavDropdown title="Administrar" id="basic-nav-dropdown">
+                        <Link href="/administrar/materias" passHref>
+                            <NavDropdown.Item href="/administrar/materias">Materias</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/modulos" passHref>
+                            <NavDropdown.Item href="/administrar/modulos">Módulos</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/niveles-academicos" passHref>
+                            <NavDropdown.Item href="/administrar/niveles-academicos">Niveles Académicos</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/roles" passHref>
+                            <NavDropdown.Item href="/administrar/roles">Roles</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/unidades" passHref>
+                            <NavDropdown.Item href="/administrar/unidades">Unidades</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/usuarios" passHref>
+                            <NavDropdown.Item href="/administrar/usuarios">Usuarios</NavDropdown.Item>
+                        </Link>
+                        {/* <NavDropdown.Divider /> */}
+                    </NavDropdown>
+                }
             </Nav>
             <Nav>
                 {autenticado
                 ?   
                     <>
-                        <h6 className="mt-auto mr-2">
+                        <h6 className="mt-2 mr-2">
                             {usuario.nombre}
                         </h6>
                         <Button 
@@ -54,4 +75,4 @@ const Header = () => {
      );
 }
  
-export default Header;
+export default Navegacion;

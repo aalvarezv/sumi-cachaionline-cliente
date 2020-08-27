@@ -1,14 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
-import AuthContext from '../../../context/auth/AuthContext';
 import InputSearch from '../../ui/InputSearch';
 import clienteAxios from '../../../config/axios';
 
 const RolForm = () => {
-
-    const { autenticado } = useContext(AuthContext);
-    const router = useRouter();
 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
@@ -19,12 +14,10 @@ const RolForm = () => {
         inactivo: false
     });
 
-
     const busquedaRol = async () => {
         const resp = await clienteAxios.get(`/api/roles/busqueda/${filtro_busqueda}`)
         setResultBusqueda(resp.data.roles);
     }
-
 
     useEffect(() => {
 
@@ -49,12 +42,6 @@ const RolForm = () => {
         }
 
     }, [filtro_busqueda, result_select])
-
-     //verifica si está autenticado o no.
-     if(!autenticado){
-        router.push('/login');
-        return null;
-    }
 
     return (
         <Container>

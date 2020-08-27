@@ -7,10 +7,11 @@ const InputSelectUnidad = props => {
 
     const [unidades, setUnidades] = useState([]);
 
-    useEffect(  () => {
+    useEffect(() => {
       
         const listarUnidades = async () => {
             const resp = await clienteAxios.get('/api/unidades/listar');
+            console.log('UNIDADES',resp.data.unidades);
             setUnidades(resp.data.unidades);
         }
         listarUnidades();
@@ -21,7 +22,7 @@ const InputSelectUnidad = props => {
         <Form.Control
             {...props}
         >
-            <option>SELECCIONE UNA UNIDAD</option>
+            <option key="0" value="0">SELECCIONE UNA UNIDAD</option>
             {unidades.map(unidad => <option key={unidad.codigo} value={unidad.codigo}>{unidad.descripcion}</option>)}
         </Form.Control>
       );

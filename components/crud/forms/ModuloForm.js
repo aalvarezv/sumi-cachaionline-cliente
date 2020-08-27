@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
-import AuthContext from '../../../context/auth/AuthContext';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
 import InputSelectUnidad from '../../ui/InputSelectUnidad';
 import InputSelectNivelAcademico from '../../ui/InputSelectNivelAcademico';
 
 const ModuloForm = () => {
-
-    const { autenticado } = useContext(AuthContext);
-    const router = useRouter();
 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
@@ -28,9 +23,7 @@ const ModuloForm = () => {
         setResultBusqueda(resp.data.modulos);
     }
 
-    
     useEffect(() => {
-
         
         if(filtro_busqueda.trim() !== '' && !result_select){
             buscarModulo();
@@ -59,10 +52,6 @@ const ModuloForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
-    if(!autenticado){
-        router.push('/login');
-        return null;
-    }
 
     return ( 
     <Container>
@@ -71,8 +60,8 @@ const ModuloForm = () => {
             setFilter={setFiltroBusqueda}
             results={result_busqueda}
             setResultSelect={setResultSelect}
-            id="rut"
-            label="nombre"
+            id="codigo"
+            label="descripcion"
         />
 
        <Form>

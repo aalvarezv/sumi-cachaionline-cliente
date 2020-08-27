@@ -7,7 +7,7 @@ const InputSelectNivelAcademico = props => {
 
     const [niveles_academicos, setNivelesAcademicos] = useState([]);
 
-    useEffect(  () => {
+    useEffect(() => {
       
         const listarNivelesAcademicos = async () => {
             const resp = await clienteAxios.get('/api/nivel-academico/listar');
@@ -21,7 +21,7 @@ const InputSelectNivelAcademico = props => {
         <Form.Control
             {...props}
         >
-            <option>SELECCIONE UN NIVEL ACADEMICO</option>
+            <option key="0" value="0">SELECCIONE UN NIVEL ACADEMICO</option>
             {niveles_academicos.map(nivel_academico => <option key={nivel_academico.codigo} value={nivel_academico.codigo}>{nivel_academico.descripcion}</option>)}
         </Form.Control>
       );

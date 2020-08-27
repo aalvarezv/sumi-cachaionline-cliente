@@ -1,8 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import Head from 'next/head';
-import Header from './Header';
+import Navegacion from './Navegacion';
 import AuthContext from '../../context/auth/AuthContext';
-
 
 const Layout = props => {
 
@@ -10,11 +9,10 @@ const Layout = props => {
 
     useEffect(() => {
       usuarioAuth();
-      if(autenticado){
-        console.log('Mandar al home, está autenticado...');
-      }
+    //   if(autenticado){
+    //     console.log('Mandar al home, está autenticado...');
+    //   }
     },[] );
-
 
     return ( 
         <>
@@ -29,7 +27,7 @@ const Layout = props => {
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"
         />
         </Head>
-        <Header />
+        <Navegacion />
         <main>
             {props.children}
         </main>
