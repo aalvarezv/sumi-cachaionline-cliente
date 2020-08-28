@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import ToastMultiline from '../../../components/ui/ToastMultiline';
 import { Container, Form, Button } from 'react-bootstrap';
+import { handleError } from '../../../helpers';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
 import InputSelectRol from '../../ui/InputSelectRol';
@@ -18,8 +21,10 @@ const MateriaForm = () => {
         imagen: '',
         inactivo: false
     });
+    //1.- definir la variable que almacena los errores.
+    const [errores, setErrores] = useState({});
 
-    const busquedaMateria = async () => {
+    const buscarMateria = async () => {
         const resp = await clienteAxios.get(`/api/materias/busqueda/${filtro_busqueda}`);
         setResultBusqueda(resp.data.materias);
     }
@@ -27,7 +32,7 @@ const MateriaForm = () => {
     useEffect(() => {
 
         if(filtro_busqueda.trim() !== '' && !result_select){
-            busquedaMateria();
+            buscarMateria();
         }else{
             setResultBusqueda([]);
         }
@@ -41,16 +46,101 @@ const MateriaForm = () => {
                 inactivo: result_select.inactivo
             });
         }else{
-            setFormulario({
-                codigo: '',
-                nombre: '',
-                descripcion: '',
-                imagen: '',
-                inactivo: false
-            });
+            reseteaFormulario();
         }
+        setErrores({});
 
     }, [filtro_busqueda, result_select])
+
+
+    const validarFormulario = () => {
+        //setea los errores para que no exista ninguno.
+        let errors = {}
+        //valida el rut.
+        //valida el codigo.
+        if(formulario.codigo.trim() === ''){
+            errors = {
+                ...errors,
+                codigo: 'Requerido'
+            }
+        }
+        //valida el nombre.
+        if(formulario.nombre.trim() === ''){
+            errors = {
+                ...errors,
+                nombre: 'Requerido'
+            }
+        }
+        //valida el descripcion.
+        if(formulario.descripcion.trim() === ''){
+            errors = {
+                ...errors,
+                descripcion: 'Requerido'
+            }
+        }
+
+        setErrores(errors);
+    }
+
+    const reseteaFormulario = () => {
+        setFormulario({
+            codigo: '',
+            nombre: '',
+            descripcion: '',
+            imagen: '',
+            inactivo: false
+        });
+    }
+
+    const handleClickCrear = async e => {
+        
+        try{
+             //previne el envío
+             e.preventDefault();
+             //verifica que no hayan errores
+             if(Object.keys(errores).length > 0){
+                 return;
+             }
+             //materia a enviar
+             let materia = formulario;
+             const resp = await clienteAxios.post('/api/materias/crear', materia);
+             //respuesta de la materia recibido.
+             materia = resp.data;
+             reseteaFormulario();
+             toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA'},
+                                                      {msg: `CODIGO: ${materia.codigo}`},
+                                                      {msg: `NOMBRE: ${materia.nombre}`},
+                                                      {msg: 'CREADA CORRECTAMENTE'}  
+                                                     ]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+     }
+     const handleClickActualizar = async e => {
+        
+        try{
+            e.preventDefault();
+            //verifica que no hayan errores
+            if(Object.keys(errores).length > 0){
+                return;
+            }
+            //materia a enviar
+
+            let materia = formulario;
+
+            await clienteAxios.put('/api/materias/actualizar', materia);
+            //respuesta de la materia recibido.
+            toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA'},
+                                                     {msg: `CODIGO: ${materia.codigo}`},
+                                                     {msg: `NOMBRE: ${materia.nombre}`},
+                                                     {msg: 'ACTUALIZADA CORRECTAMENTE'}  
+                                                     ]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+    }
 
     return ( 
         <Container>
@@ -73,11 +163,16 @@ const MateriaForm = () => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value
+                                [e.target.name]: e.target.value.toUpperCase()
                             })
                         }}
                         readOnly={result_select}  
+                        isInvalid={errores.hasOwnProperty('codigo')}
+                        onBlur={validarFormulario}
                     />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('codigo') && errores.rut}
+                </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Nombre</Form.Label>
@@ -90,10 +185,15 @@ const MateriaForm = () => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value
+                                [e.target.name]: e.target.value.toUpperCase()
                             })
                         }} 
+                        isInvalid={errores.hasOwnProperty('nombre')}
+                        onBlur={validarFormulario}
                     />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('nombre') && errores.rut}
+                </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Descripción</Form.Label>
@@ -107,10 +207,15 @@ const MateriaForm = () => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value
+                                [e.target.name]: e.target.value.toUpperCase()
                             })
                         }}
+                        isInvalid={errores.hasOwnProperty('descripcion')}
+                        onBlur={validarFormulario}
                     />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('descripcion') && errores.rut}
+                </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
                     <Form.File 
@@ -135,9 +240,15 @@ const MateriaForm = () => {
                 />
                 {result_select
                 ?
-                    <Button variant="outline-info">Actualizar</Button>
+                    <Button 
+                        variant="outline-info"
+                        onClick={handleClickActualizar}
+                    >Actualizar</Button>
                 :
-                    <Button variant="info">Crear</Button>
+                    <Button 
+                        variant="info"
+                        onClick={handleClickCrear}
+                    >Crear</Button>
                 }
             </Form>
         </Container> );

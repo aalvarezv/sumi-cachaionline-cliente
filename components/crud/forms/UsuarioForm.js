@@ -23,6 +23,7 @@ const UsuarioForm = () => {
         codigo_rol: '',
         inactivo: false
     });
+    //1.- definir la variable que almacena los errores.
     const [errores, setErrores] = useState({});
 
     const buscarUsuario = async () => {
@@ -60,6 +61,7 @@ const UsuarioForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
+    //2.- Valida los campos del formulario.
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
         let errors = {}
@@ -154,7 +156,7 @@ const UsuarioForm = () => {
             //previne el envío
             e.preventDefault();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 1){
+            if(Object.keys(errores).length > 0){
                 return;
             }
             //usuario a enviar
@@ -182,16 +184,17 @@ const UsuarioForm = () => {
         try{
             e.preventDefault();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 1){
+            if(Object.keys(errores).length > 0){
                 return;
             }
             //usuario a enviar
+
             let usuario = {
                 ...formulario,
                 rut: formulario.rut.replace('-','')
             }
 
-            const resp = await clienteAxios.put('/api/usuarios/actualizar', usuario);
+            await clienteAxios.put('/api/usuarios/actualizar', usuario);
             //respuesta del usuario recibido.
             toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO'},
                                                      {msg: `RUT: ${rutFormat(usuario.rut)}`},
@@ -247,7 +250,7 @@ const UsuarioForm = () => {
                     value={formulario.nombre}
                     onChange={e => setFormulario({
                         ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase(),
+                        [e.target.name]: e.target.value.toUpperCase()
                     })}
                     isInvalid={errores.hasOwnProperty('nombre')}
                     onBlur={validarFormulario}
@@ -305,7 +308,7 @@ const UsuarioForm = () => {
                     value={formulario.email}
                     onChange={e => setFormulario({
                         ...formulario,
-                        [e.target.name]: e.target.value,
+                        [e.target.name]: e.target.value.toUpperCase()
                     })}
                     isInvalid={errores.hasOwnProperty('email')}
                     onBlur={validarFormulario}

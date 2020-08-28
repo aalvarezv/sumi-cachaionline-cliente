@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import ToastMultiline from '../../../components/ui/ToastMultiline';
 import { Container, Form, Button } from 'react-bootstrap';
+import { handleError } from '../../../helpers';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
 import InputSelectUnidad from '../../ui/InputSelectUnidad';
@@ -17,6 +20,8 @@ const ModuloForm = () => {
         codigo_nivel_academico: '',
         inactivo: false
     });
+
+    const [errores, setErrores] = useState({});
 
     const buscarModulo = async () => {
         const resp = await clienteAxios.get(`/api/modulos/busqueda/${filtro_busqueda}`);
@@ -41,17 +46,110 @@ const ModuloForm = () => {
                 inactivo: result_select.inactivo
             });
         }else{
-            setFormulario({
-                codigo: '',
-                descripcion: '',
-                codigo_unidad: '',
-                codigo_nivel_academico: '',
-                inactivo: false
-            });
+            reseteaFormulario();
         }
+        setErrores({});
 
     }, [filtro_busqueda, result_select]);
 
+    const validarFormulario = () => {
+        //setea los errores para que no exista ninguno.
+        let errors = {}
+        //valida el codigo
+        if(formulario.codigo.trim() === ''){
+            errors = {
+                ...errors,
+                codigo: 'Requerido'
+            }
+        }
+
+        //valida la descripcion.
+        if(formulario.descripcion.trim() === ''){
+            errors = {
+                ...errors,
+                descripcion: 'Requerido'
+            }
+        }
+
+        //valida la unidad.
+        if(formulario.codigo_unidad.trim() === '' || formulario.codigo_unidad.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_unidad: 'Requerido'
+            }
+        }
+        //valida el nivel academico.
+        if(formulario.codigo_nivel_academico.trim() === '' || formulario.codigo_nivel_academico.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_nivel_academico: 'Requerido'
+            }
+        }
+
+        setErrores(errors);
+    }
+
+    const reseteaFormulario = () => {
+        setFormulario({
+            codigo: '',
+            descripcion: '',
+            codigo_unidad: '',
+            codigo_nivel_academico: '',
+            inactivo: false
+        });
+    }
+
+    const handleClickCrear = async e => {
+        
+        try{
+             //previne el envío
+             e.preventDefault();
+             //verifica que no hayan errores
+             if(Object.keys(errores).length > 0){
+                 return;
+             }
+             //modulo a enviar
+             let modulo = formulario; 
+             const resp = await clienteAxios.post('/api/modulos/crear', modulo);
+             //respuesta del modulo recibido.
+             modulo = resp.data;
+             reseteaFormulario();
+             toast.success(<ToastMultiline mensajes={[{msg: 'MODULO'},
+                                                      {msg: `CODIGO: ${modulo.codigo}`},
+                                                      {msg: `DESCRIPCION: ${modulo.descripcion}`},
+                                                      {msg: 'CREADO CORRECTAMENTE'}  
+                                                     ]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+     
+    }
+
+    const handleClickActualizar = async e => {
+        
+        try{
+            e.preventDefault();
+            //verifica que no hayan errores
+            if(Object.keys(errores).length > 0){
+                return;
+            }
+            //modulo a enviar
+
+            let modulo = formulario;
+
+            await clienteAxios.put('/api/modulos/actualizar', modulo);
+            //respuesta del usuario recibido.
+            toast.success(<ToastMultiline mensajes={[{msg: 'MODULO'},
+                                                     {msg: `CODIGO: ${modulo.codigo}`},
+                                                     {msg: `DESCRIPCION: ${modulo.descripcion}`},
+                                                     {msg: 'ACTUALIZADO CORRECTAMENTE'}  
+                                                     ]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+    }
 
     return ( 
     <Container>
@@ -76,10 +174,15 @@ const ModuloForm = () => {
                     value={formulario.codigo}
                     onChange={e => setFormulario({
                         ...formulario,
-                        [e.target.name]: e.target.value,
+                        [e.target.name]: e.target.value.toUpperCase()
                     })}
                     readOnly={result_select}
+                    isInvalid={errores.hasOwnProperty('codigo')}
+                    onBlur={validarFormulario}
                 />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('codigo') && errores.rut}
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
@@ -91,9 +194,14 @@ const ModuloForm = () => {
                     value={formulario.descripcion}
                     onChange={e => setFormulario({
                         ...formulario,
-                        [e.target.name]: e.target.value,
+                        [e.target.name]: e.target.value.toUpperCase()
                     })}
+                    isInvalid={errores.hasOwnProperty('descripcion')}
+                    onBlur={validarFormulario}
                 />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('descripcion') && errores.nombre}
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Unidad</Form.Label>
@@ -106,7 +214,12 @@ const ModuloForm = () => {
                         ...formulario,
                         [e.target.name]: e.target.value
                     })}
+                    isInvalid={errores.hasOwnProperty('codigo_unidad')}
+                    onBlur={validarFormulario}
                 />
+                <Form.Control.Feedback type="invalid">
+                    {errores.hasOwnProperty('codigo_unidad') && errores.codigo_unidad}
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Nivel Academico</Form.Label>
@@ -119,7 +232,12 @@ const ModuloForm = () => {
                         ...formulario,
                         [e.target.name]: e.target.value
                     })}
+                    isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
+                    onBlur={validarFormulario}
                 />
+            <Form.Control.Feedback type="invalid">
+                {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
+            </Form.Control.Feedback>
             </Form.Group>
             <Form.Check 
                 id="inactivo"
@@ -137,10 +255,12 @@ const ModuloForm = () => {
             ?
                 <Button 
                     variant="outline-info"
+                    onClick={handleClickActualizar}
                 >Actualizar</Button>
             :
                 <Button 
                     variant="info"
+                    onClick={handleClickCrear}
                 >Crear</Button>
             }
        </Form>
