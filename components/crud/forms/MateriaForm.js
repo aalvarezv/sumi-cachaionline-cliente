@@ -52,7 +52,6 @@ const MateriaForm = () => {
 
     }, [filtro_busqueda, result_select])
 
-
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
         let errors = {}
@@ -80,6 +79,9 @@ const MateriaForm = () => {
         }
 
         setErrores(errors);
+
+        return errors;
+
     }
 
     const reseteaFormulario = () => {
@@ -97,8 +99,10 @@ const MateriaForm = () => {
         try{
              //previne el envío
              e.preventDefault();
+             //valida el formulario
+             const errors = validarFormulario();
              //verifica que no hayan errores
-             if(Object.keys(errores).length > 0){
+             if(Object.keys(errors).length > 0){
                  return;
              }
              //materia a enviar
@@ -121,12 +125,13 @@ const MateriaForm = () => {
         
         try{
             e.preventDefault();
-            //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
-                return;
-            }
+             //valida el formulario
+             const errors = validarFormulario();
+             //verifica que no hayan errores
+             if(Object.keys(errors).length > 0){
+                 return;
+             }
             //materia a enviar
-
             let materia = formulario;
 
             await clienteAxios.put('/api/materias/actualizar', materia);
@@ -171,7 +176,7 @@ const MateriaForm = () => {
                         onBlur={validarFormulario}
                     />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.rut}
+                    {errores.hasOwnProperty('codigo') && errores.codigo}
                 </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
@@ -192,7 +197,7 @@ const MateriaForm = () => {
                         onBlur={validarFormulario}
                     />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('nombre') && errores.rut}
+                    {errores.hasOwnProperty('nombre') && errores.nombre}
                 </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
@@ -214,7 +219,7 @@ const MateriaForm = () => {
                         onBlur={validarFormulario}
                     />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.rut}
+                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
                 </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>

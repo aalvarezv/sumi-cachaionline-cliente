@@ -65,7 +65,7 @@ const NivelAcademicoForm = () => {
             }
         }
 
-        if(formulario.nivel.trim() === ''){
+        if(Number(formulario.nivel) === 0){
             errors = {
                 ...errors,
                 nivel: 'Requerido'
@@ -73,6 +73,9 @@ const NivelAcademicoForm = () => {
         }
 
         setErrores(errors);
+
+        return errors;
+
     }
 
     const reseteaFormulario = () => {
@@ -89,8 +92,10 @@ const NivelAcademicoForm = () => {
         try{
             //previne el envío
             e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
+            if(Object.keys(errors).length > 0){
                 return;
             }
             //Unidad a enviar
@@ -115,7 +120,10 @@ const NivelAcademicoForm = () => {
         
         try{
             e.preventDefault();
-            if(Object.keys(errores).length > 0){
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
                 return;
             }
             let nivelacademico = formulario;
@@ -183,23 +191,27 @@ const NivelAcademicoForm = () => {
                  </Form.Control.Feedback>
              </Form.Group>
              <Form.Group>
-                 <Form.Label>Nivel</Form.Label>
+                 <Form.Label>Nivel Numérico</Form.Label>
                  <Form.Control
                      id="nivel"
                      name="nivel"
                      type="text" 
-                     placeholder="NIVEL" 
+                     placeholder="NIVEL NUMÉRICO" 
                      value={formulario.nivel}
-                     onChange={e => {setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value
-                         })
+                     onChange={e => {
+                        //si es número ó es vacío.
+                        if (Number(e.target.value) || e.target.value === '') {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })
+                        }
                      }}
                      isInvalid={errores.hasOwnProperty('nivel')}
                      onBlur={validarFormulario}
                  />
                  <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
+                    {errores.hasOwnProperty('nivel') && errores.nivel}
                  </Form.Control.Feedback>
              </Form.Group>       
             <Form.Check 

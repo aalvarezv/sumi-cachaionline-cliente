@@ -76,6 +76,9 @@ const UnidadForm = () => {
         }
 
         setErrores(errors);
+
+        return errors;
+
     }
 
     const reseteaFormulario = () => {
@@ -92,8 +95,10 @@ const UnidadForm = () => {
         try{
             //previne el envío
             e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
+            if(Object.keys(errors).length > 0){
                 return;
             }
             //Unidad a enviar
@@ -118,7 +123,10 @@ const UnidadForm = () => {
         
         try{
             e.preventDefault();
-            if(Object.keys(errores).length > 0){
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
                 return;
             }
             let unidad = formulario;

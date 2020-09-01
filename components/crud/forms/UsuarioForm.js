@@ -133,8 +133,9 @@ const UsuarioForm = () => {
                 codigo_rol: 'Requerido'
             }
         }
-
         setErrores(errors);
+
+        return errors;
     }
 
     const reseteaFormulario = () => {
@@ -155,8 +156,10 @@ const UsuarioForm = () => {
        try{
             //previne el envío
             e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
+            if(Object.keys(errors).length > 0){
                 return;
             }
             //usuario a enviar
@@ -183,10 +186,12 @@ const UsuarioForm = () => {
         
         try{
             e.preventDefault();
-            //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
-                return;
-            }
+             //valida el formulario
+             const errors = validarFormulario();
+             //verifica que no hayan errores
+             if(Object.keys(errors).length > 0){
+                 return;
+             }
             //usuario a enviar
 
             let usuario = {

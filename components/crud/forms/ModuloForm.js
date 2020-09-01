@@ -87,6 +87,9 @@ const ModuloForm = () => {
         }
 
         setErrores(errors);
+
+        return errors;
+
     }
 
     const reseteaFormulario = () => {
@@ -104,8 +107,10 @@ const ModuloForm = () => {
         try{
              //previne el envío
              e.preventDefault();
+             //valida el formulario
+             const errors = validarFormulario();
              //verifica que no hayan errores
-             if(Object.keys(errores).length > 0){
+             if(Object.keys(errors).length > 0){
                  return;
              }
              //modulo a enviar
@@ -130,12 +135,13 @@ const ModuloForm = () => {
         
         try{
             e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
             //verifica que no hayan errores
-            if(Object.keys(errores).length > 0){
+            if(Object.keys(errors).length > 0){
                 return;
             }
             //modulo a enviar
-
             let modulo = formulario;
 
             await clienteAxios.put('/api/modulos/actualizar', modulo);
@@ -181,7 +187,7 @@ const ModuloForm = () => {
                     onBlur={validarFormulario}
                 />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.rut}
+                    {errores.hasOwnProperty('codigo') && errores.codigo}
                 </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
@@ -200,7 +206,7 @@ const ModuloForm = () => {
                     onBlur={validarFormulario}
                 />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.nombre}
+                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
                 </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
