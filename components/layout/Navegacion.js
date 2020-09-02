@@ -48,6 +48,12 @@ const Navegacion = () => {
                         <Link href="/administrar/usuarios" passHref>
                             <NavDropdown.Item href="/administrar/usuarios">Usuarios</NavDropdown.Item>
                         </Link>
+                        <Link href="/administrar/instituciones" passHref>
+                            <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/cursos" passHref>
+                            <NavDropdown.Item href="/administrar/cursos">Cursos</NavDropdown.Item>
+                        </Link>
                         {/* <NavDropdown.Divider /> */}
                     </NavDropdown>
                 }
