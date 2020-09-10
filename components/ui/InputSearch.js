@@ -64,8 +64,10 @@ const InputSearch = ({setFilter, results, setResultSelect, id, label}) => {
             })}
         </ul> 
         <style jsx>{`
+            
             ul {
                 margin-bottom: 1rem;
+                z-index: 1;
                 position: absolute;
                 
             }

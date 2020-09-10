@@ -11,7 +11,7 @@ const Navegacion = () => {
         <Navbar  collapseOnSelect expand="lg" bg="white" text="light">
         <Navbar.Brand>
             <img
-                src="/logo.png"
+                src="/static/logo.png"
                 width="30"
                 height="24"
                 className="d-inline-block align-top mr-1"
@@ -30,6 +30,12 @@ const Navegacion = () => {
                 {autenticado
                 &&
                     <NavDropdown title="Administrar" id="basic-nav-dropdown">
+                        <Link href="/administrar/instituciones" passHref>
+                            <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/cursos" passHref>
+                            <NavDropdown.Item href="/administrar/cursos">Cursos</NavDropdown.Item>
+                        </Link>
                         <Link href="/administrar/materias" passHref>
                             <NavDropdown.Item href="/administrar/materias">Materias</NavDropdown.Item>
                         </Link>
@@ -48,12 +54,7 @@ const Navegacion = () => {
                         <Link href="/administrar/usuarios" passHref>
                             <NavDropdown.Item href="/administrar/usuarios">Usuarios</NavDropdown.Item>
                         </Link>
-                        <Link href="/administrar/instituciones" passHref>
-                            <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/cursos" passHref>
-                            <NavDropdown.Item href="/administrar/cursos">Cursos</NavDropdown.Item>
-                        </Link>
+                       
                         {/* <NavDropdown.Divider /> */}
                     </NavDropdown>
                 }

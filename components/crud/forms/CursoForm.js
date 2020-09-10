@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../../../components/ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import {handleError } from '../../../helpers';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
 import InputSelectNivelAcademico from '../../ui/InputSelectNivelAcademico';
+import InputSelectInstitucion from '../../ui/InputSelectInstitucion';
 
 
 const CursoForm = () => {
 
+    const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         letra: '',
-        codigo_nivel_academico: '',
+        codigo_institucion: '0',
+        codigo_nivel_academico: '0',
         inactivo: false
     });
     
     const [errores, setErrores] = useState({});
 
     const buscarCurso = async () => {
-        const resp = await clienteAxios.get(`/api/cursos/busqueda/${filtro_busqueda}`);
+        const resp = await clienteAxios.get(`/api/cursos/busqueda/${filtro_busqueda}`, 
+            { params: { 
+                codigo_institucion: router.query.institucion 
+            } 
+        });
         setResultBusqueda(resp.data.cursos);
     }
 
@@ -49,22 +57,32 @@ const CursoForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
+    
+    // this works (pressing back and forward in history to test)
+    useEffect(() => {
+        if(router.query.institucion){
+            setFormulario({
+                ...formulario,
+                codigo_institucion: router.query.institucion
+            });
+        }
+    }, []);
 
     const validarFormulario = () => {
         
         let errors = {}
 
-        if(formulario.codigo.trim() === ''){
-            errors = {
-                ...errors,
-                codigo: 'Requerido'
-            }
-        }
-
         if(formulario.letra.trim() === ''){
             errors = {
                 ...errors,
                 letra: 'Requerido'
+            }
+        }
+
+        if(formulario.codigo_institucion.trim() === '' || formulario.codigo_institucion.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_institucion: 'Requerido'
             }
         }
 
@@ -85,7 +103,8 @@ const CursoForm = () => {
         setFormulario({
             codigo: '',
             letra: '',
-            codigo_nivel_academico: '',
+            codigo_institucion: (router.query.institucion ? router.query.institucion : '0'),
+            codigo_nivel_academico: '0',
             inactivo: false
         });
     }
@@ -103,6 +122,7 @@ const CursoForm = () => {
             }
             //curso a enviar
             let curso = formulario;
+            curso.codigo = `${formulario.codigo_institucion}${formulario.codigo_nivel_academico}${formulario.letra}`
 
             const resp = await clienteAxios.post('/api/cursos/crear', curso);
             
@@ -149,92 +169,114 @@ const CursoForm = () => {
             results={result_busqueda}
             setResultSelect={setResultSelect}
             id="codigo"
-            label="letra"
+            label="nivel_letra"
         />
 
-       <Form>
+        <Form>
             <Form.Group>
-                <Form.Label>Codigo</Form.Label>
-                <Form.Control 
-                    id="codigo"
-                    name="codigo"
-                    type="text" 
-                    placeholder="CODIGO" 
-                    autoComplete="off"
-                    value={formulario.codigo}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })}
-                    readOnly={result_select}
-                    isInvalid={errores.hasOwnProperty('codigo')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.codigo}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Nivel Academico</Form.Label>
-                <InputSelectNivelAcademico
-                    id="codigo_nivel_academico"
-                    name="codigo_nivel_academico"
+                <Form.Label>Institución</Form.Label>
+                <InputSelectInstitucion
+                    id="codigo_institucion"
+                    name="codigo_institucion"
                     as="select"
-                    value={formulario.codigo_nivel_academico}
+                    value={formulario.codigo_institucion}
                     onChange={e => setFormulario({
                         ...formulario,
                         [e.target.name]: e.target.value
                     })}
-                    isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
+                    isInvalid={errores.hasOwnProperty('codigo_institucion')}
                     onBlur={validarFormulario}
+                    readOnly={router.query.institucion} 
                 />
                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
+                    {errores.hasOwnProperty('codigo_institucion') && errores.codigo_institucion}
                 </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group>
-                <Form.Label>Letra</Form.Label>
-                <Form.Control
-                    id="letra"
-                    name="letra"
-                    type="text" 
-                    placeholder="LETRA"
-                    value={formulario.letra}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })} 
-                    isInvalid={errores.hasOwnProperty('letra')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('letra') && errores.letra}
-                </Form.Control.Feedback>
+            <Form.Group as={Row}>
+                <Col sm={8}>
+                    <Form.Group>
+                        <Form.Label>Nivel Academico</Form.Label>
+                        <InputSelectNivelAcademico
+                            id="codigo_nivel_academico"
+                            name="codigo_nivel_academico"
+                            as="select"
+                            value={formulario.codigo_nivel_academico}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col sm={4}>
+                    <Form.Group>
+                        <Form.Label>Letra</Form.Label>
+                        <Form.Control
+                            id="letra"
+                            name="letra"
+                            type="text" 
+                            placeholder="LETRA"
+                            value={formulario.letra}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value.toUpperCase()
+                            })} 
+                            isInvalid={errores.hasOwnProperty('letra')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('letra') && errores.letra}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
             </Form.Group>
-            <Form.Check 
-                id="inactivo"
-                name="inactivo"
-                type="checkbox"
-                label="Inactivo"
-                className="mb-3"
-                checked={formulario.inactivo}
-                onChange={e => setFormulario({
-                    ...formulario,
-                    [e.target.name]: e.target.checked,
-                })}
-            />
+            <Form.Group as={Row}>
+                <Col sm={12}>
+                    <Form.Check 
+                        id="inactivo"
+                        name="inactivo"
+                        type="checkbox"
+                        label="Inactivo"
+                        checked={formulario.inactivo}
+                        onChange={e => setFormulario({
+                            ...formulario,
+                            [e.target.name]: e.target.checked,
+                        })}
+                    />
+                </Col>
+            </Form.Group>
+           
             {result_select
             ?
                 <Button 
                     variant="outline-info"
                     onClick={handleClickActualizar}
+                    size="lg"
                 >Actualizar</Button>
             :
                 <Button 
                     variant="info"
                     onClick={handleClickCrear}
+                    size="lg"
                 >Crear</Button>
             }
+             <Button 
+                className="ml-3"
+                variant="success"
+                //onClick={handleClickActualizar}
+                size="lg"
+            >+ Agregar Modulos</Button>
+             <Button 
+                className="ml-3"
+                variant="success"
+                //onClick={handleClickActualizar}
+                size="lg"
+            >+ Agregar Personas</Button>
        </Form>
     </Container> );
 }

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../../../components/ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
-import {handleError } from '../../../helpers';
+import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap';
+import {handleError, getBase64 } from '../../../helpers';
 import  clienteAxios from '../../../config/axios';
 import InputSearch from '../../ui/InputSearch';
+import Uploader from '../../ui/Uploader';
+
 
 const InstitucionForm = () => {
 
+    const router = useRouter(); 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
@@ -19,7 +23,7 @@ const InstitucionForm = () => {
     });
 
     const [errores, setErrores] = useState({});
-
+   
     const buscarInstitucion = async () => {
         const resp = await clienteAxios.get(`/api/instituciones/busqueda/${filtro_busqueda}`);
         console.log('estoy aqui', resp)
@@ -65,7 +69,6 @@ const InstitucionForm = () => {
                 descripcion: 'Requerido'
             }
         }
-
        
         setErrores(errors);
 
@@ -99,7 +102,9 @@ const InstitucionForm = () => {
             const resp = await clienteAxios.post('/api/instituciones/crear', institucion);
             
             institucion = resp.data;
-            reseteaFormulario();
+            //reseteaFormulario();
+            setFormulario(institucion);
+            setResultSelect(institucion);
             toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO'},
                                                      {msg: `CODIGO: ${institucion.codigo}`},
                                                      {msg: `DESCRIPCION: ${institucion.descripcion}`},
@@ -133,6 +138,17 @@ const InstitucionForm = () => {
         }
     }
 
+    //funcion que recibe el componente Uploader donde retorna los archivos a subir.
+    const getArchivos = async archivos => {
+    
+        const base64 = await getBase64(archivos[0]);
+        setFormulario({
+            ...formulario,
+            logo: base64
+        })
+
+    }
+
     return ( 
         <Container>
             <InputSearch
@@ -143,6 +159,25 @@ const InstitucionForm = () => {
                 label="descripcion"
             />
         <Form>
+            <Form.Group as={Row}>
+                {/* <Form.Row className="justify-content-center">
+                     */}
+                    <Col md={9}>
+                        <Uploader 
+                            titulo={"CLICK ó ARRASTRA Y SUELTA UNA IMAGEN"}
+                            getArchivos={getArchivos}
+                        />
+                    </Col>
+                    <Col>
+                        <Image 
+                            src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
+                            style={{width: 150, height: 150}}
+                            thumbnail
+                        />
+                    </Col>    
+                    
+                {/* </Form.Row> */}
+            </Form.Group>
             <Form.Group>
                 <Form.Label>Codigo</Form.Label>
                 <Form.Control 
@@ -151,15 +186,15 @@ const InstitucionForm = () => {
                     type="text" 
                     placeholder="CODIGO"
                     value={formulario.codigo}
-                     onChange={e => {
-                         setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     readOnly={result_select} 
-                     isInvalid={errores.hasOwnProperty('codigo')}
-                     onBlur={validarFormulario}
+                    onChange={e => {
+                        setFormulario({
+                            ...formulario,
+                        [e.target.name]: e.target.value.toUpperCase()
+                        })
+                    }}
+                    readOnly={result_select} 
+                    isInvalid={errores.hasOwnProperty('codigo')}
+                    onBlur={validarFormulario}
                 />
                 <Form.Control.Feedback type="invalid">
                     {errores.hasOwnProperty('codigo') && errores.codigo}
@@ -185,26 +220,8 @@ const InstitucionForm = () => {
                     {errores.hasOwnProperty('descripcion') && errores.descripcion}
                  </Form.Control.Feedback>
              </Form.Group>
-             <Form.Group>
-                 <Form.Label>Logo</Form.Label>
-                 <Form.Control
-                     id="logo"
-                     name="logo"
-                     type="text" 
-                     placeholder="LOGO" 
-                     value={formulario.logo}
-                     onChange={e => {setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                        })
-                    }}
-                     isInvalid={errores.hasOwnProperty('logo')}
-                     onBlur={validarFormulario}
-                 />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('logo') && errores.logo}
-                 </Form.Control.Feedback>
-             </Form.Group>       
+
+               
             <Form.Check 
                     id="inactivo"
                     name="inactivo"
@@ -220,17 +237,31 @@ const InstitucionForm = () => {
                     }}
             />
             {result_select
-             ?
+             ?  
                 <Button 
                     variant="outline-info"
                     onClick={handleClickActualizar}
-            >   Actualizar</Button>
+                    size="lg"
+                > Actualizar</Button>
              :
                 <Button 
                     variant="info"
                     onClick={handleClickCrear}
+                    size="lg"
                 >Crear</Button>
              }
+             <Button 
+                    variant="success"
+                    onClick={() => {
+                        router.push({
+                            pathname: '/administrar/cursos',
+                            query: { institucion: formulario.codigo },
+                        })
+                    }}
+                    className="ml-3"
+                    disabled={!result_select}
+                    size="lg"
+                > + Agregar Cursos</Button>
         </Form>
         </Container> );
 }
