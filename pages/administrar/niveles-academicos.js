@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import NivelAcademicoForm from '../../components/crud/forms/NivelAcademicoForm';
+import NivelAcademicoForm from '../../components/forms/NivelAcademicoForm';
 
 
 const NivelesAcademicos = () => {

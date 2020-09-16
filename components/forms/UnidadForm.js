@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
+import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button } from 'react-bootstrap';
-import {handleError } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
-import InputSelectMateria from '../../ui/InputSelectMateria';
+import {handleError } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import InputSearch from '../ui/InputSearch';
+import InputSelectMateria from '../ui/InputSelectMateria';
 
 
 const UnidadForm = () => {

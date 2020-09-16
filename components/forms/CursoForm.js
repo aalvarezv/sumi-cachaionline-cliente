@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
-import {handleError } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
-import InputSelectNivelAcademico from '../../ui/InputSelectNivelAcademico';
-import InputSelectInstitucion from '../../ui/InputSelectInstitucion';
+import {handleError } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import InputSearch from '../ui/InputSearch';
+import ToastMultiline from '../ui/ToastMultiline';
+import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico';
+import InputSelectInstitucion from '../ui/InputSelectInstitucion';
 
 
 const CursoForm = () => {

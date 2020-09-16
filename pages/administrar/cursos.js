@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import CursoForm from '../../components/crud/forms/CursoForm';
+import CursoForm from '../../components/forms/CursoForm';
 
 
 const Cursos = () => {

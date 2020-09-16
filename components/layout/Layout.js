@@ -26,6 +26,7 @@ const Layout = props => {
         />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;1,700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet"
         />
+        {/* <link href="/static/css/spinner.css" rel="stylesheet"/> */}
         </Head>
         <Navegacion />
         <main>

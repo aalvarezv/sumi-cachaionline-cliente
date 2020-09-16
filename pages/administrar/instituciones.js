@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import InstitucionForm from '../../components/crud/forms/InstitucionForm';
+import InstitucionForm from '../../components/forms/InstitucionForm';
 
 
 const Instituciones = () => {

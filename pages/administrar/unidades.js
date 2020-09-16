@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import UnidadForm from '../../components/crud/forms/UnidadForm';
+import UnidadForm from '../../components/forms/UnidadForm';
 
 
 const Unidades = () => {

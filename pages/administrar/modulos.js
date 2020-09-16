@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import ModuloForm from '../../components/crud/forms/ModuloForm';
+import ModuloForm from '../../components/forms/ModuloForm';
 
 
 const Modulos = () => {

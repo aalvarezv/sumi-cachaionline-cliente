@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
+import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap';
-import {handleError, getBase64 } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
-import Uploader from '../../ui/Uploader';
+import {handleError, getBase64 } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import InputSearch from '../ui/InputSearch';
+import Uploader from '../ui/Uploader';
 
 
 const InstitucionForm = () => {
