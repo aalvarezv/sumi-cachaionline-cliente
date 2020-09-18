@@ -8,7 +8,8 @@ import InputSearch from '../ui/InputSearch';
 import ToastMultiline from '../ui/ToastMultiline';
 import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico';
 import InputSelectInstitucion from '../ui/InputSelectInstitucion';
-
+import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
+import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
 
 const CursoForm = () => {
 
@@ -47,6 +48,7 @@ const CursoForm = () => {
             setFormulario({
                 codigo: result_select.codigo,
                 letra: result_select.letra,
+                codigo_institucion: result_select.codigo_institucion,
                 codigo_nivel_academico: result_select.codigo_nivel_academico,
                 inactivo: result_select.inactivo
             });
@@ -58,7 +60,6 @@ const CursoForm = () => {
     }, [filtro_busqueda, result_select]);
 
     
-    // this works (pressing back and forward in history to test)
     useEffect(() => {
         if(router.query.institucion){
             setFormulario({
@@ -78,7 +79,7 @@ const CursoForm = () => {
                 letra: 'Requerido'
             }
         }
-
+        alert(formulario.codigo_institucion)
         if(formulario.codigo_institucion.trim() === '' || formulario.codigo_institucion.trim() === '0'){
             errors = {
                 ...errors,
@@ -162,6 +163,7 @@ const CursoForm = () => {
     }
 
     return ( 
+    <>
     <Container>
 
         <InputSearch
@@ -250,9 +252,9 @@ const CursoForm = () => {
                     />
                 </Col>
             </Form.Group>
-           
+            </Form>
             {result_select
-            ?
+            ?   
                 <Button 
                     variant="outline-info"
                     onClick={handleClickActualizar}
@@ -265,20 +267,48 @@ const CursoForm = () => {
                     size="lg"
                 >Crear</Button>
             }
-             <Button 
-                className="ml-3"
-                variant="success"
-                //onClick={handleClickActualizar}
-                size="lg"
-            >+ Agregar Modulos</Button>
-             <Button 
-                className="ml-3"
-                variant="success"
-                //onClick={handleClickActualizar}
-                size="lg"
-            >+ Agregar Personas</Button>
-       </Form>
-    </Container> );
+    </Container>
+    {formulario.codigo
+    &&
+    <Container >
+        <Row className="pl-3">
+            <Col>
+                <Row className="mt-3">
+                    <Button 
+                        variant="success"
+                        //onClick={handleClickActualizar}
+                        size="lg"
+                        block
+                    >+ Crear Modulos</Button>
+                </Row>
+                <Row className="mt-3 bg-light ">
+                   
+                        <ListSelectCursoModulos
+                            codigo_curso={formulario.codigo}
+                        />
+                </Row> 
+            </Col>
+            <Col className="ml-3">
+                <Row className="mt-3">
+                    <Button 
+                        variant="success"
+                        //onClick={handleClickActualizar}
+                        size="lg"
+                        block
+                    >+ Crear Usuarios</Button>
+                </Row>
+                <Row className="mt-3">
+                        <ListSelectCursoUsuarios
+                            codigo_curso={formulario.codigo}
+                        />
+                </Row> 
+            </Col>
+        </Row>
+        <Row></Row>
+    </Container>
+    }
+    </>
+    );
 }
  
 export default CursoForm;

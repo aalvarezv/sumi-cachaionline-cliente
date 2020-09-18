@@ -16,7 +16,6 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
                 const resp = await clienteAxios.get(`/api/cursos-modulos/listar-modulos-curso/${codigo_curso}`);
                 const arr_modulos_curso = resp.data.modulos_curso.map(modulo =>  modulo.codigo_modulo);
                 setModulosCurso(arr_modulos_curso);
-
             }catch(e){
                 handleError(e);
             }  

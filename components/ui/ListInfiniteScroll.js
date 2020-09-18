@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import { InputGroup, Form, ListGroup, Col } from 'react-bootstrap';
+import { Container, InputGroup, Form, ListGroup, Col } from 'react-bootstrap';
 import useScrollInfinito from '../../hooks/useInfiniteScroll';
 import Spinner from './Spinner';
 
@@ -69,14 +69,18 @@ const ListInfiniteScroll = ({url, model, pk, label,
         }
    }
 
-   return (   
-        <>
+   return (  
+    <Container
+        className="pt-3"
+    > 
         <Form>
-        <Form.Row>
+        <Form.Row
+            //style={{backgroundColor: 'red', position:'fixed', zIndex: 1}}
+        >
             <Col>
                 <InputGroup className="mb-2 mr-sm-2">
                     <Form.Control 
-                        id="filtro" 
+                        id={`filtro_${model}`} 
                         placeholder="Buscar" 
                         value={filtro}
                         onChange={ e => {
@@ -118,7 +122,7 @@ const ListInfiniteScroll = ({url, model, pk, label,
             
         </Form.Row>
         </Form>
-        </>
+    </Container>
    );
 
 
