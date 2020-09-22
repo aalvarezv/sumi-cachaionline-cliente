@@ -20,9 +20,12 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
                 handleError(e);
             }  
         }
-        getModulosCurso();
 
-    },[])
+        if(codigo_curso){
+            getModulosCurso();
+        }
+
+    },[codigo_curso])
 
     const handleSelect = async (codigo, select) => {
         let resp = null;

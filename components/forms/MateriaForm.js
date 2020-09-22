@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
-import { handleError } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
-import InputSelectRol from '../../ui/InputSelectRol';
-
+import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap';
+import ToastMultiline from '../ui/ToastMultiline';
+import { handleError, getBase64 } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import InputSearch from '../ui/InputSearch';
+import Uploader from '../ui/Uploader';
+import ButtonBack from '../ui/ButtonBack';
 
 
 const MateriaForm = () => {
 
+    const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
@@ -55,14 +58,7 @@ const MateriaForm = () => {
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
         let errors = {}
-        //valida el rut.
-        //valida el codigo.
-        if(formulario.codigo.trim() === ''){
-            errors = {
-                ...errors,
-                codigo: 'Requerido'
-            }
-        }
+
         //valida el nombre.
         if(formulario.nombre.trim() === ''){
             errors = {
@@ -107,21 +103,20 @@ const MateriaForm = () => {
              }
              //materia a enviar
              let materia = formulario;
+             materia.codigo = uuidv4();
+
              const resp = await clienteAxios.post('/api/materias/crear', materia);
              //respuesta de la materia recibido.
              materia = resp.data;
              reseteaFormulario();
-             toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA'},
-                                                      {msg: `CODIGO: ${materia.codigo}`},
-                                                      {msg: `NOMBRE: ${materia.nombre}`},
-                                                      {msg: 'CREADA CORRECTAMENTE'}  
-                                                     ]}/>, {containerId: 'sys_msg'});
+             toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA CREADA'}]}/>, {containerId: 'sys_msg'});
  
         }catch(e){
              handleError(e);
         }
-     }
-     const handleClickActualizar = async e => {
+    }
+    
+    const handleClickActualizar = async e => {
         
         try{
             e.preventDefault();
@@ -136,15 +131,22 @@ const MateriaForm = () => {
 
             await clienteAxios.put('/api/materias/actualizar', materia);
             //respuesta de la materia recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA'},
-                                                     {msg: `CODIGO: ${materia.codigo}`},
-                                                     {msg: `NOMBRE: ${materia.nombre}`},
-                                                     {msg: 'ACTUALIZADA CORRECTAMENTE'}  
-                                                     ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA ACTUALIZADA'}]}/>, {containerId: 'sys_msg'});
  
         }catch(e){
              handleError(e);
         }
+    }
+
+    //funcion que recibe el componente Uploader donde retorna los archivos a subir.
+    const getArchivos = async archivos => {
+    
+        const base64 = await getBase64(archivos[0]);
+        setFormulario({
+            ...formulario,
+            imagen: base64
+        })
+
     }
 
     return ( 
@@ -156,29 +158,22 @@ const MateriaForm = () => {
                 id="codigo"
                 label="nombre"
             />
-        <Form>
-                <Form.Group>
-                    <Form.Label>Codigo</Form.Label>
-                    <Form.Control 
-                        id="codigo"
-                        name="codigo"
-                        type="text" 
-                        placeholder="CODIGO"
-                        value={formulario.codigo}
-                        onChange={e => {
-                            setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
-                            })
-                        }}
-                        readOnly={result_select}  
-                        isInvalid={errores.hasOwnProperty('codigo')}
-                        onBlur={validarFormulario}
-                    />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.codigo}
-                </Form.Control.Feedback>
-                </Form.Group>
+            <Form>
+                <Form.Group as={Row}>
+                    <Col md={9}>
+                        <Uploader 
+                            titulo={"CLICK ó ARRASTRA Y SUELTA UNA IMAGEN"}
+                            getArchivos={getArchivos}
+                        />
+                    </Col>
+                    <Col>
+                        <Image 
+                            src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                            style={{width: 150, height: 150}}
+                            thumbnail
+                        />
+                    </Col>    
+                </Form.Group> 
                 <Form.Group>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control
@@ -196,9 +191,9 @@ const MateriaForm = () => {
                         isInvalid={errores.hasOwnProperty('nombre')}
                         onBlur={validarFormulario}
                     />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('nombre') && errores.nombre}
-                </Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                        {errores.hasOwnProperty('nombre') && errores.nombre}
+                    </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Descripción</Form.Label>
@@ -218,17 +213,10 @@ const MateriaForm = () => {
                         isInvalid={errores.hasOwnProperty('descripcion')}
                         onBlur={validarFormulario}
                     />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group>
-                    <Form.File 
-                        id="Imagen" 
-                        label="Imagen" 
-                        
-                    />
-                </Form.Group>        
+                    <Form.Control.Feedback type="invalid">
+                        {errores.hasOwnProperty('descripcion') && errores.descripcion}
+                    </Form.Control.Feedback>
+                </Form.Group>      
                 <Form.Check 
                         id="inactivo"
                         name="inactivo"
@@ -247,14 +235,29 @@ const MateriaForm = () => {
                 ?
                     <Button 
                         variant="outline-info"
+                        size="lg"
                         onClick={handleClickActualizar}
                     >Actualizar</Button>
                 :
                     <Button 
                         variant="info"
+                        size="lg"
                         onClick={handleClickCrear}
                     >Crear</Button>
                 }
+                <Button 
+                    variant="success"
+                    onClick={() => {
+                        router.push({
+                            pathname: '/administrar/unidades',
+                            query: { materia: formulario.codigo },
+                        })
+                    }}
+                    className="ml-3"
+                    disabled={!result_select}
+                    size="lg"
+                > + Agregar Unidades</Button>
+                <ButtonBack />
             </Form>
         </Container> );
 }

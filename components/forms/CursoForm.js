@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import {handleError } from '../../helpers';
@@ -10,6 +11,7 @@ import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico';
 import InputSelectInstitucion from '../ui/InputSelectInstitucion';
 import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
 import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
+import ButtonBack from '../ui/ButtonBack';
 
 const CursoForm = () => {
 
@@ -59,7 +61,7 @@ const CursoForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
-    
+    //carga la institución en el formulario si existe en la url.
     useEffect(() => {
         if(router.query.institucion){
             setFormulario({
@@ -79,7 +81,7 @@ const CursoForm = () => {
                 letra: 'Requerido'
             }
         }
-        alert(formulario.codigo_institucion)
+        
         if(formulario.codigo_institucion.trim() === '' || formulario.codigo_institucion.trim() === '0'){
             errors = {
                 ...errors,
@@ -123,17 +125,12 @@ const CursoForm = () => {
             }
             //curso a enviar
             let curso = formulario;
-            curso.codigo = `${formulario.codigo_institucion}${formulario.codigo_nivel_academico}${formulario.letra}`
+            curso.codigo = uuidv4();
 
             const resp = await clienteAxios.post('/api/cursos/crear', curso);
-            
             curso = resp.data;
             reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO'},
-                                                     {msg: `CODIGO: ${curso.codigo}`},
-                                                     {msg: `LETRA: ${curso.letra}`},
-                                                     {msg: 'CREADO CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO CREADO'}]}/>, {containerId: 'sys_msg'});
         
         }catch(e){
             handleError(e);
@@ -152,20 +149,14 @@ const CursoForm = () => {
             }
             let curso = formulario;
             await clienteAxios.put('/api/cursos/actualizar', curso);
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO'},
-                                                     {msg: `CODIGO: ${(curso.codigo)}`},
-                                                     {msg: `LETRA: ${curso.letra}`},
-                                                     {msg: 'ACTUALIZADO CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
         }catch(e){
             handleError(e);
         }
     }
 
     return ( 
-    <>
     <Container>
-
         <InputSearch
             setFilter={setFiltroBusqueda}
             results={result_busqueda}
@@ -188,7 +179,7 @@ const CursoForm = () => {
                     })}
                     isInvalid={errores.hasOwnProperty('codigo_institucion')}
                     onBlur={validarFormulario}
-                    readOnly={router.query.institucion} 
+                    disabled={router.query.institucion} 
                 />
                 <Form.Control.Feedback type="invalid">
                     {errores.hasOwnProperty('codigo_institucion') && errores.codigo_institucion}
@@ -237,7 +228,7 @@ const CursoForm = () => {
                     </Form.Group>
                 </Col>
             </Form.Group>
-            <Form.Group as={Row}>
+            <Row className="mb-3">
                 <Col sm={12}>
                     <Form.Check 
                         id="inactivo"
@@ -251,7 +242,7 @@ const CursoForm = () => {
                         })}
                     />
                 </Col>
-            </Form.Group>
+            </Row>
             </Form>
             {result_select
             ?   
@@ -267,47 +258,50 @@ const CursoForm = () => {
                     size="lg"
                 >Crear</Button>
             }
-    </Container>
-    {formulario.codigo
+            <ButtonBack />
+    {result_select
+    
     &&
-    <Container >
-        <Row className="pl-3">
-            <Col>
+        <Container>
+        <Row>
+            <Col sm={12} md={6}>
                 <Row className="mt-3">
                     <Button 
                         variant="success"
-                        //onClick={handleClickActualizar}
+                        onClick={()=>{
+                            router.push('/administrar/modulos')
+                        }}
                         size="lg"
                         block
                     >+ Crear Modulos</Button>
                 </Row>
-                <Row className="mt-3 bg-light ">
-                   
-                        <ListSelectCursoModulos
-                            codigo_curso={formulario.codigo}
-                        />
+                <Row className="mt-2 py-1 bg-light rounded">
+                    <ListSelectCursoModulos
+                        codigo_curso={formulario.codigo}
+                    />
                 </Row> 
             </Col>
             <Col className="ml-3">
                 <Row className="mt-3">
                     <Button 
                         variant="success"
-                        //onClick={handleClickActualizar}
+                        onClick={()=>{
+                            router.push('/administrar/usuarios')
+                        }}
                         size="lg"
                         block
                     >+ Crear Usuarios</Button>
                 </Row>
-                <Row className="mt-3">
-                        <ListSelectCursoUsuarios
-                            codigo_curso={formulario.codigo}
-                        />
+                <Row className="mt-2 py-1 bg-light rounded">
+                    <ListSelectCursoUsuarios
+                        codigo_curso={formulario.codigo}
+                    />
                 </Row> 
             </Col>
         </Row>
-        <Row></Row>
-    </Container>
+        </Container>
     }
-    </>
+    </Container>
     );
 }
  

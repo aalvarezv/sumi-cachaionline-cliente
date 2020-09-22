@@ -31,12 +31,14 @@ const img = {
 
 const dropzoneStyle = {
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    height: "150px",
+    height: "100%",
     border : "2px dashed #DDE1E5",
-    color: "#C0C0C0", 
+    color: "#C0C0C0",
+    textAlign: "center"
 };
 
 
@@ -83,7 +85,9 @@ function Uploader({titulo, getArchivos}) {
     {/*<Container fluid>
     //      <Row>
     //         <Col>*/}
-                <section>
+                <section
+                  style={{width: '100%', height: '100%'}}
+                >
                     <div {...getRootProps({className: 'dropzone'})} style={dropzoneStyle}>
                         <input {...getInputProps()} />
                         <p>{titulo}</p>

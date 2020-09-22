@@ -30,29 +30,20 @@ const Navegacion = () => {
                 {autenticado
                 &&
                     <NavDropdown title="Administrar" id="basic-nav-dropdown">
-                         <Link href="/test" passHref>
+                        <Link href="/test" passHref>
                             <NavDropdown.Item href="/test">TEST</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/instituciones" passHref>
                             <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
                         </Link>
-                        <Link href="/administrar/cursos" passHref>
-                            <NavDropdown.Item href="/administrar/cursos">Cursos</NavDropdown.Item>
-                        </Link>
                         <Link href="/administrar/materias" passHref>
                             <NavDropdown.Item href="/administrar/materias">Materias</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/modulos" passHref>
-                            <NavDropdown.Item href="/administrar/modulos">Módulos</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/niveles-academicos" passHref>
                             <NavDropdown.Item href="/administrar/niveles-academicos">Niveles Académicos</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/roles" passHref>
                             <NavDropdown.Item href="/administrar/roles">Roles</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/unidades" passHref>
-                            <NavDropdown.Item href="/administrar/unidades">Unidades</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/usuarios" passHref>
                             <NavDropdown.Item href="/administrar/usuarios">Usuarios</NavDropdown.Item>

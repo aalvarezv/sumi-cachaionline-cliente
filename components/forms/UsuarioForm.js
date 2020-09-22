@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
-import { rutEsValido, rutFormat, handleError } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
-import InputSelectRol from '../../ui/InputSelectRol';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { rutEsValido, rutFormat, handleError } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import ToastMultiline from '../ui/ToastMultiline';
+import InputSearch from '../ui/InputSearch';
+import InputSelectRol from '../ui/InputSelectRol';
+import ButtonBack from '../ui/ButtonBack';
 
 
 const UsuarioForm = () => {
 
+    const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
@@ -61,7 +64,16 @@ const UsuarioForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
-    //2.- Valida los campos del formulario.
+    //carga el rol en el formulario si existe en la url.
+    useEffect(() => {
+        if(router.query.rol){
+            setFormulario({
+                ...formulario,
+                codigo_rol: router.query.rol
+            })
+        }
+    }, []);
+
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
         let errors = {}
@@ -171,11 +183,7 @@ const UsuarioForm = () => {
             //respuesta del usuario recibido.
             usuario = resp.data;
             reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO'},
-                                                     {msg: `RUT: ${rutFormat(usuario.rut)}`},
-                                                     {msg: `NOMBRE: ${usuario.nombre}`},
-                                                     {msg: 'CREADO CORRECTAMENTE'}  
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO CREADO'}]}/>, {containerId: 'sys_msg'});
 
        }catch(e){
             handleError(e);
@@ -201,11 +209,7 @@ const UsuarioForm = () => {
 
             await clienteAxios.put('/api/usuarios/actualizar', usuario);
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO'},
-                                                     {msg: `RUT: ${rutFormat(usuario.rut)}`},
-                                                     {msg: `NOMBRE: ${usuario.nombre}`},
-                                                     {msg: 'ACTUALIZADO CORRECTAMENTE'}  
-                                                     ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
  
         }catch(e){
              handleError(e);
@@ -222,139 +226,180 @@ const UsuarioForm = () => {
             label="nombre"
         />
         <Form>
+            <Row>
+                <Col xs={12} md={3}>
+                    <Form.Group>
+                        <Form.Label>Rut</Form.Label>
+                        <Form.Control 
+                            id="rut"
+                            name="rut"
+                            type="text" 
+                            placeholder="RUT" 
+                            //autoComplete="off"
+                            value={formulario.rut}
+                            onChange={e => {
+                                setFormulario({
+                                ...formulario,
+                                [e.target.name]: rutFormat(e.target.value.toUpperCase()),
+                            })}}
+                            readOnly={result_select}
+                            isInvalid={errores.hasOwnProperty('rut')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('rut') && errores.rut}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col xs={12} md={9}>
+                    <Form.Group> 
+                        <Form.Label>Nombre</Form.Label>
+                        <Form.Control
+                            id="nombre"
+                            name="nombre"
+                            type="text" 
+                            placeholder="NOMBRE COMPLETO" 
+                            //autoComplete="off"
+                            value={formulario.nombre}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value.toUpperCase()
+                            })}
+                            isInvalid={errores.hasOwnProperty('nombre')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('nombre') && errores.nombre}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Clave</Form.Label>
+                        <Form.Control
+                            id="clave"
+                            name="clave"
+                            type="password" 
+                            placeholder="CLAVE" 
+                            value={formulario.clave}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value,
+                            })}
+                            isInvalid={errores.hasOwnProperty('clave')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('clave') && errores.clave}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Confirmar Clave</Form.Label>
+                        <Form.Control
+                            id="clave_confirm"
+                            name="clave_confirm"
+                            type="password" 
+                            placeholder="CONFIRMAR CLAVE" 
+                            value={formulario.clave_confirm}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value,
+                            })}
+                            isInvalid={errores.hasOwnProperty('clave_confirm')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('clave_confirm') && errores.clave_confirm}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control 
+                            id="email"
+                            name="email"
+                            type="email" 
+                            placeholder="TU.EMAIL@EJEMPLO.COM"
+                            //autoComplete="off"
+                            value={formulario.email}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value.toUpperCase()
+                            })}
+                            isInvalid={errores.hasOwnProperty('email')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('email') && errores.email}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Teléfono</Form.Label>
+                        <Form.Control 
+                            id="telefono"
+                            name="telefono"
+                            type="tel" 
+                            placeholder="(+56) 9 4567 8323"
+                            //autoComplete="off"
+                            value={formulario.telefono}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value,
+                            })}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
             <Form.Group>
-                <Form.Label>Rut</Form.Label>
-                <Form.Control 
-                    id="rut"
-                    name="rut"
-                    type="text" 
-                    placeholder="RUT" 
-                    //autoComplete="off"
-                    value={formulario.rut}
-                    onChange={e => {
-                        setFormulario({
-                        ...formulario,
-                        [e.target.name]: rutFormat(e.target.value.toUpperCase()),
-                    })}}
-                    readOnly={result_select}
-                    isInvalid={errores.hasOwnProperty('rut')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('rut') && errores.rut}
-                </Form.Control.Feedback>
+                <Row>
+                    <Col xs={10}>
+                        <Form.Label>Rol</Form.Label>
+                    </Col>
+                    <Col xs={2}>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs={10}>
+                        <InputSelectRol
+                            id="codigo_rol"
+                            name="codigo_rol"
+                            as="select"
+                            value={formulario.codigo_rol}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_rol')}
+                            onBlur={validarFormulario}
+                            disabled={router.query.rol}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
+                        </Form.Control.Feedback>
+                    </Col>
+                    <Col xs={2} className="d-flex justify-content-end">
+                        <Button 
+                            variant="success"
+                            onClick={()=>{
+                                router.push('/administrar/roles')
+                            }}
+                            size="md"
+                            className="align-self-"
+                            //block
+                        >+</Button>
+                    </Col>
+                </Row>
             </Form.Group>
-            <Form.Group>
-                <Form.Label>Nombre</Form.Label>
-                <Form.Control
-                    id="nombre"
-                    name="nombre"
-                    type="text" 
-                    placeholder="NOMBRE COMPLETO" 
-                    //autoComplete="off"
-                    value={formulario.nombre}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })}
-                    isInvalid={errores.hasOwnProperty('nombre')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('nombre') && errores.nombre}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Clave</Form.Label>
-                <Form.Control
-                    id="clave"
-                    name="clave"
-                    type="password" 
-                    placeholder="CLAVE" 
-                    value={formulario.clave}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value,
-                    })}
-                    isInvalid={errores.hasOwnProperty('clave')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('clave') && errores.clave}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Confirmar Clave</Form.Label>
-                <Form.Control
-                    id="clave_confirm"
-                    name="clave_confirm"
-                    type="password" 
-                    placeholder="CONFIRMAR CLAVE" 
-                    value={formulario.clave_confirm}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value,
-                    })}
-                    isInvalid={errores.hasOwnProperty('clave_confirm')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('clave_confirm') && errores.clave_confirm}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Email</Form.Label>
-                <Form.Control 
-                    id="email"
-                    name="email"
-                    type="email" 
-                    placeholder="TU.EMAIL@EJEMPLO.COM"
-                    //autoComplete="off"
-                    value={formulario.email}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })}
-                    isInvalid={errores.hasOwnProperty('email')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('email') && errores.email}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Teléfono</Form.Label>
-                <Form.Control 
-                    id="telefono"
-                    name="telefono"
-                    type="tel" 
-                    placeholder="(+56) 9 4567 8323"
-                    //autoComplete="off"
-                    value={formulario.telefono}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value,
-                    })}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Rol</Form.Label>
-                <InputSelectRol
-                    id="codigo_rol"
-                    name="codigo_rol"
-                    as="select"
-                    value={formulario.codigo_rol}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value
-                    })}
-                    isInvalid={errores.hasOwnProperty('codigo_rol')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
-                </Form.Control.Feedback>
-            </Form.Group>
+
             <Form.Check 
                 id="inactivo"
                 name="inactivo"
@@ -371,14 +416,17 @@ const UsuarioForm = () => {
             ?
                 <Button 
                     variant="outline-info"
+                    size="lg"
                     onClick={handleClickActualizar}
                 >Actualizar</Button>
             :
                 <Button 
                     variant="info"
+                    size="lg"
                     onClick={handleClickCrear}
                 >Crear</Button>
             }
+            <ButtonBack />
        </Form>
     </Container> );
 }

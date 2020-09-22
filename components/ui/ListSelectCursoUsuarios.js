@@ -20,9 +20,11 @@ const ListSelectCursoUsuarios = ({codigo_curso}) => {
                 handleError(e);
             }  
         }
-        getUsuariosCurso();
+        if(codigo_curso){
+            getUsuariosCurso();
+        }
 
-    },[])
+    },[codigo_curso])
 
     const handleSelect = async (rut, select) => {
 

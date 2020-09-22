@@ -3,19 +3,23 @@ import { Form } from 'react-bootstrap';
 import  clienteAxios from '../../config/axios';
 
 
-const InputSelectUnidad = props => {
+const InputSelectUnidadesMateria = props => {
 
     const [unidades, setUnidades] = useState([]);
+    const {codigo_materia} = props
+   
 
     useEffect(() => {
-      
+        
         const listarUnidades = async () => {
-            const resp = await clienteAxios.get('/api/unidades/listar');
+            const resp = await clienteAxios.get(`/api/unidades/materia/${codigo_materia}`);
             setUnidades(resp.data.unidades);
         }
-        listarUnidades();
+        if(codigo_materia.trim() !== ''){
+            listarUnidades();
+        }
 
-    }, [])
+    }, [codigo_materia]);
 
     return (
         <Form.Control
@@ -27,4 +31,4 @@ const InputSelectUnidad = props => {
       );
 }
 
-export default React.memo(InputSelectUnidad);
+export default React.memo(InputSelectUnidadesMateria);

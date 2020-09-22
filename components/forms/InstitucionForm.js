@@ -105,11 +105,7 @@ const InstitucionForm = () => {
             //reseteaFormulario();
             setFormulario(institucion);
             setResultSelect(institucion);
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO'},
-                                                     {msg: `CODIGO: ${institucion.codigo}`},
-                                                     {msg: `DESCRIPCION: ${institucion.descripcion}`},
-                                                     {msg: 'CREADA CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'INSTITUCIÓN CREADA'}]}/>, {containerId: 'sys_msg'});
         
         }catch(e){
             handleError(e);
@@ -128,11 +124,7 @@ const InstitucionForm = () => {
             }
             let institucion = formulario;
             await clienteAxios.put('/api/instituciones/actualizar', institucion);
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO'},
-                                                     {msg: `CODIGO: ${(institucion.codigo)}`},
-                                                     {msg: `NOMBRE: ${institucion.descripcion}`},
-                                                     {msg: 'ACTUALIZADA CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'INSTITUCIÓN ACTUALIZADA'}]}/>, {containerId: 'sys_msg'});
         }catch(e){
             handleError(e);
         }
@@ -160,23 +152,21 @@ const InstitucionForm = () => {
             />
         <Form>
             <Form.Group as={Row}>
-                {/* <Form.Row className="justify-content-center">
-                     */}
-                    <Col md={9}>
-                        <Uploader 
-                            titulo={"CLICK ó ARRASTRA Y SUELTA UNA IMAGEN"}
-                            getArchivos={getArchivos}
-                        />
-                    </Col>
-                    <Col>
-                        <Image 
-                            src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
-                            style={{width: 150, height: 150}}
-                            thumbnail
-                        />
-                    </Col>    
+                <Col
+                    //style={{marginBottom: 10}}
+                >
+                    <Image 
+                        src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
+                        thumbnail
+                    />
+                </Col>
+                <Col md={9}>
+                    <Uploader 
+                        titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                        getArchivos={getArchivos}
+                    />
+                </Col>
                     
-                {/* </Form.Row> */}
             </Form.Group>
             <Form.Group>
                 <Form.Label>Codigo</Form.Label>
@@ -236,32 +226,37 @@ const InstitucionForm = () => {
                         });
                     }}
             />
-            {result_select
-             ?  
-                <Button 
-                    variant="outline-info"
-                    onClick={handleClickActualizar}
-                    size="lg"
-                > Actualizar</Button>
-             :
-                <Button 
-                    variant="info"
-                    onClick={handleClickCrear}
-                    size="lg"
-                >Crear</Button>
-             }
-             <Button 
-                    variant="success"
-                    onClick={() => {
-                        router.push({
-                            pathname: '/administrar/cursos',
-                            query: { institucion: formulario.codigo },
-                        })
-                    }}
-                    className="ml-3"
-                    disabled={!result_select}
-                    size="lg"
-                > + Agregar Cursos</Button>
+            <Row>
+                <Col xs={12} sm={6} >
+                    {result_select
+                    ?  
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            onClick={handleClickActualizar}
+                        >Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            onClick={handleClickCrear}
+                            size="lg"
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col xs={12} sm={6}>
+                    <Button 
+                        variant="success"
+                        onClick={() => {
+                            router.push({
+                                pathname: '/administrar/cursos',
+                                query: { institucion: formulario.codigo },
+                            })
+                        }}
+                        disabled={!result_select}
+                        size="lg"
+                    >+ Agregar Cursos</Button>
+                </Col>
+            </Row>
         </Form>
         </Container> );
 }

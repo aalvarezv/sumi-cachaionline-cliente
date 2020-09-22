@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../../../components/ui/ToastMultiline';
+import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button } from 'react-bootstrap';
-import {handleError } from '../../../helpers';
-import  clienteAxios from '../../../config/axios';
-import InputSearch from '../../ui/InputSearch';
+import {handleError } from '../../helpers';
+import  clienteAxios from '../../config/axios';
+import InputSearch from '../ui/InputSearch';
 
 const NivelAcademicoForm = () => {
 
@@ -51,13 +52,6 @@ const NivelAcademicoForm = () => {
         
         let errors = {}
 
-        if(formulario.codigo.trim() === ''){
-            errors = {
-                ...errors,
-                codigo: 'Requerido'
-            }
-        }
-
         if(formulario.descripcion.trim() === ''){
             errors = {
                 ...errors,
@@ -100,16 +94,13 @@ const NivelAcademicoForm = () => {
             }
             //Unidad a enviar
             let nivelacademico = formulario;
+            nivelacademico.codigo = uuidv4();
 
             const resp = await clienteAxios.post('/api/nivel-academico/crear', nivelacademico);
             
             nivelacademico = resp.data;
             reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO'},
-                                                     {msg: `CODIGO: ${nivelacademico.codigo}`},
-                                                     {msg: `DESCRIPCION: ${nivelacademico.descripcion}`},
-                                                     {msg: 'CREADO CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO CREADO'}]}/>, {containerId: 'sys_msg'});
         
         }catch(e){
             handleError(e);
@@ -128,11 +119,7 @@ const NivelAcademicoForm = () => {
             }
             let nivelacademico = formulario;
             await clienteAxios.put('/api/nivel-academico/actualizar', nivelacademico);
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO'},
-                                                     {msg: `CODIGO: ${(nivelacademico.codigo)}`},
-                                                     {msg: `NOMBRE: ${nivelacademico.descripcion}`},
-                                                     {msg: 'ACTUALIZADO CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
         }catch(e){
             handleError(e);
         }
@@ -148,28 +135,6 @@ const NivelAcademicoForm = () => {
                 label="descripcion"
             />
         <Form>
-            <Form.Group>
-                <Form.Label>Codigo</Form.Label>
-                <Form.Control 
-                    id="codigo"
-                    name="codigo"
-                    type="text" 
-                    placeholder="CODIGO"
-                    value={formulario.codigo}
-                     onChange={e => {
-                         setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     readOnly={result_select} 
-                     isInvalid={errores.hasOwnProperty('codigo')}
-                     onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.codigo}
-                 </Form.Control.Feedback>
-            </Form.Group>
             <Form.Group>
                  <Form.Label>Descripcion</Form.Label>
                  <Form.Control

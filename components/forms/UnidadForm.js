@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button } from 'react-bootstrap';
@@ -6,10 +8,12 @@ import {handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
 import InputSelectMateria from '../ui/InputSelectMateria';
+import ButtonBack from '../ui/ButtonBack';
 
 
 const UnidadForm = () => {
 
+    const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
     const [result_select, setResultSelect]     = useState(null);
@@ -49,17 +53,19 @@ const UnidadForm = () => {
 
     }, [filtro_busqueda, result_select]);
 
+    //carga la materia en el formulario si existe en la url.
+    useEffect(() => {
+        if(router.query.materia){
+            setFormulario({
+                ...formulario,
+                codigo_materia: router.query.materia
+            });
+        }
+    }, []);
 
     const validarFormulario = () => {
         
         let errors = {}
-
-        if(formulario.codigo.trim() === ''){
-            errors = {
-                ...errors,
-                codigo: 'Requerido'
-            }
-        }
 
         if(formulario.descripcion.trim() === ''){
             errors = {
@@ -103,16 +109,13 @@ const UnidadForm = () => {
             }
             //Unidad a enviar
             let unidad = formulario;
+            unidad.codigo = uuidv4();
 
             const resp = await clienteAxios.post('/api/unidades/crear', unidad);
             
             unidad = resp.data;
             reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD'},
-                                                     {msg: `CODIGO: ${unidad.codigo}`},
-                                                     {msg: `DESCRIPCION: ${unidad.descripcion}`},
-                                                     {msg: 'CREADA CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD CREADA'}]}/>, {containerId: 'sys_msg'});
         
         }catch(e){
             handleError(e);
@@ -131,11 +134,7 @@ const UnidadForm = () => {
             }
             let unidad = formulario;
             await clienteAxios.put('/api/unidades/actualizar', unidad);
-            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD'},
-                                                     {msg: `CODIGO: ${(unidad.codigo)}`},
-                                                     {msg: `NOMBRE: ${unidad.descripcion}`},
-                                                     {msg: 'ACTUALIZADO CORRECTAMENTE'}
-                                                    ]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD ACTUALIZADA'}]}/>, {containerId: 'sys_msg'});
         }catch(e){
             handleError(e);
         }
@@ -153,27 +152,6 @@ const UnidadForm = () => {
         />
 
        <Form>
-            <Form.Group>
-                <Form.Label>Codigo</Form.Label>
-                <Form.Control 
-                    id="codigo"
-                    name="codigo"
-                    type="text" 
-                    placeholder="CODIGO" 
-                    autoComplete="off"
-                    value={formulario.codigo}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })}
-                    readOnly={result_select}
-                    isInvalid={errores.hasOwnProperty('codigo')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo') && errores.codigo}
-                </Form.Control.Feedback>
-            </Form.Group>
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
                 <Form.Control
@@ -206,6 +184,7 @@ const UnidadForm = () => {
                     })}
                     isInvalid={errores.hasOwnProperty('codigo_materia')}
                     onBlur={validarFormulario}
+                    disabled={router.query.materia}
                 />
                 <Form.Control.Feedback type="invalid">
                     {errores.hasOwnProperty('codigo_materia') && errores.codigo_materia}
@@ -227,14 +206,34 @@ const UnidadForm = () => {
             ?
                 <Button 
                     variant="outline-info"
+                    size="lg"
                     onClick={handleClickActualizar}
                 >Actualizar</Button>
             :
                 <Button 
                     variant="info"
+                    size="lg"
                     onClick={handleClickCrear}
                 >Crear</Button>
             }
+
+            <Button 
+                variant="success"
+                onClick={() => {
+                    router.push({
+                        pathname: '/administrar/modulos',
+                        query: { 
+                            materia: formulario.codigo_materia,
+                            unidad: formulario.codigo
+                        },
+                    })
+                }}
+                className="ml-3"
+                disabled={!result_select}
+                size="lg"
+            > + Agregar Módulos</Button>
+
+            <ButtonBack />
        </Form>
     </Container> );
 }
