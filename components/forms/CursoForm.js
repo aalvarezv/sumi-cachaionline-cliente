@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Card, Button, Row, Col } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
@@ -12,6 +12,8 @@ import InputSelectInstitucion from '../ui/InputSelectInstitucion';
 import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
 import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
 import ButtonBack from '../ui/ButtonBack';
+import HookMemorizado from '../ui/HookMemorizado';
+import HookCallback from '../ui/HookCallback';
 
 const CursoForm = () => {
 
@@ -30,14 +32,19 @@ const CursoForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarCurso = async () => {
-        const resp = await clienteAxios.get(`/api/cursos/busqueda/${filtro_busqueda}`, 
-            { params: { 
-                codigo_institucion: router.query.institucion 
-            } 
-        });
-        setResultBusqueda(resp.data.cursos);
+        try{
+            const resp = await clienteAxios.get(`/api/cursos/busqueda/${filtro_busqueda}`, 
+                { params: { 
+                    codigo_institucion: router.query.institucion 
+                } 
+            });
+            setResultBusqueda(resp.data.cursos);
+        }catch(e){
+            handleError(e);
+        }
+        
     }
-
+    
     useEffect(() => {
 
         if(filtro_busqueda.trim() !== '' && !result_select){
@@ -60,6 +67,7 @@ const CursoForm = () => {
         setErrores({});
 
     }, [filtro_busqueda, result_select]);
+    //filtro_busqueda, result_select
 
     //carga la institución en el formulario si existe en la url.
     useEffect(() => {
@@ -70,7 +78,7 @@ const CursoForm = () => {
             });
         }
     }, []);
-
+    
     const validarFormulario = () => {
         
         let errors = {}
@@ -154,9 +162,23 @@ const CursoForm = () => {
             handleError(e);
         }
     }
+    
+    const ListSelectCursoUsuariosNoMemo = formulario => {
+        
+        return ( <ListSelectCursoUsuarios
+            codigo_institucion={formulario.codigo_institucion}
+            codigo_curso={formulario.codigo}
+        />)
+    }
 
+    const ListSelectCursoUsuariosMemo = useMemo(() => {
+        return ListSelectCursoUsuariosNoMemo(formulario)
+    }, [formulario.codigo])
+    
+   
     return ( 
     <Container>
+
         <InputSearch
             setFilter={setFiltroBusqueda}
             results={result_busqueda}
@@ -243,48 +265,36 @@ const CursoForm = () => {
                     />
                 </Col>
             </Row>
-            </Form>
-            {result_select
-            ?   
-                <Button 
-                    variant="outline-info"
-                    onClick={handleClickActualizar}
-                    size="lg"
-                >Actualizar</Button>
-            :
-                <Button 
-                    variant="info"
-                    onClick={handleClickCrear}
-                    size="lg"
-                >Crear</Button>
-            }
-            <ButtonBack />
-    {result_select
-    
-    &&
-        <Container>
+            <Row className="justify-content-start">
+                <Col className="mb-3 mb-sm-0 " xs={12} sm={"auto"}>
+                    {result_select
+                    ?   
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                        >Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col xs={12} sm={"auto"}>
+                    <ButtonBack />
+                </Col>
+            </Row>
+        </Form>
+        <Container className="mt-3">
         <Row>
-            <Col sm={12} md={6}>
-                <Row className="mt-3">
+            <Col className="bg-info m-0 mr-md-1 p-3 rounded">
+                <Row className="p-3">
                     <Button 
-                        variant="success"
-                        onClick={()=>{
-                            router.push('/administrar/modulos')
-                        }}
-                        size="lg"
-                        block
-                    >+ Crear Modulos</Button>
-                </Row>
-                <Row className="mt-2 py-1 bg-light rounded">
-                    <ListSelectCursoModulos
-                        codigo_curso={formulario.codigo}
-                    />
-                </Row> 
-            </Col>
-            <Col className="ml-3">
-                <Row className="mt-3">
-                    <Button 
-                        variant="success"
+                        variant="outline-light"
                         onClick={()=>{
                             router.push('/administrar/usuarios')
                         }}
@@ -292,16 +302,43 @@ const CursoForm = () => {
                         block
                     >+ Crear Usuarios</Button>
                 </Row>
-                <Row className="mt-2 py-1 bg-light rounded">
-                    <ListSelectCursoUsuarios
-                        codigo_curso={formulario.codigo}
-                    />
+                <Row className="px-3">
+                    <h6 className="text-light text-center">
+                        Seleccione Alumnos y Profesores que pertenecen al curso.
+                    </h6>
+                </Row>
+                <Row>
+                    {ListSelectCursoUsuariosMemo}
                 </Row> 
             </Col>
+            <Col className="bg-info m-0 ml-md-1 mt-3 mt-md-0 p-3 rounded" sm={12} md={6}>
+                <Row className="p-3">
+                    <Button 
+                        variant="outline-light"
+                        size="lg"
+                        className="btn-block"
+                        onClick={()=>{
+                            router.push('/administrar/modulos')
+                        }}
+                    >+ Crear Modulos</Button>
+                </Row>
+                <Row className="px-3">
+                    <h6 className="text-light text-center">
+                        Seleccione uno o más módulos que serán impartidos en el curso.
+                    </h6>
+                </Row>
+                <Row>
+                    {<ListSelectCursoModulos
+                        codigo_curso={formulario.codigo}
+                    />}
+                </Row> 
+            </Col>
+            
         </Row>
         </Container>
-    }
+    
     </Container>
+  
     );
 }
  

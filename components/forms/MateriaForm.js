@@ -28,8 +28,12 @@ const MateriaForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarMateria = async () => {
-        const resp = await clienteAxios.get(`/api/materias/busqueda/${filtro_busqueda}`);
-        setResultBusqueda(resp.data.materias);
+        try{
+            const resp = await clienteAxios.get(`/api/materias/busqueda/${filtro_busqueda}`);
+            setResultBusqueda(resp.data.materias);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     useEffect(() => {
@@ -160,19 +164,18 @@ const MateriaForm = () => {
             />
             <Form>
                 <Form.Group as={Row}>
-                    <Col md={9}>
-                        <Uploader 
-                            titulo={"CLICK ó ARRASTRA Y SUELTA UNA IMAGEN"}
-                            getArchivos={getArchivos}
-                        />
-                    </Col>
                     <Col>
                         <Image 
                             src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
-                            style={{width: 150, height: 150}}
                             thumbnail
                         />
                     </Col>    
+                    <Col md={9}>
+                        <Uploader 
+                            titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                            getArchivos={getArchivos}
+                        />
+                    </Col>
                 </Form.Group> 
                 <Form.Group>
                     <Form.Label>Nombre</Form.Label>
@@ -231,33 +234,43 @@ const MateriaForm = () => {
                             });
                         }}
                 />
-                {result_select
-                ?
-                    <Button 
-                        variant="outline-info"
-                        size="lg"
-                        onClick={handleClickActualizar}
-                    >Actualizar</Button>
-                :
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        onClick={handleClickCrear}
-                    >Crear</Button>
-                }
-                <Button 
-                    variant="success"
-                    onClick={() => {
-                        router.push({
-                            pathname: '/administrar/unidades',
-                            query: { materia: formulario.codigo },
-                        })
-                    }}
-                    className="ml-3"
-                    disabled={!result_select}
-                    size="lg"
-                > + Agregar Unidades</Button>
-                <ButtonBack />
+                <Row className="justify-content-center">
+                    <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                        {result_select
+                        ?
+                            <Button 
+                                variant="outline-info"
+                                size="lg"
+                                className="btn-block"
+                                onClick={handleClickActualizar}
+                            >Actualizar</Button>
+                        :
+                            <Button 
+                                variant="info"
+                                size="lg"
+                                className="btn-block"
+                                onClick={handleClickCrear}
+                            >Crear</Button>
+                        }
+                    </Col>
+                    <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>     
+                        <Button 
+                            variant="success"
+                            disabled={!result_select}
+                            size="lg"
+                            className="btn-block"
+                            onClick={() => {
+                                router.push({
+                                    pathname: '/administrar/unidades',
+                                    query: { materia: formulario.codigo },
+                                })
+                            }}
+                        >+ Agregar Unidades</Button>
+                    </Col>
+                    <Col xs={12} sm={"auto"}>
+                        <ButtonBack />
+                    </Col>
+                </Row>
             </Form>
         </Container> );
 }

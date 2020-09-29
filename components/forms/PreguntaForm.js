@@ -1,10 +1,76 @@
 import React from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, 
+        Accordion, Card, Image, Button } from 'react-bootstrap';
+import Uploader from '../ui/Uploader';
 
-const MateriaForm = () => {
+
+const PreguntaForm = () => {
+
+
+    //funcion que recibe el componente Uploader donde retorna los archivos a subir.
+    const getArchivos = async archivos => {
+    
+        const base64 = await getBase64(archivos[0]);
+        setFormulario({
+            ...formulario,
+            imagen: base64
+        })
+
+    }
+
     return ( 
     <Container>
-       <Form>
+
+        <Row>
+            <Col sm={8}>
+                <Form.Group>
+                    <Form.Control 
+                        id="descripcion"
+                        name="descripcion"
+                        as="textarea" 
+                        rows="3"
+                        placeholder="PREGUNTA"
+                        //value={formulario.descripcion}
+                        // onChange={e => {
+                        //     setFormulario({
+                        //         ...formulario,
+                        //         [e.target.name]: e.target.value.toUpperCase()
+                        //     })
+                        // }}
+                        // isInvalid={errores.hasOwnProperty('descripcion')}
+                        // onBlur={validarFormulario}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                        {/* {errores.hasOwnProperty('descripcion') && errores.descripcion} */}
+                    </Form.Control.Feedback>
+                </Form.Group>
+            </Col>
+            <Col sm={2}>
+                Opción Función Matemática.
+            </Col>
+            <Col sm={2}>
+                Modal Carga Imagen.
+            </Col>
+        </Row>
+                {/* <Form.Group as={Row}>
+                    <Col>
+                        <Image 
+                            //src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                            thumbnail
+                        />
+                    </Col>    
+                    <Col md={9}>
+                        <Uploader 
+                            titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                            getArchivos={getArchivos}
+                        />
+                    </Col>
+                </Form.Group>         */}
+            
+       
+                 
+          
+       {/* <Form>
             <Form.Group>
                 <Form.Label>Codigo</Form.Label>
                 <Form.Control 
@@ -76,8 +142,8 @@ const MateriaForm = () => {
                     className="mb-3"
             />
             <Button variant="info">Aceptar</Button>
-        </Form>
+        </Form> */}
     </Container> );
 }
  
-export default MateriaForm;
+export default PreguntaForm;

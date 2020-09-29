@@ -1,56 +1,114 @@
-import React, {useEffect, useState } from 'react';
+import React, {useEffect, useState, useMemo, useCallback } from 'react';
+import {Container, Form, Row, Col} from 'react-bootstrap';
+import { debounce } from 'lodash';
 import ListInfiniteScroll from './ListInfiniteScroll';
 import {handleError} from '../../helpers'
 import clienteAxios from '../../config/axios';
+import InputSelectMateria from './InputSelectMateria';
 
 const ListSelectCursoModulos = ({codigo_curso}) => {
 
-    const [modulos_curso, setModulosCurso] = useState([]);
-
-    //traer todos los items seleccionados
+    //const [modulos_curso, setModulosCurso] = useState([]);
+    const [descripcion_modulo, setDescripcionModulo ] = useState('');
+    const [filtro_codigo_materia, setFiltroCodigoMateria] = useState('0');
+    const [filtro_descripcion_modulo, setFiltroDescripcionModulo] = useState('');
+    
     useEffect(() => {
-
-        //obtiene los modulos del curso.
-        const getModulosCurso = async () => {
-            try{
-                const resp = await clienteAxios.get(`/api/cursos-modulos/listar-modulos-curso/${codigo_curso}`);
-                const arr_modulos_curso = resp.data.modulos_curso.map(modulo =>  modulo.codigo_modulo);
-                setModulosCurso(arr_modulos_curso);
-            }catch(e){
-                handleError(e);
-            }  
-        }
-
-        if(codigo_curso){
-            getModulosCurso();
-        }
+       
+        setFiltroCodigoMateria('0');
+        setFiltroDescripcionModulo('');
+        setDescripcionModulo('');
 
     },[codigo_curso])
 
-    const handleSelect = async (codigo, select) => {
-        let resp = null;
-        try{
-            if(select){
-                resp = await clienteAxios.post('/api/cursos-modulos/agregar-modulo-curso',
-                                                     {codigo_curso, codigo_modulo: codigo});
-            }else{
-                resp = await clienteAxios.delete(`/api/cursos-modulos/eliminar-modulo-curso/${codigo_curso}`,
-                                                     {params: { codigo_modulo: codigo}});
+    const handleSelect = (codigo, select) => {
+
+        return new Promise(async (resolve, reject) => {
+            let resp = null;
+            try{
+                if(select){
+                    resp = await clienteAxios.post('/api/cursos-modulos/agregar-modulo-curso',
+                                                        {codigo_curso, codigo_modulo: codigo});
+                }else{
+                    resp = await clienteAxios.delete(`/api/cursos-modulos/eliminar-modulo-curso/${codigo_curso}`,
+                                                        {params: { codigo_modulo: codigo}});
+                }
+                resolve(true);
+            }catch(e){
+                handleError(e);
+                reject(e);
             }
-        }catch(e){
-            handleError(e)
-        }
+        });
+        
+    }
+
+    const ListInfiniteScrollNoMemo = (curso, desc_modulo, materia)  => {
+
+        return (
+            <ListInfiniteScroll 
+                url={'/api/modulos/listar-disponibles-curso'}
+                model={"modulos"}
+                pk={"codigo"}
+                label={"descripcion"}
+                filters={{
+                    codigo_curso: curso,
+                    descripcion: desc_modulo,
+                    codigo_materia: materia
+                }}
+                //items_selected={modulos_curso}
+                handleSelect={handleSelect}
+            />
+        );
+    }
+
+    const ListInfiniteScrollMemo = useMemo(() => ListInfiniteScrollNoMemo(codigo_curso, filtro_descripcion_modulo, filtro_codigo_materia), [codigo_curso, filtro_codigo_materia, filtro_descripcion_modulo])
+
+    const setFiltroDescripcionModuloDebounced = useCallback(debounce((val) => {
+        setFiltroDescripcionModulo(val);
+    }, 500),[]);
+
+    const handleChangeDescripcionModulo = e => {
+        setDescripcionModulo(e.target.value);
+        setFiltroDescripcionModuloDebounced(e.target.value);
     }
 
     return (
-        <ListInfiniteScroll 
-            url={'/api/modulos/listar'}
-            model={"modulos"}
-            pk={"codigo"}
-            label={"descripcion"}
-            items_selected={modulos_curso}
-            handleSelect={handleSelect}
-        />
+        <>
+        {codigo_curso !== ''
+        &&
+        <Container>
+            <Row>
+                <Col className="mb-3">
+                    <InputSelectMateria
+                        id="codigo_materia"
+                        name="codigo_materia"
+                        as="select"
+                        label="TODAS LAS MATERIAS"
+                        value={filtro_codigo_materia}
+                        onChange={e => {
+                            setFiltroCodigoMateria(e.target.value)
+                        }}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col className="mb-1">
+                    <Form.Control
+                        id="descripción_modulo"
+                        name="descripción_modulo"
+                        type="text" 
+                        placeholder="Escribe un nombre de módulo para buscar..."
+                        value={descripcion_modulo}
+                        onChange={handleChangeDescripcionModulo} 
+                    />
+                </Col>
+            </Row>
+            <Row>
+                {ListInfiniteScrollMemo}
+            </Row>
+        </Container>
+        }
+        </>
     )
 }
 

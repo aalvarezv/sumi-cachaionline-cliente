@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 //esperá un tiempo (delay) y ejecutará la función recibida.
 const useDebounce = (funcion, delay) => {
     
-    console.log('render-debounce');
     const [timeoutId, setTimeoutId] = useState(null);
     const [search, setSearch] = useState(false);
     

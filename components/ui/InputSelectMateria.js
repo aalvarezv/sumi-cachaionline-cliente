@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Form } from 'react-bootstrap';
 import  clienteAxios from '../../config/axios';
-
+import { handleError } from '../../helpers';
 
 const InputSelectMateria = props => {
 
@@ -10,8 +10,12 @@ const InputSelectMateria = props => {
     useEffect(() => {
       
         const listarMaterias = async () => {
-            const resp = await clienteAxios.get('/api/materias/listar');
-            setMaterias(resp.data.materias);
+            try{
+                const resp = await clienteAxios.get('/api/materias/listar');
+                setMaterias(resp.data.materias);
+            }catch(e){
+                handleError(e);
+            }
         }
         listarMaterias();
 
@@ -21,7 +25,7 @@ const InputSelectMateria = props => {
         <Form.Control
             {...props}
         >
-            <option key="0" value="0">SELECCIONE UNA MATERIA</option>
+            <option key="0" value="0">{props.label ? props.label : 'SELECCIONE UNA MATERIA'}</option>
             {materias.map(materia => <option key={materia.codigo} value={materia.codigo}>{materia.nombre}</option>)}
         </Form.Control>
       );

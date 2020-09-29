@@ -28,8 +28,12 @@ const ModuloForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarModulo = async () => {
-        const resp = await clienteAxios.get(`/api/modulos/busqueda/${filtro_busqueda}`);
-        setResultBusqueda(resp.data.modulos);
+        try{
+            const resp = await clienteAxios.get(`/api/modulos/busqueda/${filtro_busqueda}`);
+            setResultBusqueda(resp.data.modulos);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     useEffect(() => {
@@ -42,12 +46,15 @@ const ModuloForm = () => {
 
         //cuando se selecciona o cambia el result_select
         if(result_select){
+
             setFormulario({
                 codigo: result_select.codigo,
                 descripcion: result_select.descripcion,
                 codigo_unidad: result_select.codigo_unidad,
                 inactivo: result_select.inactivo
             });
+            setCodigoMateria(result_select.unidad.codigo_materia);
+
         }else{
             reseteaFormulario();
         }
@@ -101,6 +108,8 @@ const ModuloForm = () => {
             codigo_unidad: '',
             inactivo: false
         });
+
+        setCodigoMateria('');
     }
 
     const handleClickCrear = async e => {
@@ -192,7 +201,7 @@ const ModuloForm = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={10}>
+                    <Col>
                         <InputSelectMateria
                             id="codigo_materia"
                             name="codigo_materia"
@@ -202,14 +211,13 @@ const ModuloForm = () => {
                             disabled={router.query.materia}
                         />
                     </Col>
-                    <Col xs={2} className="d-flex justify-content-end">
+                    <Col xs={"auto"}>
                         <Button 
                             variant="success"
                             onClick={()=>{
                                 router.push('/administrar/materias')
                             }}
                             size="md"
-                            block
                         >+</Button>
                     </Col>
                 </Row>        
@@ -223,7 +231,7 @@ const ModuloForm = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={10}>
+                    <Col>
                         <InputSelectUnidadesMateria
                             id="codigo_unidad"
                             name="codigo_unidad"
@@ -244,14 +252,13 @@ const ModuloForm = () => {
                             {errores.hasOwnProperty('codigo_unidad') && errores.codigo_unidad}
                         </Form.Control.Feedback>
                     </Col>
-                    <Col xs={2} className="d-flex justify-content-end">
+                    <Col xs={"auto"}>
                         <Button 
                             variant="success"
                             onClick={()=>{
                                 router.push('/administrar/unidades')
                             }}
                             size="md"
-                            //block
                         >+</Button>
                     </Col>
                 </Row>
@@ -268,23 +275,34 @@ const ModuloForm = () => {
                     [e.target.name]: e.target.checked,
                 })}
             />
-            {result_select
-            ?
-                <Button 
-                    variant="outline-info"
-                    size="lg"
-                    onClick={handleClickActualizar}
-                    
-                >Actualizar</Button>
-            :
-                <Button 
-                    variant="info"
-                    size="lg"
-                    onClick={handleClickCrear}
-                >Crear</Button>
-            }
-            <ButtonBack />
-       </Form>
+            
+        <Row className="justify-content-center">
+            <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                {result_select
+                ?
+                    <Button 
+                        variant="outline-info"
+                        size="lg"
+                        className="btn-block"
+                        onClick={handleClickActualizar}
+                        
+                    >Actualizar</Button>
+                :
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        className="btn-block"
+                        onClick={handleClickCrear}
+                    >Crear</Button>
+                }
+            </Col>
+            <Col xs={12} sm={"auto"}>
+                <ButtonBack />
+            </Col>
+        </Row>
+        
+        
+        </Form>
     </Container> );
 }
  

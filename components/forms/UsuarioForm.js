@@ -30,8 +30,13 @@ const UsuarioForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarUsuario = async () => {
-        const resp = await clienteAxios.get(`/api/usuarios/busqueda/${filtro_busqueda}`);
-        setResultBusqueda(resp.data.usuarios);
+
+        try{
+            const resp = await clienteAxios.get(`/api/usuarios/busqueda/${filtro_busqueda}`);
+            setResultBusqueda(resp.data.usuarios);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     //cuando cambia el filtro de búsqueda.
@@ -274,6 +279,86 @@ const UsuarioForm = () => {
                     </Form.Group>
                 </Col>
             </Row>
+            
+            <Row>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control 
+                            id="email"
+                            name="email"
+                            type="email" 
+                            placeholder="TU.EMAIL@EJEMPLO.COM"
+                            //autoComplete="off"
+                            value={formulario.email}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value.toUpperCase()
+                            })}
+                            isInvalid={errores.hasOwnProperty('email')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('email') && errores.email}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col xs={12} md={6}>
+                    <Form.Group>
+                        <Form.Label>Teléfono</Form.Label>
+                        <Form.Control 
+                            id="telefono"
+                            name="telefono"
+                            type="tel" 
+                            placeholder="(+56) 9 4567 8323"
+                            //autoComplete="off"
+                            value={formulario.telefono}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value,
+                            })}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Form.Group>
+                <Row>
+                    <Col>
+                        <Form.Label>Rol</Form.Label>
+                    </Col>
+                    <Col>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <InputSelectRol
+                            id="codigo_rol"
+                            name="codigo_rol"
+                            as="select"
+                            value={formulario.codigo_rol}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_rol')}
+                            onBlur={validarFormulario}
+                            disabled={router.query.rol}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
+                        </Form.Control.Feedback>
+                    </Col>
+                    <Col xs={"auto"}>
+                        <Button 
+                            variant="success"
+                            onClick={()=>{
+                                router.push('/administrar/roles')
+                            }}
+                            size="md"
+                        >+</Button>
+                    </Col>
+                </Row>
+            </Form.Group>
             <Row>
                 <Col xs={12} md={6}>
                     <Form.Group>
@@ -318,87 +403,7 @@ const UsuarioForm = () => {
                     </Form.Group>
                 </Col>
             </Row>
-            <Row>
-                <Col xs={12} md={6}>
-                    <Form.Group>
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control 
-                            id="email"
-                            name="email"
-                            type="email" 
-                            placeholder="TU.EMAIL@EJEMPLO.COM"
-                            //autoComplete="off"
-                            value={formulario.email}
-                            onChange={e => setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
-                            })}
-                            isInvalid={errores.hasOwnProperty('email')}
-                            onBlur={validarFormulario}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('email') && errores.email}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                </Col>
-                <Col xs={12} md={6}>
-                    <Form.Group>
-                        <Form.Label>Teléfono</Form.Label>
-                        <Form.Control 
-                            id="telefono"
-                            name="telefono"
-                            type="tel" 
-                            placeholder="(+56) 9 4567 8323"
-                            //autoComplete="off"
-                            value={formulario.telefono}
-                            onChange={e => setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value,
-                            })}
-                        />
-                    </Form.Group>
-                </Col>
-            </Row>
-            <Form.Group>
-                <Row>
-                    <Col xs={10}>
-                        <Form.Label>Rol</Form.Label>
-                    </Col>
-                    <Col xs={2}>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs={10}>
-                        <InputSelectRol
-                            id="codigo_rol"
-                            name="codigo_rol"
-                            as="select"
-                            value={formulario.codigo_rol}
-                            onChange={e => setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value
-                            })}
-                            isInvalid={errores.hasOwnProperty('codigo_rol')}
-                            onBlur={validarFormulario}
-                            disabled={router.query.rol}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
-                        </Form.Control.Feedback>
-                    </Col>
-                    <Col xs={2} className="d-flex justify-content-end">
-                        <Button 
-                            variant="success"
-                            onClick={()=>{
-                                router.push('/administrar/roles')
-                            }}
-                            size="md"
-                            className="align-self-"
-                            //block
-                        >+</Button>
-                    </Col>
-                </Row>
-            </Form.Group>
+            
 
             <Form.Check 
                 id="inactivo"
@@ -412,21 +417,29 @@ const UsuarioForm = () => {
                     [e.target.name]: e.target.checked,
                 })}
             />
-            {result_select
-            ?
-                <Button 
-                    variant="outline-info"
-                    size="lg"
-                    onClick={handleClickActualizar}
-                >Actualizar</Button>
-            :
-                <Button 
-                    variant="info"
-                    size="lg"
-                    onClick={handleClickCrear}
-                >Crear</Button>
-            }
-            <ButtonBack />
+            <Row className="justify-content-center">
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    {result_select
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                        >Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col xs={12} sm={"auto"}>
+                    <ButtonBack />
+                </Col>
+            </Row>
        </Form>
     </Container> );
 }

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Form } from 'react-bootstrap';
 import  clienteAxios from '../../config/axios';
-
+import { handleError } from '../../helpers';
 
 const InputSelectNivelAcademico = props => {
 
@@ -10,8 +10,12 @@ const InputSelectNivelAcademico = props => {
     useEffect(() => {
       
         const listarNivelesAcademicos = async () => {
-            const resp = await clienteAxios.get('/api/nivel-academico/listar');
-            setNivelesAcademicos(resp.data.niveles_academicos);
+            try{
+                const resp = await clienteAxios.get('/api/nivel-academico/listar');
+                setNivelesAcademicos(resp.data.niveles_academicos);
+            }catch(e){
+                handleError(e);
+            }
         }
         listarNivelesAcademicos();
 

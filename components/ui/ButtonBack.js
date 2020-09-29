@@ -11,6 +11,7 @@ const ButtonBack = () => {
             className="ml-3"
             variant="outline-primary"
             size="lg"
+            className="btn-block"
             onClick={() => {
                 router.back();
             }}

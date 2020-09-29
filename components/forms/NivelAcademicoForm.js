@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
+import ButtonBack from '../ui/ButtonBack';
 
 const NivelAcademicoForm = () => {
 
@@ -22,8 +23,12 @@ const NivelAcademicoForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarNivelAcademico = async () => {
-        const resp = await clienteAxios.get(`/api/nivel-academico/busqueda/${filtro_busqueda}`);
-        setResultBusqueda(resp.data.nivelesAcademicos);
+        try{
+            const resp = await clienteAxios.get(`/api/nivel-academico/busqueda/${filtro_busqueda}`);
+            setResultBusqueda(resp.data.nivelesAcademicos);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     useEffect(() => {
@@ -193,18 +198,30 @@ const NivelAcademicoForm = () => {
                         });
                     }}
             />
-            {result_select
-             ?
-                <Button 
-                    variant="outline-info"
-                    onClick={handleClickActualizar}
-            >   Actualizar</Button>
-             :
-                <Button 
-                    variant="info"
-                    onClick={handleClickCrear}
-                >Crear</Button>
-             }
+            
+            <Row className="justify-content-center">
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    {result_select
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                    >   Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col xs={12} sm={"auto"}>
+                    <ButtonBack />
+                </Col>
+            </Row>
         </Form>
         </Container> );
 }

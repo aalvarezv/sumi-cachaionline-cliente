@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { debounce } from 'lodash';
 
 const InputSearch = ({setFilter, results, setResultSelect, id, label}) => {
+
     //state del campo de texto, cuando una opción sea seleccionada,
     //el valor será seteado en el campo.
     const [text, setText]    =  useState('');
@@ -37,6 +38,7 @@ const InputSearch = ({setFilter, results, setResultSelect, id, label}) => {
         setItemSelect(true);
 
         setFilter(e.target.innerHTML);
+
     }
  
     return (
@@ -69,7 +71,6 @@ const InputSearch = ({setFilter, results, setResultSelect, id, label}) => {
                 margin-bottom: 1rem;
                 z-index: 1;
                 position: absolute;
-                
             }
             li {
                 list-style-type: none;

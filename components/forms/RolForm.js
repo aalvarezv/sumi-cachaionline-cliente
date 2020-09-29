@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
@@ -24,8 +24,12 @@ const RolForm = () => {
     const [errores, setErrores] = useState({});
 
     const buscarRol = async () => {
-        const resp = await clienteAxios.get(`/api/roles/busqueda/${filtro_busqueda}`)
-        setResultBusqueda(resp.data.roles);
+        try{
+            const resp = await clienteAxios.get(`/api/roles/busqueda/${filtro_busqueda}`)
+            setResultBusqueda(resp.data.roles);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     useEffect(() => {
@@ -162,39 +166,46 @@ const RolForm = () => {
                         [e.target.name]: e.target.checked
                     });
                 }}
-             />
-            {result_select
-            ?
-                <Button 
-                    variant="outline-info"
-                    size="lg"
-                    onClick={handleClickActualizar}
-                >Actualizar</Button>
-            :
-                <Button 
-                    variant="info"
-                    size="lg"
-                    onClick={handleClickCrear}
-                >Crear</Button>
-            }
-
-            <Button 
-                variant="success"
-                onClick={() => {
-                    router.push({
-                        pathname: '/administrar/usuarios',
-                        query: { 
-                            rol: formulario.codigo
-                        },
-                    })
-                }}
-                className="ml-3"
-                disabled={!result_select}
-                size="lg"
-            >+ Agregar Usuarios</Button>
-
-            <ButtonBack />
-             
+            />
+            <Row className="justify-content-center">
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    {result_select
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                        >Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    <Button 
+                        variant="success"
+                        disabled={!result_select}
+                        size="lg"
+                        className="btn-block"
+                        onClick={() => {
+                            router.push({
+                                pathname: '/administrar/usuarios',
+                                query: { 
+                                    rol: formulario.codigo
+                                },
+                            })
+                        }}
+                    >+ Agregar Usuarios</Button>
+                </Col>
+                <Col xs={12} sm={"auto"}>
+                    <ButtonBack />
+                </Col>
+            </Row>
         </Form>
      </Container> );
 }

@@ -24,15 +24,13 @@ const Navegacion = () => {
                 <Link href="/" passHref>
                     <Nav.Link className="text-info">CachaiOnline</Nav.Link>
                 </Link>
-                <Link href="/" passHref>
+                {/* <Link href="/" passHref>
                     <Nav.Link href="/materias">Materias</Nav.Link>
-                </Link>
+                </Link> */}
                 {autenticado
                 &&
                     <NavDropdown title="Administrar" id="basic-nav-dropdown">
-                        <Link href="/test" passHref>
-                            <NavDropdown.Item href="/test">TEST</NavDropdown.Item>
-                        </Link>
+                      
                         <Link href="/administrar/instituciones" passHref>
                             <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
                         </Link>
@@ -41,6 +39,9 @@ const Navegacion = () => {
                         </Link>
                         <Link href="/administrar/niveles-academicos" passHref>
                             <NavDropdown.Item href="/administrar/niveles-academicos">Niveles Académicos</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/preguntas" passHref>
+                            <NavDropdown.Item href="/administrar/preguntas">Preguntas</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/roles" passHref>
                             <NavDropdown.Item href="/administrar/roles">Roles</NavDropdown.Item>

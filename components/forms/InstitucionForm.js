@@ -25,9 +25,12 @@ const InstitucionForm = () => {
     const [errores, setErrores] = useState({});
    
     const buscarInstitucion = async () => {
-        const resp = await clienteAxios.get(`/api/instituciones/busqueda/${filtro_busqueda}`);
-        console.log('estoy aqui', resp)
-        setResultBusqueda(resp.data.instituciones);
+        try{
+            const resp = await clienteAxios.get(`/api/instituciones/busqueda/${filtro_busqueda}`);
+            setResultBusqueda(resp.data.instituciones);
+        }catch(e){
+            handleError(e);
+        }
     }
 
     useEffect(() => {
@@ -152,9 +155,7 @@ const InstitucionForm = () => {
             />
         <Form>
             <Form.Group as={Row}>
-                <Col
-                    //style={{marginBottom: 10}}
-                >
+                <Col>
                     <Image 
                         src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
                         thumbnail
@@ -226,39 +227,43 @@ const InstitucionForm = () => {
                         });
                     }}
             />
-            <Row>
-                <Col xs={12} sm={6} >
+            <Row className="justify-content-center">
+                <Col className="mb-2 mb-sm-0" xs={12} sm={"auto"}>
                     {result_select
                     ?  
                         <Button 
                             variant="outline-info"
                             size="lg"
+                            className="btn-block"
                             onClick={handleClickActualizar}
                         >Actualizar</Button>
                     :
                         <Button 
                             variant="info"
-                            onClick={handleClickCrear}
                             size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
                         >Crear</Button>
                     }
                 </Col>
-                <Col xs={12} sm={6}>
+                <Col xs={12} sm={"auto"}>
                     <Button 
                         variant="success"
+                        size="lg"
+                        className="btn-block"
+                        disabled={!result_select}
                         onClick={() => {
                             router.push({
                                 pathname: '/administrar/cursos',
                                 query: { institucion: formulario.codigo },
                             })
                         }}
-                        disabled={!result_select}
-                        size="lg"
-                    >+ Agregar Cursos</Button>
+                    >+Administrar Cursos</Button>
                 </Col>
             </Row>
         </Form>
-        </Container> );
+        </Container> 
+    );
 }
  
 export default InstitucionForm;

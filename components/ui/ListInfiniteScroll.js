@@ -1,131 +1,117 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import { Container, InputGroup, Form, ListGroup, Col } from 'react-bootstrap';
+import { Container, Form, ListGroup, Col } from 'react-bootstrap';
 import useScrollInfinito from '../../hooks/useInfiniteScroll';
+import { handleError } from '../../helpers';
 import Spinner from './Spinner';
 
-const ListInfiniteScroll = ({url, model, pk, label, 
+const ListInfiniteScroll = ({url, model, pk, label, filters, 
                              items_selected, handleSelect}) => {
-
-   const [filtro, setFiltro] = useState('');
-   const [page_num, setPageNum] = useState(1);
-   const [limit, setLimit] = useState(10);
-   const [result_select, setResultSelect] = useState([]);
-
-   const {
-       loading, 
-       error, 
-       results, 
-       hasMore
-   } = useScrollInfinito(url, filtro, page_num, limit, model);
-
-   useEffect(() => {
-       if(items_selected.length > 0) setResultSelect(items_selected)
-   },[items_selected])
-
-   const observer = useRef();
-   //esta referencia llama a la función y le pasa el elemento creado.
-   const lastResultElementRef = useCallback( node => {
-       //si está cargando entonces se detiene.
-       if(loading) {
-           return
-       }
-       if(observer.current) {
-           observer.current.disconnect();
-       }
-       observer.current = new IntersectionObserver(entries => {
-           //entries[0] es el elemento que estamos observando, en este caso el último registro.
-           if(entries[0].isIntersecting && hasMore){
-               setPageNum(prevPageNumber => prevPageNumber + 1);
-           }
-       })
-       
-       if(node){
-           observer.current.observe(node);
-       }
-       
-   },[loading, hasMore]);
    
-   //cuando hace click a un item
-   const handleClickItem = result => {
+    const [page_num, setPageNum] = useState(1);
+    const [limit, setLimit] = useState(10);
+    //almacena los results obtenido en el useScrollInfinito para poder manipularlos cuando el usuario
+    //seleccione o deseleccione un ítem.
+    const [results_local, setResultLocal] = useState([]);
+    
+    const {
+        loading, 
+        results, 
+        hasMore
+    } = useScrollInfinito(url, filters, page_num, limit, model);
+    
+    //si cambian los filtros entonces parte la consulta desde la página 1
+    useEffect(() => {
+        setPageNum(1);
+    },[filters]);
 
-        //si el elemento ya se encuentra seleccionado y se encuentra en el array result_select.
-        if(result_select.includes(result[pk])){
-            //lo quita del array
-            const new_result_select = result_select.filter(item => {
-            return  item !== result[pk] 
-            })
-            //setea el state
-            setResultSelect(new_result_select);
-            //envia el codigo del item deselecionado al componente superior mediante la funcion handleSelect.
-            handleSelect(result[pk], false);
-        }else{
-            //agrega el elemento seleccionado al state
-            setResultSelect([
-                ...result_select,
-                result[pk]
-            ]);
-            //envia el codigo del item seleccionado al componente superior mediante la funcion handleSelect.
-            handleSelect(result[pk], true);
+    useEffect(() => {
+        if(results) {
+            setResultLocal(results);
         }
-   }
+    }, [results])
 
-   return (  
-    <Container
-        className="pt-3"
-    > 
+    const observer = useRef();
+    //esta referencia llama a la función y le pasa el elemento creado.
+    
+    const lastResultElementRef = useCallback( node => {
+        //si está cargando entonces se detiene.
+        if(loading) {
+            return
+        }
+        if(observer.current) {
+            observer.current.disconnect();
+        }
+        observer.current = new IntersectionObserver(entries => {
+            //entries[0] es el elemento que estamos observando, en este caso el último registro.
+            if(entries[0].isIntersecting && hasMore){
+                setPageNum(prevPageNumber => prevPageNumber + 1);
+            }
+        })
+        
+        if(node){
+            observer.current.observe(node);
+        }
+        
+    },[loading, hasMore]);
+
+    //cuando hace click a un item
+    const handleClickItem = async result => {
+
+        try{
+            await handleSelect(result[pk], !result.item_select);
+            const new_results_local = results_local.map(res => {
+                if(res[pk] === result[pk]){
+                    return { 
+                        ...res,
+                        item_select : Number(!res.item_select)
+                    }
+                }
+                return res;
+            });
+            setResultLocal(new_results_local);
+        }catch(e){
+            handleError(e);
+        }
+        
+    }
+
+    return (  
+        <Container
+            className="pt-3"
+        > 
         <Form>
-        <Form.Row
-            //style={{backgroundColor: 'red', position:'fixed', zIndex: 1}}
-        >
-            <Col>
-                <InputGroup className="mb-2 mr-sm-2">
-                    <Form.Control 
-                        id={`filtro_${model}`} 
-                        placeholder="Buscar" 
-                        value={filtro}
-                        onChange={ e => {
-                            setFiltro(e.target.value)
-                            setPageNum(1)
-                        }}
-                    />
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>@</InputGroup.Text>
-                    </InputGroup.Prepend>
-                </InputGroup>
-            </Col>
-        </Form.Row> 
-        <Form.Row>
-            <Col>
-                <ListGroup>
-                {results.map((result, index) => {
-                    //Si el elemento corresponde al ultimo resultado, pasa la referencia para que se almacene con el useCallback 
-                    return <ListGroup.Item 
-                                key={result[pk]}
-                                ref={results.length === index + 1 ? lastResultElementRef : undefined}
-                                variant="light"
-                                variant={result_select.includes(result[pk]) ? "info" : "light"}
-                                onClick={() => {handleClickItem(result)}}
-                            >
-                                {`${result[label]}`}
-                            </ListGroup.Item> 
-                })}
-                </ListGroup>
-            </Col>
-        </Form.Row>
-        <Form.Row className="justify-content-center">
-            
-            {loading 
-            && 
-            <Col> 
-                <Spinner label={model} /> 
-            </Col>}
-            
-        </Form.Row>
-        </Form>
-    </Container>
+            <Form.Row>
+                <Col>
+                    <ListGroup>
+                    {results_local.map((result, index) => {
+                        //Si el elemento corresponde al ultimo resultado, pasa la referencia para que se almacene con el useCallback 
+                        return <ListGroup.Item 
+                                    key={result[pk]}
+                                    ref={results.length === index + 1 ? lastResultElementRef : undefined}
+                                    //variant={result_select.includes(result[pk]) ? "info" : "light"}
+                                    variant={result.item_select === 0 ? "light" : "info"}
+                                    onClick={() => {handleClickItem(result)}}
+                                >
+                                    {`${result[label]}`}
+                                </ListGroup.Item> 
+                    })}
+                    </ListGroup>
+                </Col>
+            </Form.Row>
+            <Form.Row className="justify-content-center">
+                
+                {loading 
+                && 
+                <Col> 
+                    <Spinner label={model} /> 
+                </Col>}
+                
+            </Form.Row>
+            </Form> 
+        </Container>
    );
 
 
 }
 
-export default ListInfiniteScroll
+export default ListInfiniteScroll;

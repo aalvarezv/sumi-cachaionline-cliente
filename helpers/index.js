@@ -1,12 +1,16 @@
 import { toast } from 'react-toastify';
+import Router from 'next/router';
 import ToastMultiline from '../components/ui/ToastMultiline';
 
+
 export const handleError = (e) => {
-    
+
     console.log({e})
     let error = {
         tipo: 'error'
     }
+
+    
     //error de servidor.
     if(!e.response){
         error = {
@@ -15,13 +19,24 @@ export const handleError = (e) => {
         }
         toast.error(error.msg, {containerId: 'sys_msg'});
 
-    //rescata los errores generados por validaciones sin 
+    //rescata los errores generados por validaciones sin express-validator 
     }else if(e.response.data.hasOwnProperty('msg')){
-        error = {
-            ...error,
-            msg: e.response.data.msg
+
+        //si es un error por token, elimina el token del localstorage.
+        if(e.response.data.msg === 'TokenExpiredError' || e.response.data.msg === 'TokenMissingError'){
+            localStorage.removeItem('token');
+            //falta redirigir!
+            Router.push('/login');
+            console.log('ES NECESARIO REDIRIGIR AL LOGIN');
+        }else{
+             error = {
+                ...error,
+                msg: e.response.data.msg
+            }
+            toast.error(error.msg, {containerId: 'sys_msg'});
         }
-        toast.error(error.msg, {containerId: 'sys_msg'});
+
+       
     //rescata los errores de express-validator
     }else if(e.response.data.hasOwnProperty('errors')){
 
@@ -29,8 +44,6 @@ export const handleError = (e) => {
         e.response.data.errors.forEach(error =>{
             msgs.concat(error.msg, '\n');
         });
-        console.log('mensajes', msgs);
-       
 
         error = {
             ...error,

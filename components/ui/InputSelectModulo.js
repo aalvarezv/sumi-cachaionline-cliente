@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Form } from 'react-bootstrap';
 import  clienteAxios from '../../config/axios';
-
+import { handleError } from '../../helpers';
 
 const InputSelectModulo = props => {
 
@@ -10,8 +10,12 @@ const InputSelectModulo = props => {
     useEffect(() => {
       
         const listarModulos = async () => {
-            const resp = await clienteAxios.get('/api/modulos/listar');
-            setModulos(resp.data.modulos);
+            try{
+                const resp = await clienteAxios.get('/api/modulos/listar');
+                setModulos(resp.data.modulos);
+            }catch(e){
+                handleError(e);
+            }
         }
         listarModulos();
 
