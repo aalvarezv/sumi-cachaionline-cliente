@@ -1,6 +1,7 @@
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, Slide, Zoom, Flip, Bounce } from 'react-toastify';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import AuthState from '../context/auth/AuthState';
 import MateriaState from '../context/materias/MateriaState';

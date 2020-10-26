@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import CursoForm from '../../components/forms/CursoForm';
+import RingForm from '../../components/forms/RingForm';
 
 
-const Cursos = () => { 
+const Rings = () => {
 
     const { autenticado } = useContext(AuthContext);
         
@@ -15,8 +15,8 @@ const Cursos = () => {
              {autenticado 
              ?
                 <div>
-                    <h3 className="mb-4 text-center">Administrar Cursos</h3>
-                    <CursoForm/>
+                    <h3 className="mb-4 text-center">Administrar Rings</h3>
+                    <RingForm/>
                 </div>
              :
                 null
@@ -26,4 +26,4 @@ const Cursos = () => {
      );
 }
  
-export default Cursos;
+export default Rings;

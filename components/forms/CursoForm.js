@@ -12,8 +12,8 @@ import InputSelectInstitucion from '../ui/InputSelectInstitucion';
 import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
 import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
 import ButtonBack from '../ui/ButtonBack';
-import HookMemorizado from '../ui/HookMemorizado';
-import HookCallback from '../ui/HookCallback';
+//import HookMemorizado from '../ui/HookMemorizado';
+//import HookCallback from '../ui/HookCallback';
 
 const CursoForm = () => {
 
