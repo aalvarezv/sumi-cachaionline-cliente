@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Tabs, Tab, Button, Row, Col } from 'react-bootstrap';
 import ToastMultiline from '../ui/ToastMultiline';
 import { handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
 import InputSelectMateria from '../ui/InputSelectMateria';
+import ModuloFormTabConfig from './ModuloFormTabConfig';
 import ButtonBack from '../ui/ButtonBack';
 
 const ModuloForm = () => {
@@ -24,6 +25,7 @@ const ModuloForm = () => {
         inactivo: false
     });
     const [codigo_materia, setCodigoMateria] = useState('');
+    const [tab_key, setTabKey] = useState("tab_modulo");
 
     const [errores, setErrores] = useState({});
 
@@ -115,17 +117,19 @@ const ModuloForm = () => {
     const handleClickCrear = async e => {
         
         try{
-             //previne el envío
-             e.preventDefault();
-             //valida el formulario
-             const errors = validarFormulario();
-             //verifica que no hayan errores
-             if(Object.keys(errors).length > 0){
-                 return;
+            //previne el envío
+            e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return;
+            }
+            //modulo a enviar
+            let modulo = {
+                ...formulario,
+                codigo : uuidv4(),
              }
-             //modulo a enviar
-             let modulo = formulario; 
-             modulo.codigo = uuidv4();
 
              const resp = await clienteAxios.post('/api/modulos/crear', modulo);
              //respuesta del modulo recibido.
@@ -171,8 +175,13 @@ const ModuloForm = () => {
             id="codigo"
             label="descripcion"
         />
-
-       <Form>
+        <Tabs 
+            id="tab_modulo"
+            activeKey={tab_key}
+            onSelect={(k) => setTabKey(k)}
+        >
+        <Tab eventKey="tab_modulo" title="Información del Módulo">
+        <Form className="p-3">
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
                 <Form.Control
@@ -275,34 +284,40 @@ const ModuloForm = () => {
                     [e.target.name]: e.target.checked,
                 })}
             />
-            
-        <Row className="justify-content-center">
-            <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                {result_select
-                ?
-                    <Button 
-                        variant="outline-info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickActualizar}
-                        
-                    >Actualizar</Button>
-                :
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickCrear}
-                    >Crear</Button>
-                }
-            </Col>
-            <Col xs={12} sm={"auto"}>
-                <ButtonBack />
-            </Col>
-        </Row>
-        
-        
+            <Row className="justify-content-center">
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    {result_select
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                            
+                        >Actualizar</Button>
+                    :
+                        <Button 
+                            variant="info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickCrear}
+                        >Crear</Button>
+                    }
+                </Col>
+                <Col xs={12} sm={"auto"}>
+                    <ButtonBack />
+                </Col>
+            </Row>
         </Form>
+        </Tab>
+        {result_select &&
+            <Tab eventKey="tab_configuracion" title="Propiedades Módulo">
+                <ModuloFormTabConfig    
+                    codigo_modulo = {result_select.codigo}
+                />
+            </Tab> 
+        }    
+       </Tabs>
     </Container> );
 }
  

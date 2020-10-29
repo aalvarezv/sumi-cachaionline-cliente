@@ -15,7 +15,7 @@ const Modulos = () => {
              {autenticado 
              ?
                 <div>
-                    <h3 className="mb-4 text-center">Administrar Módulos</h3>
+                    <h5 className="my-4 text-center">Administrar Módulos</h5>
                     <ModuloForm/>
                 </div>
              :

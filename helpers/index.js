@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import Router from 'next/router';
 import ToastMultiline from '../components/ui/ToastMultiline';
 
@@ -9,8 +10,6 @@ export const handleError = (e) => {
     let error = {
         tipo: 'error'
     }
-
-    
     //error de servidor.
     if(!e.response){
         error = {
@@ -125,9 +124,9 @@ export const calculateDV = (rut) => {
     if (dvEsperado === 11) return "0";
     return `${dvEsperado}`;
     
-  }
+}
 
-  export const getBase64 = file => {
+export const getBase64 = file => {
 
     return new Promise((resolve, reject) => {
 
@@ -140,7 +139,21 @@ export const calculateDV = (rut) => {
             handleError(error)
         };
         
-    })
+    });
 
-   
- }
+}
+
+export const letras = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
+    'Q', 'R', 'S', 'U', 'V', 'W', 'X', 'Y',
+    'Z' 
+]
+
+export const getBase64FromURL = async url => {
+    let image = await axios.get(url, {
+        responseType: 'arraybuffer'
+    });
+    let base64 = Buffer.from(image.data).toString('base64');
+    return `data:${image.headers['content-type']};base64,${base64}`
+}

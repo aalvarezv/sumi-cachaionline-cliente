@@ -20,7 +20,6 @@ const InputSelectMateria = props => {
         listarMaterias();
 
     }, [])
-
     return (
         <Form.Control
             {...props}

@@ -29,10 +29,10 @@ const InputSelectUnidadesMateria = props => {
         <Form.Control
             {...props}
         >
-            <option key="0" value="0">SELECCIONE UNA UNIDAD</option>
+            <option key="0" value="0">{props.label ? props.label : 'SELECCIONE UNA UNIDAD'}</option>
             {unidades && unidades.map(unidad => <option key={unidad.codigo} value={unidad.codigo}>{unidad.descripcion}</option>)}
         </Form.Control>
       );
-}
+};
 
 export default React.memo(InputSelectUnidadesMateria);

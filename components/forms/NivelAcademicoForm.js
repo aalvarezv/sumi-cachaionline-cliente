@@ -98,8 +98,10 @@ const NivelAcademicoForm = () => {
                 return;
             }
             //Unidad a enviar
-            let nivelacademico = formulario;
-            nivelacademico.codigo = uuidv4();
+            let nivelacademico = {
+                ...formulario,
+                codigo : uuidv4(),
+            }
 
             const resp = await clienteAxios.post('/api/nivel-academico/crear', nivelacademico);
             

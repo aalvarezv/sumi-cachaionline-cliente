@@ -34,15 +34,16 @@ const dropzoneStyle = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    padding: "5px",
     width: "100%",
     height: "100%",
-    border : "2px dashed #DDE1E5",
+    border : "3px dashed #DDE1E5",
     color: "#C0C0C0",
     textAlign: "center"
 };
 
 
-function Uploader({titulo, getArchivos}) {
+function Uploader({titulo, index, getArchivos}) {
 
   const [files, setFiles] = useState([]);
 
@@ -51,8 +52,11 @@ function Uploader({titulo, getArchivos}) {
     multiple: false,
     onDrop: acceptedFiles => {
       //retorna los archivos a un componente superior.
-      getArchivos(acceptedFiles);
-
+      if(index){
+        getArchivos(index, acceptedFiles);
+      }else{
+        getArchivos(acceptedFiles);
+      }
       setFiles(acceptedFiles.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
       })));
@@ -81,28 +85,14 @@ function Uploader({titulo, getArchivos}) {
   }, [files]);
 
   return (
-    <>
-    {/*<Container fluid>
-    //      <Row>
-    //         <Col>*/}
-                <section
-                  style={{width: '100%', height: '100%'}}
-                >
-                    <div {...getRootProps({className: 'dropzone'})} style={dropzoneStyle}>
-                        <input {...getInputProps()} />
-                        <p>{titulo}</p>
-                    </div>
-                </section>
-             {/*</Col>
-            <Col style={{ backgroundColor: 'white' }}>  
-                <div style={thumbsContainer}>
-                    {thumbs}
-                </div>
-            </Col> 
-        </Row>
-    </Container>*/
-    } 
-    </>
+      <section
+        style={{width: '100%', height: '100%'}}
+      >
+          <div {...getRootProps({className: 'dropzone'})} style={dropzoneStyle}>
+              <input {...getInputProps()} />
+              <p>{titulo}</p>
+          </div>
+      </section>
   );
 }
 

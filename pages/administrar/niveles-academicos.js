@@ -15,7 +15,7 @@ const NivelesAcademicos = () => {
              {autenticado 
              ?
                 <div>
-                    <h3 className="mb-4 text-center">Administrar Niveles Académicos</h3>
+                    <h5 className="my-4 text-center">Administrar Niveles Académicos</h5>
                     <NivelAcademicoForm/>
                 </div>
              :

@@ -12,8 +12,6 @@ import InputSelectInstitucion from '../ui/InputSelectInstitucion';
 import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
 import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
 import ButtonBack from '../ui/ButtonBack';
-//import HookMemorizado from '../ui/HookMemorizado';
-//import HookCallback from '../ui/HookCallback';
 
 const CursoForm = () => {
 
@@ -132,8 +130,10 @@ const CursoForm = () => {
                 return;
             }
             //curso a enviar
-            let curso = formulario;
-            curso.codigo = uuidv4();
+            let curso = {
+                ...formulario,
+                codigo : uuidv4(),
+            }
 
             const resp = await clienteAxios.post('/api/cursos/crear', curso);
             curso = resp.data;

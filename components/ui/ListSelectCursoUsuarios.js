@@ -16,37 +16,32 @@ const ListSelectCursoUsuarios = ({codigo_curso, codigo_institucion}) => {
     
     //traer todos los items seleccionados
     useEffect(() => {
-        /*obtiene los usuarios del curso.
-        const getUsuariosCurso = async () => {
-            try{
-                const resp = await clienteAxios.get(`/api/cursos-usuarios/listar-usuarios-curso/${codigo_curso}`);
-                const arr_usuarios_curso = resp.data.usuarios_curso.map(usuario =>  usuario.rut_usuario);
-                setUsuariosInscritosCurso(arr_usuarios_curso);
-            }catch(e){
-                handleError(e);
-            }  
-        }
-        if(codigo_curso.trim() !== ''){
-            getUsuariosCurso();
-        }*/
+        
         setNombreUsuario('');
         setFiltroNombreUsuario('');
         setFiltroCodigoRol('0');
 
     },[codigo_curso]);
     
-    const handleSelect = async (rut, select) => {
+    const handleSelect = async (item, select) => {
 
         return new Promise(async (resolve, reject) => {
 
             let resp = null;
             try{
                 if(select){
-                    resp = await clienteAxios.post('/api/cursos-usuarios/agregar-usuario-curso',
-                                                        {codigo_curso, rut_usuario: rut});
+                    resp = await clienteAxios.post('/api/cursos-usuarios-roles/crear',{
+                        codigo_curso, 
+                        rut_usuario: item.rut,
+                        codigo_rol: item.codigo_rol
+                    });
                 }else{
-                    resp = await clienteAxios.delete(`/api/cursos-usuarios/eliminar-usuario-curso/${codigo_curso}`,
-                                                        {params: { rut_usuario: rut}});
+                    resp = await clienteAxios.delete(`/api/cursos-usuarios-roles/eliminar/${codigo_curso}`,{
+                        params: { 
+                            rut_usuario: item.rut,
+                            codigo_rol: item.codigo_rol
+                        }
+                    });
                 }
                 resolve(true);
             }catch(e){
@@ -67,16 +62,14 @@ const ListSelectCursoUsuarios = ({codigo_curso, codigo_institucion}) => {
         <ListInfiniteScroll 
             url={'/api/usuarios/listar-inscritos-disponibles-curso'}
             model={"usuarios"}
-            pk={"rut"}
-            label={"nombre"}
+            pk={"rut_rol"}
+            label={"nombre_rol"}
             filters={{
                 nombre: nombre_usuario,
                 codigo_institucion: institucion,
                 codigo_curso: curso,
                 codigo_rol: rol
             }}
-            //items_selected = {[]}
-            //items_selected={usuarios_inscritos_curso}
             handleSelect={handleSelect}
         />
         );

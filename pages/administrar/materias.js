@@ -15,7 +15,7 @@ const Materias = () => {
              {autenticado 
              ?
                 <div>
-                    <h3 className="mb-4 text-center">Administrar Materias</h3>
+                    <h5 className="my-4 text-center">Administrar Materias</h5>
                     <MateriaForm/>
                 </div>
              :

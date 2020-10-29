@@ -8,7 +8,6 @@ import InputSelectMateria from './InputSelectMateria';
 
 const ListSelectCursoModulos = ({codigo_curso}) => {
 
-    //const [modulos_curso, setModulosCurso] = useState([]);
     const [descripcion_modulo, setDescripcionModulo ] = useState('');
     const [filtro_codigo_materia, setFiltroCodigoMateria] = useState('0');
     const [filtro_descripcion_modulo, setFiltroDescripcionModulo] = useState('');
@@ -21,17 +20,22 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
 
     },[codigo_curso])
 
-    const handleSelect = (codigo, select) => {
+    const handleSelect = (item, select) => {
 
         return new Promise(async (resolve, reject) => {
             let resp = null;
             try{
                 if(select){
-                    resp = await clienteAxios.post('/api/cursos-modulos/agregar-modulo-curso',
-                                                        {codigo_curso, codigo_modulo: codigo});
+                    resp = await clienteAxios.post('/api/cursos-modulos/crear',{
+                        codigo_curso, 
+                        codigo_modulo: item.codigo
+                    });
                 }else{
-                    resp = await clienteAxios.delete(`/api/cursos-modulos/eliminar-modulo-curso/${codigo_curso}`,
-                                                        {params: { codigo_modulo: codigo}});
+                    resp = await clienteAxios.delete(`/api/cursos-modulos/eliminar/${codigo_curso}`,{
+                        params: { 
+                            codigo_modulo: item.codigo
+                        }
+                    });
                 }
                 resolve(true);
             }catch(e){
@@ -55,7 +59,6 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
                     descripcion: desc_modulo,
                     codigo_materia: materia
                 }}
-                //items_selected={modulos_curso}
                 handleSelect={handleSelect}
             />
         );
@@ -112,4 +115,4 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
     )
 }
 
-export default ListSelectCursoModulos
+export default React.memo(ListSelectCursoModulos);

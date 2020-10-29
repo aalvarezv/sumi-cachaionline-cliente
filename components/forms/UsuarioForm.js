@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
-import { rutEsValido, rutFormat, handleError } from '../../helpers';
+import { Container, Form, Button, Image, Row, Col, Tab, Tabs } from 'react-bootstrap';
+import { rutEsValido, rutFormat, handleError, getBase64 } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import ToastMultiline from '../ui/ToastMultiline';
 import InputSearch from '../ui/InputSearch';
-import InputSelectRol from '../ui/InputSelectRol';
+import Uploader from '../ui/Uploader';
 import ButtonBack from '../ui/ButtonBack';
-
+import UsuarioFormTabConfig from './UsuarioFormTabConfig';
 
 const UsuarioForm = () => {
 
@@ -24,8 +24,11 @@ const UsuarioForm = () => {
         email: '',
         telefono: '',
         codigo_rol: '',
-        inactivo: false
+        imagen: '',
+        inactivo: true
     });
+    const [tab_key, setTabKey] = useState("tab_perfil");
+
     //1.- definir la variable que almacena los errores.
     const [errores, setErrores] = useState({});
 
@@ -51,6 +54,7 @@ const UsuarioForm = () => {
 
         //cuando se selecciona o cambia el result_select
         if(result_select){
+
             setFormulario({
                 rut: rutFormat(result_select.rut),
                 nombre: result_select.nombre,
@@ -59,9 +63,10 @@ const UsuarioForm = () => {
                 email: result_select.email,
                 telefono: result_select.telefono,
                 codigo_rol: result_select.codigo_rol,
+                imagen: result_select.imagen,
                 inactivo: result_select.inactivo
             });
-            
+   
         }else{
             reseteaFormulario();
         }
@@ -101,7 +106,6 @@ const UsuarioForm = () => {
                 nombre: 'Requerido'
             }
         }
-
         //valida la clave
         if(formulario.clave.trim() === ''){
             errors = {
@@ -143,13 +147,6 @@ const UsuarioForm = () => {
             }
         }
 
-        //valida el rol
-        if(formulario.codigo_rol.trim() === '' || formulario.codigo_rol.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_rol: 'Requerido'
-            }
-        }
         setErrores(errors);
 
         return errors;
@@ -164,8 +161,10 @@ const UsuarioForm = () => {
             email: '',
             telefono: '',
             codigo_rol: '',
+            imagen: '',
             inactivo: false
         });
+        setTabKey('tab_perfil');
     }
 
     const handleClickCrear = async e => {
@@ -187,7 +186,8 @@ const UsuarioForm = () => {
             const resp = await clienteAxios.post('/api/usuarios/crear', usuario);
             //respuesta del usuario recibido.
             usuario = resp.data;
-            reseteaFormulario();
+            setResultSelect(usuario);
+
             toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO CREADO'}]}/>, {containerId: 'sys_msg'});
 
        }catch(e){
@@ -221,6 +221,17 @@ const UsuarioForm = () => {
         }
     }
 
+    //funcion que recibe el componente Uploader donde retorna los archivos a subir.
+    const getArchivos = async archivos => {
+
+        const base64 = await getBase64(archivos[0]);
+        setFormulario({
+            ...formulario,
+            imagen: base64
+        })
+
+    }
+
     return ( 
     <Container>
         <InputSearch
@@ -230,9 +241,15 @@ const UsuarioForm = () => {
             id="rut"
             label="nombre"
         />
-        <Form>
+        <Tabs 
+            id="tab_usuario"
+            activeKey={tab_key}
+            onSelect={(k) => setTabKey(k)}
+        >
+        <Tab eventKey="tab_perfil" title="Información del Usuario">
+        <Form className="p-3">
             <Row>
-                <Col xs={12} md={3}>
+                <Col sm={12} md={5} lg={7}>
                     <Form.Group>
                         <Form.Label>Rut</Form.Label>
                         <Form.Control 
@@ -255,8 +272,6 @@ const UsuarioForm = () => {
                             {errores.hasOwnProperty('rut') && errores.rut}
                         </Form.Control.Feedback>
                     </Form.Group>
-                </Col>
-                <Col xs={12} md={9}>
                     <Form.Group> 
                         <Form.Label>Nombre</Form.Label>
                         <Form.Control
@@ -278,8 +293,19 @@ const UsuarioForm = () => {
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
+                <Col className="pb-3">
+                    <Uploader 
+                        titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                        getArchivos={getArchivos}
+                    /> 
+                </Col>
+                <Col className="pb-3">
+                    <Image 
+                        src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                        thumbnail
+                    />       
+                </Col>
             </Row>
-            
             <Row>
                 <Col xs={12} md={6}>
                     <Form.Group>
@@ -321,44 +347,6 @@ const UsuarioForm = () => {
                     </Form.Group>
                 </Col>
             </Row>
-            <Form.Group>
-                <Row>
-                    <Col>
-                        <Form.Label>Rol</Form.Label>
-                    </Col>
-                    <Col>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <InputSelectRol
-                            id="codigo_rol"
-                            name="codigo_rol"
-                            as="select"
-                            value={formulario.codigo_rol}
-                            onChange={e => setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value
-                            })}
-                            isInvalid={errores.hasOwnProperty('codigo_rol')}
-                            onBlur={validarFormulario}
-                            disabled={router.query.rol}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
-                        </Form.Control.Feedback>
-                    </Col>
-                    <Col xs={"auto"}>
-                        <Button 
-                            variant="success"
-                            onClick={()=>{
-                                router.push('/administrar/roles')
-                            }}
-                            size="md"
-                        >+</Button>
-                    </Col>
-                </Row>
-            </Form.Group>
             <Row>
                 <Col xs={12} md={6}>
                     <Form.Group>
@@ -403,8 +391,6 @@ const UsuarioForm = () => {
                     </Form.Group>
                 </Col>
             </Row>
-            
-
             <Form.Check 
                 id="inactivo"
                 name="inactivo"
@@ -441,6 +427,15 @@ const UsuarioForm = () => {
                 </Col>
             </Row>
        </Form>
+       </Tab>
+       {result_select &&
+            <Tab eventKey="tab_configuracion" title="Configuración">
+                <UsuarioFormTabConfig
+                    rut_usuario = {result_select.rut}
+                />
+            </Tab> 
+        }    
+       </Tabs>
     </Container> );
 }
  

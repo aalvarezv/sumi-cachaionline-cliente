@@ -55,12 +55,12 @@ const ListInfiniteScroll = ({url, model, pk, label, filters,
     },[loading, hasMore]);
 
     //cuando hace click a un item
-    const handleClickItem = async result => {
+    const handleClickItem = async item => {
 
         try{
-            await handleSelect(result[pk], !result.item_select);
+            await handleSelect(item, !item.item_select);
             const new_results_local = results_local.map(res => {
-                if(res[pk] === result[pk]){
+                if(res[pk] === item[pk]){
                     return { 
                         ...res,
                         item_select : Number(!res.item_select)
@@ -86,7 +86,7 @@ const ListInfiniteScroll = ({url, model, pk, label, filters,
                     {results_local.map((result, index) => {
                         //Si el elemento corresponde al ultimo resultado, pasa la referencia para que se almacene con el useCallback 
                         return <ListGroup.Item 
-                                    key={result[pk]}
+                                    key={`${index}-${result[pk]}`}
                                     ref={results.length === index + 1 ? lastResultElementRef : undefined}
                                     //variant={result_select.includes(result[pk]) ? "info" : "light"}
                                     variant={result.item_select === 0 ? "light" : "info"}

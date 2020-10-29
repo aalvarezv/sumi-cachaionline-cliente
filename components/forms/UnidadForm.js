@@ -112,8 +112,10 @@ const UnidadForm = () => {
                 return;
             }
             //Unidad a enviar
-            let unidad = formulario;
-            unidad.codigo = uuidv4();
+            let unidad = {
+                ...formulario,
+                codigo : uuidv4(),
+            }
 
             const resp = await clienteAxios.post('/api/unidades/crear', unidad);
             

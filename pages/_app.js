@@ -12,20 +12,6 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          transition={Slide}
-          enableMultiContainer 
-          containerId={'sys_msg'}
-      />
       <AuthState>
         <MateriaState>
           <UnidadState>

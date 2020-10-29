@@ -23,7 +23,6 @@ function useInfiniteScroll(url, filters, page_num, limit, model) {
                 cancel = c
             })
         }).then(resp => {
-            console.log(resp);
             setResults(prevResults => {
                 //prevResults es el state actual
                 //retorna un array con los valores previos + los de la llamada y con el Set quita los duplicados.

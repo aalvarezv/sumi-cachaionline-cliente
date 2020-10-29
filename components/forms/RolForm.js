@@ -90,8 +90,10 @@ const RolForm = () => {
                 return;
             }
             //Unidad a enviar
-            let rol = formulario;
-            rol.codigo = uuidv4();
+            let rol = {
+                ...formulario,
+                codigo : uuidv4(),
+            }
 
             const resp = await clienteAxios.post('/api/roles/crear', rol);
             

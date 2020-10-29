@@ -11,9 +11,17 @@ const Login = () => {
 
     const router = useRouter();
 
-    const { autenticado, iniciarSesion } = useContext(AuthContext);
+    const { autenticado, iniciarSesion, cerrarSesion } = useContext(AuthContext);
     
     useEffect(() => {
+
+        //si no hay token cierra la sesión. Ya que cuando el token expira manda a la pagina de login.
+        //en el manejador de errores en helpers (handleError).
+        if(!localStorage.getItem('token')){
+            cerrarSesion();
+            return;
+        }
+        //si está autenticado envía al HOME
         if(autenticado){
             router.push('/');
         }

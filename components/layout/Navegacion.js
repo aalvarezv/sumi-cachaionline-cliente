@@ -1,7 +1,7 @@
 import React,{ useContext, useEffect } from 'react';
 import Link from 'next/link';
 import AuthContext from '../../context/auth/AuthContext';
-import { Navbar, Nav, Button, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav, Button, NavDropdown, Dropdown } from 'react-bootstrap';
 
 const Navegacion = () => {
 
@@ -28,30 +28,38 @@ const Navegacion = () => {
                     <Nav.Link href="/materias">Materias</Nav.Link>
                 </Link> */}
                 {autenticado
-                &&
-                    <NavDropdown title="Administrar" id="basic-nav-dropdown">
-                      
+                && 
+                <> 
+                    <NavDropdown title="Administrar" id="administrar-nav-dropdown">
                         <Link href="/administrar/instituciones" passHref>
-                            <NavDropdown.Item href="/administrar/instituciones">Instituciones</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/materias" passHref>
-                            <NavDropdown.Item href="/administrar/materias">Materias</NavDropdown.Item>
+                            <NavDropdown.Item>Instituciones</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/niveles-academicos" passHref>
-                            <NavDropdown.Item href="/administrar/niveles-academicos">Niveles Académicos</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/preguntas" passHref>
-                            <NavDropdown.Item href="/administrar/preguntas">Preguntas</NavDropdown.Item>
+                            <NavDropdown.Item>Niveles Académicos</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/roles" passHref>
-                            <NavDropdown.Item href="/administrar/roles">Roles</NavDropdown.Item>
+                            <NavDropdown.Item>Roles</NavDropdown.Item>
                         </Link>
                         <Link href="/administrar/usuarios" passHref>
-                            <NavDropdown.Item href="/administrar/usuarios">Usuarios</NavDropdown.Item>
+                            <NavDropdown.Item>Usuarios</NavDropdown.Item>
                         </Link>
-                       
-                        {/* <NavDropdown.Divider /> */}
                     </NavDropdown>
+                    <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
+                        <Link href="/administrar/materias" passHref>
+                            <NavDropdown.Item>Materias</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/unidades" passHref>
+                            <NavDropdown.Item>Unidades</NavDropdown.Item>
+                        </Link>
+                        <Link href="/administrar/modulos" passHref>
+                            <NavDropdown.Item>Módulos</NavDropdown.Item>
+                        </Link>
+                    </NavDropdown>
+                    <Link href="/administrar/preguntas" passHref>
+                        <Nav.Link>Crear Preguntas</Nav.Link>
+                    </Link>
+                    
+                    </>
                 }
             </Nav>
             <Nav>
@@ -63,6 +71,7 @@ const Navegacion = () => {
                         </h6>
                         <Button 
                             variant="info"
+                            size="sm"
                             onClick={() => cerrarSesion()}
                         >Cerrar Sesión</Button>
                     </>

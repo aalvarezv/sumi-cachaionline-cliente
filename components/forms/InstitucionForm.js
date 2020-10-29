@@ -155,13 +155,14 @@ const InstitucionForm = () => {
             />
         <Form>
             <Form.Group as={Row}>
-                <Col>
+                <Col xs="auto">
                     <Image 
                         src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
+                        style={{width: 150}}
                         thumbnail
                     />
                 </Col>
-                <Col md={9}>
+                <Col>
                     <Uploader 
                         titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
                         getArchivos={getArchivos}

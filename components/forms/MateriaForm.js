@@ -106,8 +106,10 @@ const MateriaForm = () => {
                  return;
              }
              //materia a enviar
-             let materia = formulario;
-             materia.codigo = uuidv4();
+             let materia = {
+                 ...formulario,
+                codigo : uuidv4(),
+             }
 
              const resp = await clienteAxios.post('/api/materias/crear', materia);
              //respuesta de la materia recibido.
@@ -164,13 +166,14 @@ const MateriaForm = () => {
             />
             <Form>
                 <Form.Group as={Row}>
-                    <Col>
+                    <Col xs="auto">
                         <Image 
                             src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                            style={{width: 150}}
                             thumbnail
                         />
                     </Col>    
-                    <Col md={9}>
+                    <Col>
                         <Uploader 
                             titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
                             getArchivos={getArchivos}
