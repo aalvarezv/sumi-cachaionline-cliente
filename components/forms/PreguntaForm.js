@@ -13,7 +13,7 @@ import SolucionPregunta from '../ui/SolucionPregunta';
 import Uploader from '../ui/Uploader';
 
 
-const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
+const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
 
     const { usuario:{rut}} = useContext(AuthContext);
 
@@ -29,14 +29,14 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
     const [pistas, setPistas] = useState([]);
     const [soluciones, setSoluciones] = useState([]);
     const [modulos, setModulos] = useState([]);
-    const [numero_alternativas, setNumeroAlternativas] = useState(4);
+    const [numero_alternativas, setNumeroAlternativas] = useState(5);
     const [tab_select, setTabSelect] = useState('#tab_pregunta_imagen')
 
     const [error_solucion, setErrorSolucion] = useState([]);
     const [error_pista, setErrorPista] = useState([]);
 
     //setea por defecto con el numero_alternativas para la pregunta.
-    useEffect(() => {
+    const iniciarAlternativas = () => {
         const letras_default = [
             ...letras
         ];
@@ -49,6 +49,10 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
             }
         });
         setAlternativas(alternativas_default);
+    } 
+
+    useEffect(() => {
+        iniciarAlternativas();
     }, [])
     
     //efecto que obtiene los datos de la pregunta a modificar.
@@ -57,12 +61,12 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
         if(pregunta_modificar){
             const getDatosPregunta = async () => {
                 
-                //leer modulo y modulo_propiedad para ajustar a la estructura del state.
+                //leer modulo y modulo_contenidos para ajustar a la estructura del state.
                 /**
                  * {
                  *  codigo: '1', 
                  *  descripcion: 'modulo', 
-                 *  propiedades: [{codigo: '1', descripcion: 'PROP 1'}]
+                 *  contenidos: [{codigo: '1', descripcion: 'PROP 1'}]
                  * }
                  */
                 const modulos = pregunta_modificar.pregunta_modulos.map(mod => {
@@ -71,22 +75,22 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
                         codigo: mod.codigo_modulo,
                         descripcion: mod.modulo.descripcion
                     }
-                    //Recorre las propiedades de la pregunta.
-                    for(const prop of pregunta_modificar.pregunta_modulo_propiedad){
-
-                        //Si el codigo modulo de la propiedad es igual al módulo en curso, entonces se la agrega.
-                        if(prop.modulo_propiedad.codigo_modulo === mod.codigo_modulo){
+                    //Recorre los contenidos de la pregunta.
+                    for(const contenido of pregunta_modificar.pregunta_modulo_contenido){
+                        console.log('ENTRA A RECORRER EL CONTENIDO');
+                        //Si el codigo modulo del contenido es igual al módulo en curso, entonces se la agrega.
+                        if(contenido.modulo_contenido.codigo_modulo === mod.codigo_modulo){
 
                             //verifica si existe el atributo propiedades en el módulo
-                            if(modulo.hasOwnProperty('propiedades')){
+                            if(modulo.hasOwnProperty('contenidos')){
                                
                                 modulo = {
                                     ...modulo,
-                                    propiedades: [
-                                        ...modulo.propiedades,
+                                    contenidos: [
+                                        ...modulo.contenidos,
                                         {
-                                            codigo: prop.modulo_propiedad.codigo,
-                                            descripcion: prop.modulo_propiedad.descripcion,
+                                            codigo: contenido.modulo_contenido.codigo,
+                                            descripcion: contenido.modulo_contenido.descripcion,
                                         }
                                     ]
                                 }
@@ -95,9 +99,9 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
                             }else{
                                 modulo = {
                                     ...modulo,
-                                    propiedades: [{
-                                        codigo: prop.modulo_propiedad.codigo,
-                                        descripcion: prop.modulo_propiedad.descripcion,
+                                    contenidos: [{
+                                        codigo: contenido.modulo_contenido.codigo,
+                                        descripcion: contenido.modulo_contenido.descripcion,
                                     }]
                                 }
                             }
@@ -150,6 +154,7 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
     
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
+
         const base64 = await getBase64(archivo[0]);
         setPregunta({
             ...pregunta,
@@ -292,7 +297,7 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
                 audio: '',
                 video: '',
             });
-            setAlternativas([]);
+            iniciarAlternativas();
             setPistas([]);
             setSoluciones([]);
 
@@ -399,7 +404,7 @@ const PreguntaForm = ({pregunta_modificar, handleBuscarPreguntas}) => {
                 <Button
                     variant="outline-primary"
                     size="lg"
-                    onClick={handleBuscarPreguntas}
+                    onClick={handleMostrarBusquedaPreguntas}
                 >
                    Ir a buscar
                 </Button>

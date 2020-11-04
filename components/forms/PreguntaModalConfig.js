@@ -5,7 +5,7 @@ import { RiDeleteBin5Line } from 'react-icons/ri';
 import InputSelectMateria from '../ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
 import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad';
-import InputSelectPropiedadesModulo from '../ui/InputSelectPropiedadesModulo';
+import InputSelectContenidosModulo from '../ui/InputSelectContenidosModulo';
 
 const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) => {
 
@@ -16,12 +16,12 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
         codigo: '0',
         descripcion: ''
     });
-    const [propiedad_modulo, setPropiedadModulo] = useState({
+    const [contenido_modulo, setContenidoModulo] = useState({
         codigo: '0',
         descripcion: '',
     });
     const modulo_ref = createRef();
-    const propiedad_modulo_ref = createRef();
+    const contenido_modulo_ref = createRef();
 
     const [modulos, setModulos] = useState([]);
     //Carga los módulos iniciales en caso que sea una pregunta a modificar.
@@ -50,11 +50,11 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
         setModulos(new_modulos);
     }
 
-    const handleAddPropiedadModulo = () => {
+    const handleAddContenidoModulo = () => {
 
-        if(propiedad_modulo.codigo === "0") return
+        if(contenido_modulo.codigo === "0") return
 
-        //Si el modulo no se ha agregado y pincha agregar la propiedad, agrega ambos.
+        //Si el modulo no se ha agregado y pincha agregar el contenido, agrega ambos.
         if(modulos.filter(mod => mod.codigo === modulo.codigo).length === 0 ){
            
             setModulos([
@@ -62,34 +62,33 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                 {
                     codigo: modulo.codigo,
                     descripcion: modulo.descripcion,
-                    propiedades: [{
-                        codigo: propiedad_modulo.codigo,
-                        descripcion: propiedad_modulo.descripcion,
+                    contenidos: [{
+                        codigo: contenido_modulo.codigo,
+                        descripcion: contenido_modulo.descripcion,
                     }],
                 }
             ]);
             return;
         } 
 
-        
-        //Asigna la propiedad al módulo es esté seleccionado.
+        //si existe.. agrega el contenido al módulo que esté seleccionado.
         let new_modulos = modulos.map(mod => {
             //si el modulo recorrido actual es igual al modulo seleccionado.
             if(mod.codigo === modulo.codigo){
-                //verifica si ya existe el atributo propiedades.
-                if(mod.propiedades){
-                    //si la propiedad no existe, entonces la agrega
-                    if(mod.propiedades.filter(propiedad => propiedad.codigo === propiedad_modulo.codigo).length === 0){
-                        mod.propiedades.push({
-                            codigo : propiedad_modulo.codigo,
-                            descripcion : propiedad_modulo.descripcion,
+                //verifica si ya existe el atributo contenidos.
+                if(mod.contenidos){
+                    //si la contenido no existe, entonces lo agrega
+                    if(mod.contenidos.filter(contenido => contenido.codigo === contenido_modulo.codigo).length === 0){
+                        mod.contenidos.push({
+                            codigo : contenido_modulo.codigo,
+                            descripcion : contenido_modulo.descripcion,
                         });
                     }
-                //si no existe lo crea por primera vez y agrega la propiedad.
+                //si no existe lo crea por primera vez y agrega el contenido.
                 }else{
-                    mod.propiedades = [{
-                        codigo : propiedad_modulo.codigo,
-                        descripcion : propiedad_modulo.descripcion,
+                    mod.contenidos = [{
+                        codigo : contenido_modulo.codigo,
+                        descripcion : contenido_modulo.descripcion,
                     }];
                 }
             }
@@ -100,11 +99,11 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
       
     }
 
-    const handleQuitarPropiedadModulo = codigo => {
+    const handleQuitarContenidoModulo = codigo => {
         
-        const new_modulos = modulos.map(modulo => modulo.propiedades ? { 
+        const new_modulos = modulos.map(modulo => modulo.contenidos ? { 
                 ...modulo,
-                propiedades: modulo.propiedades.filter(propiedad => propiedad.codigo !== codigo)
+                contenidos: modulo.contenidos.filter(contenido => contenido.codigo !== codigo)
             } : modulo);
 
         setModulos(new_modulos);
@@ -181,8 +180,8 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                                     codigo: e.target.value,
                                     descripcion,
                                 });
-                                //reinicia la propiedad.
-                                setPropiedadModulo({
+                                //reinicia la contenido.
+                                setContenidoModulo({
                                     codigo: '0',
                                     descripcion: '',
                                 });
@@ -201,22 +200,22 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
             <Row>
                 <Col>
                     <Form.Group>
-                        <InputSelectPropiedadesModulo
-                            id="codigo_propiedad_modulo"
-                            name="codigo_propiedad_modulo"
-                            ref={propiedad_modulo_ref}
+                        <InputSelectContenidosModulo
+                            id="codigo_contenido_modulo"
+                            name="codigo_contenido_modulo"
+                            ref={contenido_modulo_ref}
                             /*codigo modulo se le pasa a las props del componente
                             para filtrar las unidades de la materia seleccionada.*/
                             codigo_modulo={modulo.codigo}
                             as="select"
                             size="sm"
-                            value={propiedad_modulo.codigo}
+                            value={contenido_modulo.codigo}
                             onChange={e => {
                                 
-                                let index = propiedad_modulo_ref.current.selectedIndex;
-                                let descripcion = propiedad_modulo_ref.current[index].text
+                                let index = contenido_modulo_ref.current.selectedIndex;
+                                let descripcion = contenido_modulo_ref.current[index].text
 
-                                setPropiedadModulo({
+                                setContenidoModulo({
                                     codigo: e.target.value,
                                     descripcion,
                                 })
@@ -228,7 +227,7 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                     <Button
                         variant="success"
                         size="sm"
-                        onClick={handleAddPropiedadModulo}
+                        onClick={handleAddContenidoModulo}
                     >+ Agregar</Button>
                 </Col>
             </Row>
@@ -253,19 +252,19 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                                     </a>
                                 </ListGroup.Item>
 
-                                {modulo.propiedades && 
+                                {modulo.contenidos && 
                                     <ListGroup variant="flush">
-                                    {modulo.propiedades.map(propiedad =>{
+                                    {modulo.contenidos.map(contenido =>{
                                         return (
                                             <ListGroup.Item
-                                                key={propiedad.codigo}
+                                                key={contenido.codigo}
                                                 className="d-flex align-items-center justify-content-end py-0"
                                                 variant="info"
                                             >
-                                                <small>{propiedad.descripcion}</small>
+                                                <small>{contenido.descripcion}</small>
                                                 <a href="#"
                                                     className="nav-link"
-                                                    onClick={() => handleQuitarPropiedadModulo(propiedad.codigo)}
+                                                    onClick={() => handleQuitarContenidoModulo(contenido.codigo)}
                                                 >
                                                     <RiDeleteBin5Line size={"1.2rem"} color={"gray"}/>
                                                 </a>

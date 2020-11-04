@@ -47,22 +47,28 @@ function Uploader({titulo, index, getArchivos}) {
 
   const [files, setFiles] = useState([]);
 
+  
   const {getRootProps, getInputProps} = useDropzone({
-    accept: 'image/*',
+    accept: 'image/jpeg, image/png',
     multiple: false,
     onDrop: acceptedFiles => {
-      //retorna los archivos a un componente superior.
-      if(index){
-        getArchivos(index, acceptedFiles);
-      }else{
-        getArchivos(acceptedFiles);
+      console.log(acceptedFiles);
+      //Si son archivos que son aceptados entonces lo deja pasar.
+      if(acceptedFiles.length > 0){
+        //retorna los archivos al componente superior.
+        if(index){
+          getArchivos(index, acceptedFiles);
+        }else{
+          getArchivos(acceptedFiles);
+        }
+        setFiles(acceptedFiles.map(file => Object.assign(file, {
+          preview: URL.createObjectURL(file)
+        })));
       }
-      setFiles(acceptedFiles.map(file => Object.assign(file, {
-        preview: URL.createObjectURL(file)
-      })));
     
     }
   });
+
   
   const thumbs = files.map(file => (
     <div style={thumb} key={file.name}>

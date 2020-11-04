@@ -1,14 +1,15 @@
 import React,{ useContext, useEffect } from 'react';
 import Link from 'next/link';
 import AuthContext from '../../context/auth/AuthContext';
-import { Navbar, Nav, Button, NavDropdown, Dropdown } from 'react-bootstrap';
+import { Navbar, Nav, Button, NavDropdown, Dropdown, Row, Col, Image } from 'react-bootstrap';
+import { has } from 'lodash';
 
 const Navegacion = () => {
 
     const { usuario, autenticado, cerrarSesion } = useContext(AuthContext); 
     
     return ( 
-        <Navbar  collapseOnSelect expand="lg" bg="white" text="light">
+        <Navbar collapseOnSelect expand="lg" bg="white" text="light">
         <Navbar.Brand>
             <img
                 src="/static/logo.png"
@@ -56,7 +57,10 @@ const Navegacion = () => {
                         </Link>
                     </NavDropdown>
                     <Link href="/administrar/preguntas" passHref>
-                        <Nav.Link>Crear Preguntas</Nav.Link>
+                        <Nav.Link>Preguntas</Nav.Link>
+                    </Link>
+                    <Link href="/administrar/rings" passHref>
+                        <Nav.Link>Rings</Nav.Link>
                     </Link>
                     
                     </>
@@ -66,14 +70,31 @@ const Navegacion = () => {
                 {autenticado
                 ?   
                     <>
-                        <h6 className="mt-2 mr-2">
-                            {usuario.nombre}
-                        </h6>
-                        <Button 
-                            variant="info"
-                            size="sm"
-                            onClick={() => cerrarSesion()}
-                        >Cerrar Sesión</Button>
+                       
+                        <Row>
+                            <Col className="d-flex flex-column align-items-center">
+                                <Row>
+                                    <Image src="holder.js/171x180" style={{width: 25, height: 25}} roundedCircle />
+                                </Row>
+                                <Row>
+                                <small className="mt-2 mr-2">
+                                    {usuario.nombre}
+                                </small>
+                                </Row>
+                                <Row>
+                                    <Button 
+                                            variant="info"
+                                            size="sm"
+                                            onClick={() => cerrarSesion()}
+                                        >Cerrar Sesión
+                                    </Button>
+                                </Row>
+                            </Col>
+                        </Row>
+                        {/* <Col xs={6} md={4}>
+                       
+                        </Col> */}
+                       
                     </>
                 :   
                     <Link href="/login" passHref>

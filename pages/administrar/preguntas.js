@@ -8,7 +8,7 @@ import Privado from '../../components/layout/Privado';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria';
 import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad';
-import InputSelectPropiedadesModulo from '../../components/ui/InputSelectPropiedadesModulo';
+import InputSelectContenidosModulo from '../../components/ui/InputSelectContenidosModulo';
 import PreguntaForm from '../../components/forms/PreguntaForm';
 import TablePregunta from '../../components/ui/TablePregunta';
 import AlertText from '../../components/ui/AlertText';
@@ -23,7 +23,7 @@ const Cursos = () => {
        codigo_materia: '0',
        codigo_unidad: '0',
        codigo_modulo: '0',
-       codigo_propiedad_modulo: '0',
+       codigo_contenido_modulo: '0',
        fecha_desde: new Date(),
        fecha_hasta: new Date(),
        nombre_usuario_creador: '',
@@ -34,7 +34,7 @@ const Cursos = () => {
     //const [codigo_pregunta_modificar, setCodigoPreguntaModificar] = useState('');
     const [pregunta_modificar, setPreguntaModificar] = useState(null);
    
-    const {codigo_materia, codigo_unidad, codigo_modulo, codigo_propiedad_modulo, 
+    const {codigo_materia, codigo_unidad, codigo_modulo, codigo_contenido_modulo, 
             fecha_desde, fecha_hasta, nombre_usuario_creador} = filtros;
 
    const ref_custom_date_desde = React.createRef();
@@ -61,12 +61,13 @@ const Cursos = () => {
                   codigo_materia,
                   codigo_unidad,
                   codigo_modulo,
-                  codigo_propiedad_modulo,
+                  codigo_contenido_modulo,
                   fecha_desde,
                   fecha_hasta,
                   nombre_usuario_creador
                }
          });
+         console.log(resp.data);
          //Si no hay preguntas, mostrar un mensajillo.
          setPreguntas(resp.data.preguntas);
 
@@ -96,8 +97,11 @@ const Cursos = () => {
 
    }
 
-   const handleModificaPregunta = pregunta => {
-      setPreguntaModificar(pregunta)
+   const handleModificaPregunta = async codigo => {
+      
+      const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`);
+      setPreguntaModificar(resp.data.pregunta)
+      console.log(resp.data.pregunta);
       setModificarPregunta(true);
    }
 
@@ -106,9 +110,9 @@ const Cursos = () => {
       setCrearPregunta(true);
    }
 
-   const handleBuscarPreguntas = () => {
+   const handleMostrarBusquedaPreguntas = () => {
       setPreguntaModificar(null);
-      listarPreguntas();
+      setPreguntas([]);
       setModificarPregunta(false);
       setCrearPregunta(false);
    }
@@ -222,7 +226,7 @@ const Cursos = () => {
                                        ...filtros,
                                        codigo_unidad: '0',
                                        codigo_modulo: '0',
-                                       codigo_propiedad_modulo: '0',
+                                       codigo_contenido_modulo: '0',
                                        [e.target.name]: e.target.value,
                                     })}
                                  />
@@ -241,7 +245,7 @@ const Cursos = () => {
                                     onChange={e => setFiltros({
                                        ...filtros,
                                        codigo_modulo: '0',
-                                       codigo_propiedad_modulo: '0',
+                                       codigo_contenido_modulo: '0',
                                        [e.target.name]: e.target.value,
                                     })}
                                  />
@@ -259,23 +263,23 @@ const Cursos = () => {
                                     value={codigo_modulo}
                                     onChange={e => setFiltros({
                                        ...filtros,
-                                       codigo_propiedad_modulo: '0',
+                                       codigo_contenido_modulo: '0',
                                        [e.target.name]: e.target.value
                                     })}
                                  />
                            </Row>
                            <Row className="mb-2">
-                                 <InputSelectPropiedadesModulo
-                                    id="codigo_propiedad_modulo"
-                                    name="codigo_propiedad_modulo"
+                                 <InputSelectContenidosModulo
+                                    id="codigo_contenido_modulo"
+                                    name="codigo_contenido_modulo"
                               
                                     /*codigo modulo se le pasa a las props del componente
                                     para filtrar las propiedades del modulo seleccionado.*/
                                     codigo_modulo={codigo_modulo}
                                     as="select"
                                     size="sm"
-                                    label="TODAS LAS PROPIEDADES"
-                                    value={codigo_propiedad_modulo}
+                                    label="TODOS LOS CONTENIDOS"
+                                    value={codigo_contenido_modulo}
                                     onChange={e => setFiltros({
                                        ...filtros,
                                        [e.target.name]: e.target.value
@@ -321,9 +325,8 @@ const Cursos = () => {
                   :
 
                   <PreguntaForm
-                     //codigo_pregunta_modificar = {codigo_pregunta_modificar}
                      pregunta_modificar = {pregunta_modificar}
-                     handleBuscarPreguntas = {handleBuscarPreguntas}
+                     handleMostrarBusquedaPreguntas = {handleMostrarBusquedaPreguntas}
                   />
 
                   }   

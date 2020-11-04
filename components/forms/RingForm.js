@@ -1,38 +1,53 @@
-import React, { useState, useContext} from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useContext, createRef, useEffect} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
-import ButtonBack from '../ui/ButtonBack';
-import DatePicker from 'react-datepicker';
+import CustomDateInput from '../ui/CustomDateInput';
+import DatePicker, {CalendarContainer} from 'react-datepicker';
 import AuthContext from '../../context/auth/AuthContext';
  
 
-
-const RingForm = () => {
+const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
 
     const {usuario} = useContext(AuthContext);
-    const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         nombre: '',
         descripcion: '',
-        fecha_hora_inicio: '',
-        fecha_hora_fin: '',
+        fecha_hora_inicio: new Date(),
+        fecha_hora_fin: new Date(),
         rut_usuario_creador: usuario.rut,
-        inactivo: false
+        privado: true,
+        inactivo: false,
     });
+ 
+    const radios_estado_ring = [
+        { name: 'Privado', value: true },
+        { name: 'Público', value: false },
+    ];
 
+    const ref_custom_date_desde = createRef();
+    const ref_custom_date_hasta = createRef();
     
-    const [fechaInicio, setFechaInicio] = useState(new Date());
-    const [fechaFin, setFechaFin] = useState(new Date());
     const [errores, setErrores] = useState({});
+
+    useEffect(() => {
+        if(ring_modificar){
+            setFormulario({
+                codigo: ring_modificar.codigo,
+                nombre: ring_modificar.nombre,
+                descripcion: ring_modificar.descripcion,
+                fecha_hora_inicio: new Date(ring_modificar.fecha_hora_inicio),
+                fecha_hora_fin: new Date(ring_modificar.fecha_hora_fin),
+                rut_usuario_creador: ring_modificar.rut_usuario_creador,
+                privado: ring_modificar.privado,
+                inactivo: ring_modificar.inactivo,
+            })
+        }
+    }, [ring_modificar]);
     
     const validarFormulario = () => {
         
@@ -52,15 +67,6 @@ const RingForm = () => {
             }
         }
 
-
-
-        /* if(formulario.codigo_nivel_academico.trim() === '' || formulario.codigo_nivel_academico.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_nivel_academico: 'Requerido'
-            }
-        } */
-
         setErrores(errors);
 
         return errors;
@@ -72,13 +78,15 @@ const RingForm = () => {
             codigo: '',
             nombre: '',
             descripcion: '',
-            fecha_hora_inicio: '',
-            fecha_hora_fin: '',
-            rut_usuario_creador: '',
+            fecha_hora_inicio: new Date(),
+            fecha_hora_fin: new Date(),
+            rut_usuario_creador: usuario.rut,
+            privado: true,
             inactivo: false
         });
     }
-    const handleClickCrear = async e => {
+
+    const handleCrearRing = async e => {
         
         try{
             //previne el envío
@@ -96,15 +104,38 @@ const RingForm = () => {
             const resp = await clienteAxios.post('/api/rings/crear', ring);
             ring = resp.data;
             reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'RING CREADO'}]}/>, {containerId: 'sys_msg'});
+            toast.success('RING CREADO', {containerId: 'sys_msg'});
         
         }catch(e){
             handleError(e);
         }                                                
     }
 
-    
-             
+    const handleActualizarRing = async e => {
+
+        try{
+            //previne el envío
+            e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return;
+            }
+
+            let ring = formulario;
+          
+            const resp = await clienteAxios.put('/api/rings/actualizar', ring);
+            ring = resp.data;
+            toast.success('RING ACTUALIZADO', {containerId: 'sys_msg'});
+
+
+        }catch(e){
+            handleError(e);
+        }
+
+    }
+
     return (
         <Container>
         
@@ -150,52 +181,92 @@ const RingForm = () => {
                     {errores.hasOwnProperty('descripcion') && errores.descripcion}
                  </Form.Control.Feedback>
              </Form.Group>
-             <Form.Group>
-             <Form.Label>Inicio del juego </Form.Label>
-             <br/>
-                    <DatePicker
-                    id="fecha_hora_inicio"
-                    name="fecha_hora_inicio"
-                    selected={fechaInicio}
-                    onChange={date => {
-                        
+            
+             <Row className="ml-0">
+                 <Col xs="auto">
+                     <Row>
+                        <Form.Label>Inicio del juego </Form.Label>
+                     </Row>
+                     <Row>
+                        <DatePicker
+                            id="fecha_hora_inicio"
+                            name="fecha_hora_inicio"
+                            selected={formulario.fecha_hora_inicio}
+                            showTimeInput
+                            timeFormat = 'HH:mm'
+                            dateFormat="dd/MM/yyyy HH:mm aa"
+                            onChange={date => {
+                                setFormulario({
+                                    ...formulario,
+                                    fecha_hora_inicio : date
+                                })
+                            }}
+                            customInput={
+                                <CustomDateInput 
+                                    ref = {ref_custom_date_desde}
+                                />
+                            }
+                        />
+                     </Row>
+                </Col>
+                <Col className="ml-3">
+                     <Row>
+                        <Form.Label>Fin del juego</Form.Label>
+                     </Row>
+                     <Row>
+                        <DatePicker
+                            id='fecha_hora_fin'
+                            name='fecha_hora_fin'
+                            selected={formulario.fecha_hora_fin}
+                            showTimeInput
+                            timeFormat="HH:mm"
+                            dateFormat="dd/MM/yyyy HH:mm aa"
+                            onChange={date => {
+                                setFormulario({
+                                    ...formulario,
+                                    fecha_hora_fin : date
+                                })
+                            }}
+                            customInput={
+                                <CustomDateInput 
+                                    ref = {ref_custom_date_hasta}
+                                />
+                            }
+                        />
+                     </Row>
+                </Col>
+            </Row>
+            
+            <ButtonGroup toggle style={{zIndex: 0}}>
+        
+            {radios_estado_ring.map((radio, idx) => (
+                <ToggleButton
+                    key={idx}
+                    type="radio"
+                    variant="outline-info"
+                    name="privado"
+                    value={radio.value}
+                    checked={formulario.privado === radio.value}
+                    onChange={e => {
                         setFormulario({
                             ...formulario,
-                            fecha_hora_inicio : date
-                        })
-                        setFechaInicio(date)
-                    }}
-                    showTimeSelect
-                    timeFormat = 'HH:mm'
-                    dateFormat="dd/MM/yyyy HH:mm aa"
-                    />
-             </Form.Group>
-             <Form.Group>
-             <Form.Label>Fin del juego</Form.Label>
-             <br/>
-                <DatePicker
-                    id='fecha_hora_fin'
-                    name='fecha_hora_fin'
-                    selected={fechaFin}
-                    onChange={date => {
+                            [e.target.name]: radio.value,
+                        });
+                    }
+                    }
+                >
+                    {radio.name}
+                </ToggleButton>
+            ))}
+            
+            </ButtonGroup>
 
-                        setFormulario({
-                            ...formulario,
-                            fecha_hora_fin : date
-                        })
-                        setFechaFin(date)
-                    }}
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    dateFormat="dd/MM/yyyy HH:mm aa"
-                />
-             </Form.Group>
              <Form.Check 
                 id="inactivo"
                 name="inactivo"
                 type="checkbox"
                 label="Inactivo"
-                className="mb-3"
+                className="my-3"
                 checked={formulario.inactivo}
                 onChange={e => {
                     setFormulario({
@@ -206,21 +277,32 @@ const RingForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    
+                    {!ring_modificar
+                    ?
                         <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickCrear}
+                            variant="info"
+                            size="lg"
+                            onClick={handleCrearRing}
                         >Crear</Button>
-                    
-                        
-                        
+                    :
+                        <Button
+                            variant="outline-info"
+                            size="lg"
+                            onClick={handleActualizarRing}
+                        >
+                           Actualizar 
+                        </Button>
+                    }
                     
                 </Col>
                 
                 <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
+                    <Button 
+                        variant="outline-primary"
+                        size="lg"
+                        className="btn-block"
+                        onClick={handleMostrarBusquedaRings}
+                    >Ir a buscar</Button>
                 </Col>
             </Row>
         </Form>

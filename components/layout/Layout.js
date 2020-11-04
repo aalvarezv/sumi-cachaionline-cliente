@@ -18,6 +18,8 @@ const Layout = props => {
       usuarioAuth();
     },[] );
 
+
+
     return ( 
         <>
         <Head>
@@ -36,7 +38,7 @@ const Layout = props => {
         </Head>
         <Navegacion />
         <ToastContainer
-          position="top-right"
+          position="bottom-left"
           autoClose={3000}
           hideProgressBar={false}
           newestOnTop={false}

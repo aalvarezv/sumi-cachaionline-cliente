@@ -12,10 +12,13 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
     const ref_confirm_eliminar = useRef(null);
 
+    const [codigo_eliminar, setCodigoEliminar] = useState('');
 
-    const handleClickEliminar = e => {
+
+    const handleClickEliminar = (e, codigo) => {
         setShowConfirmEliminar(!show_confirm_eliminar);
         setTargetConfirmEliminar(e.target);
+        setCodigoEliminar(codigo);
     };
 
     const handleShowImageView = img_url => {
@@ -73,7 +76,7 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                             <Button
                                 variant={"outline-info"}
                                 size={"md"}
-                                onClick={() => handleModificaPregunta(pregunta)}
+                                onClick={() => handleModificaPregunta(codigo)}
                                 >
                                 Modificar
                             </Button>
@@ -92,16 +95,19 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                                 placement="bottom"
                                 container={ref_confirm_eliminar.current}
                                 containerPadding={20}
-                            >
-                                <Popover id="popover-contained">
-                                <Popover.Title as="h3"><small>¿Desea eliminar la pregunta?</small></Popover.Title>
+                            >   
+                            <Popover id="popover-contained">
+                            <Popover.Title as="h3"><small>¿Desea eliminar la pregunta?</small></Popover.Title>
                                 <Popover.Content>
                                     <Row>
                                         <Col>
                                             <Button
                                                 variant={"success"}
                                                 size={"md"}
-                                                onClick={e => handleEliminaPregunta(codigo)}
+                                                onClick={e => {
+                                                    handleEliminaPregunta(codigo_eliminar);
+                                                    setShowConfirmEliminar(!show_confirm_eliminar);
+                                                }}
                                                 block
                                             >
                                                 Si
