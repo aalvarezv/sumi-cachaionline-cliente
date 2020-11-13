@@ -12,6 +12,9 @@ import RingForm from '../../components/forms/RingForm';
 import { handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
 
+
+
+
 const Rings = () => {
 
    const { autenticado } = useContext(AuthContext);
@@ -22,6 +25,7 @@ const Rings = () => {
       fecha_hasta: new Date(),
       nombre_usuario_creador: '',
    });
+
    const { fecha_desde, fecha_hasta, nombre_usuario_creador } = filtros;
    
    const [crear_ring, setCrearRing] = useState(false);
@@ -35,9 +39,14 @@ const Rings = () => {
 
       try{
          const resp = await clienteAxios.get('/api/rings/listar', {
-            params : { filtros }
+            params : { 
+               fecha_desde: fecha_desde.toDateString(),
+               fecha_hasta: fecha_hasta.toDateString(),
+               nombre_usuario_creador,
+             }
          });
          setRings(resp.data.ring);
+         console.log(resp.data.ring);
       }catch(e){
          handleError(e);
       }

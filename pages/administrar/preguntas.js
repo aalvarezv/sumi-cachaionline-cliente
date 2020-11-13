@@ -8,7 +8,9 @@ import Privado from '../../components/layout/Privado';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria';
 import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad';
-import InputSelectContenidosModulo from '../../components/ui/InputSelectContenidosModulo';
+import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido';
+import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema';
+import InputSelectModulosContenidoTemaConcepto from '../../components/ui/InputSelectModulosContenidoTemaConcepto';
 import PreguntaForm from '../../components/forms/PreguntaForm';
 import TablePregunta from '../../components/ui/TablePregunta';
 import AlertText from '../../components/ui/AlertText';
@@ -23,7 +25,9 @@ const Cursos = () => {
        codigo_materia: '0',
        codigo_unidad: '0',
        codigo_modulo: '0',
-       codigo_contenido_modulo: '0',
+       codigo_modulo_contenido: '0',
+       codigo_modulo_contenido_tema: '0',
+       codigo_modulo_contenido_tema_concepto: '0',
        fecha_desde: new Date(),
        fecha_hasta: new Date(),
        nombre_usuario_creador: '',
@@ -34,8 +38,9 @@ const Cursos = () => {
     //const [codigo_pregunta_modificar, setCodigoPreguntaModificar] = useState('');
     const [pregunta_modificar, setPreguntaModificar] = useState(null);
    
-    const {codigo_materia, codigo_unidad, codigo_modulo, codigo_contenido_modulo, 
-            fecha_desde, fecha_hasta, nombre_usuario_creador} = filtros;
+    const {codigo_materia, codigo_unidad, codigo_modulo, codigo_modulo_contenido,
+           codigo_modulo_contenido_tema, codigo_modulo_contenido_tema_concepto,
+           fecha_desde, fecha_hasta, nombre_usuario_creador} = filtros;
 
    const ref_custom_date_desde = React.createRef();
    const ref_custom_date_hasta = React.createRef();
@@ -61,7 +66,9 @@ const Cursos = () => {
                   codigo_materia,
                   codigo_unidad,
                   codigo_modulo,
-                  codigo_contenido_modulo,
+                  codigo_modulo_contenido,
+                  codigo_modulo_contenido_tema,
+                  codigo_modulo_contenido_tema_concepto,
                   fecha_desde,
                   fecha_hasta,
                   nombre_usuario_creador
@@ -226,7 +233,9 @@ const Cursos = () => {
                                        ...filtros,
                                        codigo_unidad: '0',
                                        codigo_modulo: '0',
-                                       codigo_contenido_modulo: '0',
+                                       codigo_modulo_contenido: '0',
+                                       codigo_modulo_contenido_tema: '0',
+                                       codigo_modulo_contenido_tema_concepto: '0',
                                        [e.target.name]: e.target.value,
                                     })}
                                  />
@@ -245,7 +254,9 @@ const Cursos = () => {
                                     onChange={e => setFiltros({
                                        ...filtros,
                                        codigo_modulo: '0',
-                                       codigo_contenido_modulo: '0',
+                                       codigo_modulo_contenido: '0',
+                                       codigo_modulo_contenido_tema: '0',
+                                       codigo_modulo_contenido_tema_concepto: '0',
                                        [e.target.name]: e.target.value,
                                     })}
                                  />
@@ -263,15 +274,17 @@ const Cursos = () => {
                                     value={codigo_modulo}
                                     onChange={e => setFiltros({
                                        ...filtros,
-                                       codigo_contenido_modulo: '0',
+                                       codigo_modulo_contenido: '0',
+                                       codigo_modulo_contenido_tema: '0',
+                                       codigo_modulo_contenido_tema_concepto: '0',
                                        [e.target.name]: e.target.value
                                     })}
                                  />
                            </Row>
                            <Row className="mb-2">
-                                 <InputSelectContenidosModulo
-                                    id="codigo_contenido_modulo"
-                                    name="codigo_contenido_modulo"
+                                 <InputSelectModulosContenido
+                                    id="codigo_modulo_contenido"
+                                    name="codigo_modulo_contenido"
                               
                                     /*codigo modulo se le pasa a las props del componente
                                     para filtrar las propiedades del modulo seleccionado.*/
@@ -279,11 +292,50 @@ const Cursos = () => {
                                     as="select"
                                     size="sm"
                                     label="TODOS LOS CONTENIDOS"
-                                    value={codigo_contenido_modulo}
+                                    value={codigo_modulo_contenido}
                                     onChange={e => setFiltros({
                                        ...filtros,
+                                       codigo_modulo_contenido_tema: '0',
+                                       codigo_modulo_contenido_tema_concepto: '0',
                                        [e.target.name]: e.target.value
                                     })}
+                                 />
+                           </Row>
+                           <Row className="mb-2">
+                                 <InputSelectModulosContenidoTema
+                                    id="codigo_modulo_contenido_tema"
+                                    name="codigo_modulo_contenido_tema"
+                                    
+                                    /*codigo contenido se le pasa a las props del componente
+                                    para filtrar las propiedades del modulo seleccionado.*/
+                                    codigo_modulo_contenido={codigo_modulo_contenido}
+                                    as="select"
+                                    size="sm"
+                                    label="TODOS LOS TEMAS"
+                                    value={codigo_modulo_contenido_tema}
+                                    onChange={e => setFiltros({
+                                       ...filtros,
+                                       codigo_modulo_contenido_tema_concepto: '0',
+                                       [e.target.name]: e.target.value
+                                    })}
+                                 />
+                           </Row>
+                           <Row className="mb-2">
+                                 <InputSelectModulosContenidoTemaConcepto
+                                 id="codigo_modulo_contenido_tema_concepto"
+                                 name="codigo_modulo_contenido_tema_concepto"
+
+                                 /*codigo contenido se le pasa a las props del componente
+                                 para filtrar las propiedades del modulo seleccionado.*/
+                                 codigo_modulo_contenido_tema={codigo_modulo_contenido_tema}
+                                 as="select"
+                                 size="sm"
+                                 label="TODOS LOS CONCEPTOS"
+                                 value={codigo_modulo_contenido_tema_concepto}
+                                 onChange={e => setFiltros({
+                                    ...filtros,
+                                    [e.target.name]: e.target.value
+                                 })}
                                  />
                            </Row>
                         </Col>

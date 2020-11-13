@@ -5,7 +5,7 @@ import { RiDeleteBin5Line } from 'react-icons/ri';
 import InputSelectMateria from '../ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
 import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad';
-import InputSelectContenidosModulo from '../ui/InputSelectContenidosModulo';
+import InputSelectModulosContenido from '../ui/InputSelectModulosContenido';
 
 const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) => {
 
@@ -16,12 +16,12 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
         codigo: '0',
         descripcion: ''
     });
-    const [contenido_modulo, setContenidoModulo] = useState({
+    const [modulo_contenido, setContenidoModulo] = useState({
         codigo: '0',
         descripcion: '',
     });
     const modulo_ref = createRef();
-    const contenido_modulo_ref = createRef();
+    const modulo_contenido_ref = createRef();
 
     const [modulos, setModulos] = useState([]);
     //Carga los módulos iniciales en caso que sea una pregunta a modificar.
@@ -52,7 +52,7 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
 
     const handleAddContenidoModulo = () => {
 
-        if(contenido_modulo.codigo === "0") return
+        if(modulo_contenido.codigo === "0") return
 
         //Si el modulo no se ha agregado y pincha agregar el contenido, agrega ambos.
         if(modulos.filter(mod => mod.codigo === modulo.codigo).length === 0 ){
@@ -63,8 +63,8 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                     codigo: modulo.codigo,
                     descripcion: modulo.descripcion,
                     contenidos: [{
-                        codigo: contenido_modulo.codigo,
-                        descripcion: contenido_modulo.descripcion,
+                        codigo: modulo_contenido.codigo,
+                        descripcion: modulo_contenido.descripcion,
                     }],
                 }
             ]);
@@ -78,17 +78,17 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
                 //verifica si ya existe el atributo contenidos.
                 if(mod.contenidos){
                     //si la contenido no existe, entonces lo agrega
-                    if(mod.contenidos.filter(contenido => contenido.codigo === contenido_modulo.codigo).length === 0){
+                    if(mod.contenidos.filter(contenido => contenido.codigo === modulo_contenido.codigo).length === 0){
                         mod.contenidos.push({
-                            codigo : contenido_modulo.codigo,
-                            descripcion : contenido_modulo.descripcion,
+                            codigo : modulo_contenido.codigo,
+                            descripcion : modulo_contenido.descripcion,
                         });
                     }
                 //si no existe lo crea por primera vez y agrega el contenido.
                 }else{
                     mod.contenidos = [{
-                        codigo : contenido_modulo.codigo,
-                        descripcion : contenido_modulo.descripcion,
+                        codigo : modulo_contenido.codigo,
+                        descripcion : modulo_contenido.descripcion,
                     }];
                 }
             }
@@ -200,20 +200,20 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, handleSetModulos }) 
             <Row>
                 <Col>
                     <Form.Group>
-                        <InputSelectContenidosModulo
-                            id="codigo_contenido_modulo"
-                            name="codigo_contenido_modulo"
-                            ref={contenido_modulo_ref}
+                        <InputSelectModulosContenido
+                            id="codigo_modulo_contenido"
+                            name="codigo_modulo_contenido"
+                            ref={modulo_contenido_ref}
                             /*codigo modulo se le pasa a las props del componente
                             para filtrar las unidades de la materia seleccionada.*/
                             codigo_modulo={modulo.codigo}
                             as="select"
                             size="sm"
-                            value={contenido_modulo.codigo}
+                            value={modulo_contenido.codigo}
                             onChange={e => {
                                 
-                                let index = contenido_modulo_ref.current.selectedIndex;
-                                let descripcion = contenido_modulo_ref.current[index].text
+                                let index = modulo_contenido_ref.current.selectedIndex;
+                                let descripcion = modulo_contenido_ref.current[index].text
 
                                 setContenidoModulo({
                                     codigo: e.target.value,
