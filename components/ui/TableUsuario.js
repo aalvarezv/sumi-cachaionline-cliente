@@ -1,10 +1,17 @@
 import React, {useState, useEffect} from 'react'
-import {Table} from 'react-bootstrap';
+import {Table, Button} from 'react-bootstrap';
 import  clienteAxios from '../../config/axios';
 import { handleError } from '../../helpers';
 
-const TableUsuario = () => {
+const TableUsuario = ({codigoring}) => {
 
+    const handleCrearRingUsuario = async (rut_usuario) => {
+
+        const resp = await clienteAxios.post('/api/ring-usuarios/crear',`${codigoring},${rut_usuario}`);
+        toast.success('RING USUARIO CREADO', {containerId: 'sys_msg'});
+    }
+
+    
     const [usuarios, setUsuarios] = useState([])
 
     useEffect(() => {
@@ -38,6 +45,17 @@ const TableUsuario = () => {
                                 <td>{index+1}</td>
                                 <td>{rut}</td>
                                 <td>{nombre}</td>
+                                <td>
+                                    <Button 
+                                        variant="outline-info"
+                                        onClick={e => {
+                                            handleCrearRingUsuario(rut)
+                                            } 
+                                        }
+                                    >
+                                     Agregar
+                                    </Button>
+                                </td> 
                             </tr>
                         )
                     })

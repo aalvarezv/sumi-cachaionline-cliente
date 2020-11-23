@@ -133,7 +133,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             if(Object.keys(errors).length > 0){
                 return;
             }
-            //curso a enviar
+            //ring a enviar
             let ring = formulario;
             ring.codigo = uuidv4();
 

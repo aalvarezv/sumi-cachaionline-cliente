@@ -1,5 +1,6 @@
 import React, {useState, useRef} from 'react';
 import {Table, Button, Badge, Overlay, Popover, Row, Col} from 'react-bootstrap';
+import ModalUsuariosRing from '../ui/ModalUsuariosRing';
 
 const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
 
@@ -7,7 +8,17 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
     const ref_confirm_eliminar = useRef(null);
 
+    const [show_modal_usuarios, setShowModalUsuarios] = useState(false);
+    const handleCloseModalUsuarios = () => setShowModalUsuarios(false);
+    const handleShowModalUsuarios = () => setShowModalUsuarios(true);
+
+    const [codigo_ring_usuario, setCodigoRingUsuario] = useState('')
+
     const [codigo_eliminar, setCodigoEliminar] = useState('');
+    
+    const handleClickAgregarUsuario = (codigo) => {
+        setCodigoRingUsuario(codigo);
+    };
 
     const handleClickEliminar = (e, codigo) => {
         setShowConfirmEliminar(!show_confirm_eliminar);
@@ -16,6 +27,12 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
     };
 
     return (
+        <>
+            <ModalUsuariosRing
+                show = {show_modal_usuarios}
+                handleClose = {handleCloseModalUsuarios}
+                codigo_ring = {codigo_ring_usuario}
+            />
             <Table striped bordered hover variant="light"> 
                 <thead>
                     <tr>
@@ -42,6 +59,19 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                                 <td><small>{createdAt}</small></td>
                                 <td>
                                     <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge></td>
+                                <td>
+                                    <Button 
+                                        variant="outline-info"
+                                        onClick={e => {
+                                            handleShowModalUsuarios(2)
+                                            handleClickAgregarUsuario(codigo)
+                                            }  
+                                        }
+                                        
+                                    >
+                                     Agregar
+                                    </Button>
+                                </td>                                
                                 <td>
                                     <Button 
                                         variant="outline-info"
@@ -105,6 +135,7 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                     
                 </tbody>
             </Table>
+        </>
     )
 }
 
