@@ -7,7 +7,7 @@ const TableUsuario = ({codigoring}) => {
 
     const handleCrearRingUsuario = async (rut_usuario) => {
 
-        const resp = await clienteAxios.post('/api/ring-usuarios/crear',`${codigoring},${rut_usuario}`);
+        const resp = await clienteAxios.post('/api/ring-usuarios/crear',{codigoring},{rut_usuario});
         toast.success('RING USUARIO CREADO', {containerId: 'sys_msg'});
     }
 
