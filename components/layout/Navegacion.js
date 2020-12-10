@@ -1,13 +1,38 @@
-import React,{ useContext, useEffect } from 'react';
+import React,{ useContext, useEffect, useState } from 'react';
+import { FaUserCircle } from 'react-icons/fa';
 import Link from 'next/link';
 import AuthContext from '../../context/auth/AuthContext';
-import { Navbar, Nav, Button, NavDropdown, Dropdown, Row, Col, Image } from 'react-bootstrap';
-import { has } from 'lodash';
+import MenuInstitucionPerfil from './MenuInstitucionPerfil';
+import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap';
 
 const Navegacion = () => {
 
-    const { usuario, autenticado, cerrarSesion } = useContext(AuthContext); 
+    const { usuario, autenticado, rol, cerrarSesion} = useContext(AuthContext);
+
+    const [permisos_menu, setPermisosMenu] = useState({
+        ver_menu_administrar: false,
+        ver_submenu_instituciones:false,
+        ver_submenu_niveles_academicos:false,
+        ver_submenu_roles:false,
+        ver_submenu_usuarios:false,
+        ver_menu_asignaturas:false,
+        ver_submenu_materias:false,
+        ver_submenu_unidades:false,
+        ver_submenu_modulos:false,
+        ver_submenu_temas:false,
+        ver_submenu_conceptos:false,
+        ver_menu_preguntas:false,
+        ver_menu_rings:false,
+    })
+
+    useEffect(() => {
+        if(rol){
+            setPermisosMenu(rol);
+        }
+    },[rol]);
+
     
+
     return ( 
         <Navbar collapseOnSelect expand="lg" bg="white" text="light">
         <Navbar.Brand>
@@ -25,76 +50,100 @@ const Navegacion = () => {
                 <Link href="/" passHref>
                     <Nav.Link className="text-info">CachaiOnline</Nav.Link>
                 </Link>
-                {/* <Link href="/" passHref>
-                    <Nav.Link href="/materias">Materias</Nav.Link>
-                </Link> */}
                 {autenticado
                 && 
                 <> 
-                    <NavDropdown title="Administrar" id="administrar-nav-dropdown">
-                        <Link href="/administrar/instituciones" passHref>
-                            <NavDropdown.Item>Instituciones</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/niveles-academicos" passHref>
-                            <NavDropdown.Item>Niveles Académicos</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/roles" passHref>
-                            <NavDropdown.Item>Roles</NavDropdown.Item>
-                        </Link>
-                        <Link href="/administrar/usuarios" passHref>
-                            <NavDropdown.Item>Usuarios</NavDropdown.Item>
-                        </Link>
+                    { permisos_menu.ver_menu_administrar &&  
+                        <NavDropdown title="Administrar" id="administrar-nav-dropdown">
+                            {permisos_menu.ver_submenu_instituciones &&
+                                <Link href="/administrar/instituciones" passHref>
+                                    <NavDropdown.Item>Instituciones</NavDropdown.Item>
+                                </Link>
+                            }
+                            {permisos_menu.ver_submenu_niveles_academicos &&
+                                <Link href="/administrar/niveles-academicos" passHref>
+                                    <NavDropdown.Item>Niveles Académicos</NavDropdown.Item>
+                                </Link>
+                            }
+                            {permisos_menu.ver_submenu_roles &&
+                                <Link href="/administrar/roles" passHref>
+                                    <NavDropdown.Item>Roles</NavDropdown.Item>
+                                </Link>
+                            }
+                            {permisos_menu.ver_submenu_usuarios && 
+                                <Link href="/administrar/usuarios" passHref>
+                                    <NavDropdown.Item>Usuarios</NavDropdown.Item>
+                                </Link>
+                            }
+                        </NavDropdown>
+                    }
+                    {permisos_menu.ver_menu_asignaturas &&
+                        <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
+                            {permisos_menu.ver_submenu_materias && 
+                                <Link href="/administrar/materias" passHref>
+                                    <NavDropdown.Item>Materias</NavDropdown.Item>
+                                </Link>
+                            }
+                            {permisos_menu.ver_submenu_unidades && 
+                                <Link href="/administrar/unidades" passHref>
+                                    <NavDropdown.Item>Unidades</NavDropdown.Item>
+                                </Link>
+                            }
+                            {permisos_menu.ver_submenu_modulos &&
+                                <Link href="/administrar/modulos" passHref>
+                                    <NavDropdown.Item>Módulos</NavDropdown.Item>
+                                </Link>
+                            }
                     </NavDropdown>
-                    <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
-                        <Link href="/administrar/materias" passHref>
-                            <NavDropdown.Item>Materias</NavDropdown.Item>
+                    }
+                    {permisos_menu.ver_menu_preguntas &&
+                        <Link href="/administrar/preguntas" passHref>
+                            <Nav.Link>Preguntas</Nav.Link>
                         </Link>
-                        <Link href="/administrar/unidades" passHref>
-                            <NavDropdown.Item>Unidades</NavDropdown.Item>
+                    }
+                    {permisos_menu.ver_menu_rings &&
+                        <Link href="/administrar/rings" passHref>
+                            <Nav.Link>Rings</Nav.Link>
                         </Link>
-                        <Link href="/administrar/modulos" passHref>
-                            <NavDropdown.Item>Módulos</NavDropdown.Item>
-                        </Link>
-                    </NavDropdown>
-                    <Link href="/administrar/preguntas" passHref>
-                        <Nav.Link>Preguntas</Nav.Link>
+                    }
+                    <Link href="/testalan" passHref>
+                        <Nav.Link>Test</Nav.Link>
                     </Link>
-                    <Link href="/administrar/rings" passHref>
-                        <Nav.Link>Rings</Nav.Link>
-                    </Link>
-                    
                     </>
                 }
-            </Nav>
+            </Nav> 
             <Nav>
                 {autenticado
                 ?   
                     <>
-                       
-                        <Row>
+                       <Row>
                             <Col className="d-flex flex-column align-items-center">
                                 <Row>
-                                    <Image src="holder.js/171x180" style={{width: 25, height: 25}} roundedCircle />
+                                <FaUserCircle 
+                                    size={"1.5rem"} 
+                                    color={"teal"}
+                                />
                                 </Row>
                                 <Row>
-                                <small className="mt-2 mr-2">
-                                    {usuario.nombre}
-                                </small>
-                                </Row>
-                                <Row>
-                                    <Button 
-                                            variant="info"
-                                            size="sm"
-                                            onClick={() => cerrarSesion()}
-                                        >Cerrar Sesión
-                                    </Button>
+                                    <NavDropdown title={usuario.nombre} id="usuario-nav-dropdown" className="d-flex">
+                                        
+                                        <MenuInstitucionPerfil />
+                                        <NavDropdown.Divider />
+                                        <Row className="m-2">
+                                            <Col className="d-flex justify-content-center">
+                                                <Button 
+                                                    variant="info"
+                                                    size="sm"
+                                                    onClick={() => cerrarSesion()}
+                                                >Cerrar Sesión
+                                                </Button>    
+                                            </Col>
+                                        </Row>
+                                        
+                                    </NavDropdown>
                                 </Row>
                             </Col>
                         </Row>
-                        {/* <Col xs={6} md={4}>
-                       
-                        </Col> */}
-                       
                     </>
                 :   
                     <Link href="/login" passHref>

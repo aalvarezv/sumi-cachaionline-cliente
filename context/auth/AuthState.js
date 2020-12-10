@@ -4,7 +4,9 @@ import {
     LOGIN_ERROR,
     CERRAR_SESION,
     USUARIO_AUTH_EXITO,
-    USUARIO_AUTH_ERROR
+    USUARIO_AUTH_ERROR,
+    SETEA_INSTITUCION,
+    SETEA_ROL,
 } from '../types';
 import {handleError} from '../../helpers';
 
@@ -19,6 +21,8 @@ const AuthState = (props) => {
     const initialState = {
         usuario: null,
         autenticado: false,
+        institucion: null,
+        roll: null,
         mensaje: null
     }
 
@@ -38,7 +42,7 @@ const AuthState = (props) => {
                 //agrega el token al request de axios.
                 tokenAuth(token);
                 resp = await clienteAxios.get('/api/auth/datos/');
-
+                console.log(resp.data.usuario);
                 dispatch({
                     type: LOGIN_EXITO,
                     payload: resp.data.usuario
@@ -75,7 +79,6 @@ const AuthState = (props) => {
                 tokenAuth(token); 
                 
                 const resp = await clienteAxios.get('/api/auth/datos/');
-                
                 dispatch({
                     type: USUARIO_AUTH_EXITO,
                     payload: resp.data.usuario
@@ -101,15 +104,33 @@ const AuthState = (props) => {
 
     }
 
+    const seteaInstitucion = institucion => {
+        dispatch({
+            type: SETEA_INSTITUCION,
+            payload: institucion,
+        });
+    }
+
+    const seteaRol = rol => {
+        dispatch({
+            type: SETEA_ROL,
+            payload: rol,
+        });
+    }
+
     return (
         <AuthContext.Provider
             value={{
                 usuario: state.usuario,
                 autenticado: state.autenticado,
+                institucion: state.institucion,
+                rol: state.rol,
                 mensaje: state.mensaje,
                 iniciarSesion,
                 cerrarSesion,
-                usuarioAuth
+                usuarioAuth,
+                seteaInstitucion,
+                seteaRol,
             }}
         >
             {props.children}

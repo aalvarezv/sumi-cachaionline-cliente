@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import { Container, Form, Tabs, Tab, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import ToastMultiline from '../ui/ToastMultiline';
 import { handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
 import InputSelectMateria from '../ui/InputSelectMateria';
-import ModuloFormTabConfig from './ModuloFormTabConfig';
 import ButtonBack from '../ui/ButtonBack';
 
 const ModuloForm = () => {
@@ -175,12 +174,6 @@ const ModuloForm = () => {
             id="codigo"
             label="descripcion"
         />
-        <Tabs 
-            id="tab_modulo"
-            activeKey={tab_key}
-            onSelect={(k) => setTabKey(k)}
-        >
-        <Tab eventKey="tab_modulo" title="Información del Módulo">
         <Form className="p-3">
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
@@ -309,15 +302,6 @@ const ModuloForm = () => {
                 </Col>
             </Row>
         </Form>
-        </Tab>
-        {result_select &&
-            <Tab eventKey="tab_configuracion" title="Propiedades Módulo">
-                <ModuloFormTabConfig    
-                    codigo_modulo = {result_select.codigo}
-                />
-            </Tab> 
-        }    
-       </Tabs>
     </Container> );
 }
  

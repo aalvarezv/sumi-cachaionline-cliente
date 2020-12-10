@@ -1,15 +1,8 @@
-import React, { useContext, useState } from 'react';
-//import ListSelectCursoModulos from '../components/ui/ListSelectCursoModulos';
+import React, { useContext } from 'react';
 import Layout from '../components/layout/Layout';
 import AuthContext from '../context/auth/AuthContext';
-import {Image,Form, Button, Row, Col, Container} from 'react-bootstrap';
-//import InputSelectRol from '../components/ui/InputSelectRol';
-//import TableRing from '../components/ui/TableRing';
+import {Image, Button, Row, Col, Container} from 'react-bootstrap';
 import Privado from '../components/layout/Privado';
-//import InputSelectModuloContenidoTemaConcepto from '../components/ui/InputSelectModuloContenidoTemaConcepto';
-//import InputSelectModuloContenidoTema from '../components/ui/InputSelectModulosContenidoTema';
-import InputSelectTipoDuracionPregunta from '../components/ui/InputSelectTipoDuracionPregunta';
-import TableUsuarios from '../components/ui/TableUsuario';
 
 
 
@@ -18,8 +11,8 @@ const Test = () =>{
   const { autenticado } = useContext(AuthContext);
 
   return (
-    <Layout>
-    <Privado>
+    // <Layout>
+    // <Privado>
       <Container fluid>
       <Row >
         <Col  xs={12}>
@@ -51,18 +44,11 @@ const Test = () =>{
             
           </Row> 
       </Col>
-      {/* <Col  xs="auto">
-          <Row>
-          <Button variant="outline-danger" style={{margin: '5px'}} block>Agregar</Button>
-          </Row>
-          <Row>
-          <Button variant="outline-danger" style={{margin: '5px'}} block>Vista previa</Button>
-          </Row>
-      </Col> */}
+     
       </Row>
       </Container>
-    </Privado>
-    </Layout>
+    // </Privado>
+    // </Layout>
   );
 }
 

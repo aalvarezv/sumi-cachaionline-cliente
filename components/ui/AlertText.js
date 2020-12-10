@@ -4,13 +4,17 @@ import { RiAlertFill } from 'react-icons/ri';
 
 const AlertText = ({text}) => {
     return ( 
-
-        <Container>
-            <Row className="d-flex justify-content-center">
-                <Col xs="auto" className="m-0"><RiAlertFill size={"1.6rem"} color={"gray"}/></Col>
-                <Col xs="auto" className="p-0"><h4 className="text-secondary ">{text}</h4></Col>
+        <>
+        {text.trim() !== ''
+        &&
+            <Container>
+            <Row className="d-flex justify-content-center ">
+                <Col xs="auto"><RiAlertFill size={"1.6rem"} color={"#FFC300"}/></Col>
+                <Col xs="auto" className="mt-0"><h5 className="text-dark">{text}</h5></Col>
             </Row>
-        </Container>
+            </Container>
+        }
+        </>
      );
 }
  

@@ -18,22 +18,32 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     const { usuario:{rut}} = useContext(AuthContext);
 
     const [show_config, setShowConfig] = useState(true);
+    
+    const [soluciones, setSoluciones] = useState([]);
+    const [modulos, setModulos] = useState([]);
+    const [contenidos, setContenidos] = useState([]);
+    const [temas, setTemas] = useState([]);
+    const [conceptos, setConceptos] = useState([]);
+
     const [pregunta, setPregunta] = useState({
         rut_usuario_creador: rut,
         texto:'',
         imagen: '',
         audio: '',
         video: '',
+        duracion: 30,
     });
+
     const [alternativas, setAlternativas] = useState([]);
-    const [pistas, setPistas] = useState([]);
-    const [soluciones, setSoluciones] = useState([]);
-    const [modulos, setModulos] = useState([]);
     const [numero_alternativas, setNumeroAlternativas] = useState(5);
     const [tab_select, setTabSelect] = useState('#tab_pregunta_imagen')
 
+    const [pistas, setPistas] = useState([]);
+
     const [error_solucion, setErrorSolucion] = useState([]);
     const [error_pista, setErrorPista] = useState([]);
+
+    const [errores, setErrores] = useState({});
 
     //setea por defecto con el numero_alternativas para la pregunta.
     const iniciarAlternativas = () => {
@@ -57,115 +67,114 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     
     //efecto que obtiene los datos de la pregunta a modificar.
     useEffect(() => {
-        
+
         if(pregunta_modificar){
             const getDatosPregunta = async () => {
                 
-                //leer modulo y modulo_contenidos para ajustar a la estructura del state.
-                /**
-                 * {
-                 *  codigo: '1', 
-                 *  descripcion: 'modulo', 
-                 *  contenidos: [{codigo: '1', descripcion: 'PROP 1'}]
-                 * }
-                 */
-                const modulos = pregunta_modificar.pregunta_modulos.map(mod => {
-                    
-                    let modulo = {
-                        codigo: mod.codigo_modulo,
-                        descripcion: mod.modulo.descripcion
+                let new_modulos = pregunta_modificar.pregunta_modulos.map(pregunta_modulo => {
+                    return {
+                        codigo: pregunta_modulo.codigo_modulo,
+                        descripcion: pregunta_modulo.modulo.descripcion,
                     }
-                    //Recorre los contenidos de la pregunta.
-                    for(const contenido of pregunta_modificar.pregunta_modulo_contenido){
-                        console.log('ENTRA A RECORRER EL CONTENIDO');
-                        //Si el codigo modulo del contenido es igual al módulo en curso, entonces se la agrega.
-                        if(contenido.modulo_contenido.codigo_modulo === mod.codigo_modulo){
-
-                            //verifica si existe el atributo propiedades en el módulo
-                            if(modulo.hasOwnProperty('contenidos')){
-                               
-                                modulo = {
-                                    ...modulo,
-                                    contenidos: [
-                                        ...modulo.contenidos,
-                                        {
-                                            codigo: contenido.modulo_contenido.codigo,
-                                            descripcion: contenido.modulo_contenido.descripcion,
-                                        }
-                                    ]
-                                }
-                            
-                            //si no existe se la agrega
-                            }else{
-                                modulo = {
-                                    ...modulo,
-                                    contenidos: [{
-                                        codigo: contenido.modulo_contenido.codigo,
-                                        descripcion: contenido.modulo_contenido.descripcion,
-                                    }]
-                                }
-                            }
-
-                        }
-
-                    }
-                    return modulo;
-
                 });
+                setModulos(new_modulos)
 
-                setModulos(modulos);
+                let new_contenidos = pregunta_modificar.pregunta_modulo_contenidos.map(pregunta_modulo_contenido => {
+                    return {
+                        codigo: pregunta_modulo_contenido.codigo_modulo_contenido,
+                        descripcion: pregunta_modulo_contenido.modulo_contenido.descripcion,
+                        codigo_modulo: pregunta_modulo_contenido.modulo_contenido.codigo_modulo,
+                    }
+                });
+                setContenidos(new_contenidos);
 
-                setAlternativas(pregunta_modificar.pregunta_alternativa);
+                let new_temas = pregunta_modificar.pregunta_modulo_contenido_temas.map(pregunta_modulo_contenido_tema => {
+                    return {
+                        codigo: pregunta_modulo_contenido_tema.codigo_modulo_contenido_tema,
+                        descripcion: pregunta_modulo_contenido_tema.modulo_contenido_tema.descripcion,
+                        codigo_contenido: pregunta_modulo_contenido_tema.modulo_contenido_tema.codigo_modulo_contenido,
+                    }
+                });
+                setTemas(new_temas);
+
+                let new_conceptos = pregunta_modificar.pregunta_modulo_contenido_tema_conceptos.map(pregunta_modulo_contenido_tema_concepto =>{
+                    return {
+                        codigo: pregunta_modulo_contenido_tema_concepto.codigo_modulo_contenido_tema_concepto,
+                        descripcion: pregunta_modulo_contenido_tema_concepto.modulo_contenido_tema_concepto.descripcion,
+                        codigo_tema: pregunta_modulo_contenido_tema_concepto.modulo_contenido_tema_concepto.codigo_modulo_contenido_tema,
+                    }
+                })
+                setConceptos(new_conceptos);
 
                 setPregunta({
                     ...pregunta,
                     rut_usuario_creador: pregunta_modificar.rut_usuario_creador,
                     texto: pregunta_modificar.texto,
-                    imagen: await getBase64FromURL(pregunta_modificar.imagen),
+                    imagen: pregunta_modificar.imagen,
                     audio: pregunta_modificar.audio,
                     video: pregunta_modificar.video,
+                    duracion: pregunta_modificar.duracion,
                 });
-
-                let new_pregunta_solucion = [];
-                for(const pregunta_solucion of pregunta_modificar.pregunta_solucion){
-                    new_pregunta_solucion.push({
-                        ...pregunta_solucion,
-                        imagen: await getBase64FromURL(pregunta_solucion.imagen),
-                    });
-                }
-                setSoluciones(new_pregunta_solucion);
-
-                let new_pregunta_pista = [];
-                for(const pregunta_pista of pregunta_modificar.pregunta_pista){
-                    new_pregunta_pista.push({
-                        ...pregunta_pista,
-                        imagen: await getBase64FromURL(pregunta_pista.imagen),
-                    });
-                }
-                setPistas(new_pregunta_pista);
+                setAlternativas(pregunta_modificar.pregunta_alternativa);
+                setSoluciones(pregunta_modificar.pregunta_solucion);
+                setPistas(pregunta_modificar.pregunta_pista);
 
             }
             getDatosPregunta();
 
         }
 
-    },[]);
-
+    },[]);   
     
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
 
-        const base64 = await getBase64(archivo[0]);
-        setPregunta({
-            ...pregunta,
-            imagen: base64,
-        });
-    }
-
-    const handleQuitarImagenPregunta = () => {
+        //setUploading(true)
+        const base64 = await getBase64(archivo[0]); 
+        
         setPregunta({
             ...pregunta,
             imagen: '',
+            video: '',
+            audio: '',
+        });
+
+        switch (archivo[0].type.split('/')[0]) {
+            case 'image':
+                setPregunta({
+                    ...pregunta,
+                    imagen: base64,
+                    video: '',
+                    audio: '',
+                });
+                break;
+            case 'video':
+                setPregunta({
+                    ...pregunta,
+                    imagen: '',
+                    video: base64,
+                    audio: '',
+                });
+                break;
+            case 'audio':{
+                setPregunta({
+                    ...pregunta,
+                    imagen: '',
+                    video: '',
+                    audio: base64,
+                });
+                break;
+            }
+        }
+        //setUploading(false)
+    }
+
+    const handleQuitarArchivoPregunta = () => {
+        setPregunta({
+            ...pregunta,
+            imagen: '',
+            audio: '',
+            video: '',
         });
     }
 
@@ -189,6 +198,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 numero: pistas.length + 1,
                 texto: '',
                 imagen: '',
+                audio: '',
+                video: '',
             }
         ]);
     }
@@ -201,24 +212,42 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 numero: soluciones.length + 1,
                 texto: '',
                 imagen: '',
+                audio: '',
+                video: '',
             }
         ]);
     }
 
-    const handleSetModulos = modulos => {
+    const handleSetPropiedadesPregunta = (modulos, contenidos, temas, conceptos) => {
         setModulos(modulos);
+        setContenidos(contenidos);
+        setTemas(temas);
+        setConceptos(conceptos);
     }
     
     const validarFormulario = () => {
-        
+        //Almacena los errores de formulario.
+        let errors = {}
+
         setErrorSolucion([]);
         setErrorPista([]);
         //Verifica que haya ingresado una imagen a la pregunta.
-        if(pregunta.imagen.trim() === ''){
-            toast.warning('Agregue la imagen de la pregunta.', {containerId: 'sys_msg'});
+        if(pregunta.imagen.trim() === '' && pregunta.video.trim() === '' && pregunta.audio.trim() === ''){
+            toast.warning('Agregue una imagen, video ó audio de la pregunta.', {containerId: 'sys_msg'});
             return false;
         }
 
+        if(Number(pregunta.duracion) <= 0 && pregunta.duracion === ''){
+            errors = {
+                ...errors,
+                duracion: 'Requerido'
+            }
+            setErrores(errors);
+            toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'});
+            return false;
+        }
+        setErrores(errors);
+        
         //Verifica que exista al menos 2 alternativas posibles.
         if(alternativas.length < 2){
             toast.warning('La pregunta debe tener al menos dos alternativas posible.', {containerId: 'sys_msg'});
@@ -237,7 +266,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         }
 
         //Verifica que las soluciones tengan texto o una imagen.
-        let new_error_solucion = soluciones.filter(solucion => solucion.texto === '' && solucion.imagen === '')
+        let new_error_solucion = soluciones.filter(solucion => solucion.texto === '' && solucion.imagen === '' && solucion.video === '' && solucion.audio === '')
         if(new_error_solucion.length > 0){
             toast.warning('Verifique que todas las soluciones ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'});
             setErrorSolucion(new_error_solucion);
@@ -247,7 +276,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         //Si ha agregado alguna pista entonces.
         if(pistas.length > 0){
             //Verifica que las soluciones tengan texto o una imagen.
-            let new_error_pista = pistas.filter(pista => pista.texto === '' && pista.imagen === '')
+            let new_error_pista = pistas.filter(pista => pista.texto === '' && pista.imagen === '' && pista.video === '' && pista.audio === '')
             if(new_error_pista.length > 0){
                 toast.warning('Verifique que todas las pistas ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'});
                 setErrorPista(new_error_pista)
@@ -286,6 +315,18 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     ...modulo,
                     codigo_pregunta,
                 })),
+                contenidos: contenidos.map(contenido => ({
+                    ...contenido,
+                    codigo_pregunta,
+                })),
+                temas: temas.map(tema => ({
+                    ...tema,
+                    codigo_pregunta,
+                })),
+                conceptos: conceptos.map(concepto => ({
+                    ...concepto,
+                    codigo_pregunta,
+                })),
             }
 
             await clienteAxios.post('/api/preguntas/crear', pregunta_full);
@@ -296,6 +337,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 imagen: '',
                 audio: '',
                 video: '',
+                duracion: 0,
             });
             iniciarAlternativas();
             setPistas([]);
@@ -309,6 +351,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     }
 
     const handleActualizaPregunta = async () => {
+
+      
         //Verifica que existe un código a modificar
         if(!pregunta_modificar){
             toast.error('No existe una pregunta para actualizar', {containerId: 'sys_msg'});
@@ -319,8 +363,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         if(!validarFormulario()) return;
         //Primero elimina la pregunta, con sus alternativas, soluciones, imagenes (en disco), etc.
         try{
-            //Elimina.
-            await clienteAxios.delete(`/api/preguntas/eliminar/${pregunta_modificar.codigo}`);
             //Crea nuevamente la pregunta con el mismo identificador.
             const codigo_pregunta = pregunta_modificar.codigo
             //Se crea el objeto que contendrá las preguntas, alternativas, soluciones y pistas.
@@ -343,9 +385,21 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     ...modulo,
                     codigo_pregunta,
                 })),
+                contenidos: contenidos.map(contenido => ({
+                    ...contenido,
+                    codigo_pregunta,
+                })),
+                temas: temas.map(tema => ({
+                    ...tema,
+                    codigo_pregunta,
+                })),
+                conceptos: conceptos.map(concepto => ({
+                    ...concepto,
+                    codigo_pregunta,
+                })),
             }
 
-            await clienteAxios.post('/api/preguntas/crear', pregunta_full);
+            await clienteAxios.put('/api/preguntas/actualizar', pregunta_full);
             toast.success('PREGUNTA ACTUALIZADA', {containerId: 'sys_msg'});
 
         }catch(e){
@@ -360,7 +414,11 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             show={show_config}
             setShow={setShowConfig}
             modulos_init = {modulos}
-            handleSetModulos = {handleSetModulos}
+            contenidos_init = {contenidos}
+            temas_init = {temas}
+            conceptos_init = {conceptos}
+            handleSetPropiedadesPregunta = {handleSetPropiedadesPregunta}
+            handleMostrarBusquedaPreguntas = {handleMostrarBusquedaPreguntas}
         />
         <Container className="p-3">
         <Row>
@@ -406,7 +464,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     size="lg"
                     onClick={handleMostrarBusquedaPreguntas}
                 >
-                   Ir a buscar
+                   Volver
                 </Button>
             </Col>
         </Row>
@@ -428,17 +486,49 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 {tab_select === "#tab_pregunta_imagen" &&
                     <Form.Group>
                         <Row>
-                            <Col xs="auto">
+                            <Col xs="4" className="d-flex justify-content-center">
                                 <div
-                                 style={{width: 200, position:"relative"}}
-                                >
-                                    <Image 
-                                        src={pregunta.imagen.trim() === '' ? '/static/no-image.png' : pregunta.imagen.trim()} 
-                                        thumbnail
-                                    />
+                                 style={{maxWidth: '300px', position:"relative"}}
+                                >   
+                                    {pregunta.imagen.trim() === '' && pregunta.audio.trim() === '' && pregunta.video.trim() === ''
+                                    ?
+                                        <Image 
+                                            src={'/static/img-pregunta.png'} 
+                                            style={{opacity: 0.3}}
+                                            thumbnail
+                                        />
+                                    :
+                                        null
+                                    }
                                     {pregunta.imagen.trim() !== '' &&
+                                        <Image 
+                                            src={pregunta.imagen.trim()} 
+                                            thumbnail
+                                        />
+                                    }
+                                    {pregunta.audio.trim() !== '' &&
+                                        <audio 
+                                            style={{maxWidth: '100%'}}
+                                            controls
+                                        >
+                                            <source src={pregunta.audio.trim()} />
+                                        </audio>
+                                    }
+                                    {pregunta.video.trim() !== '' &&
+                                        <video 
+                                            style={{maxWidth: '100%'}}
+                                            controls
+                                        >
+                                            <source src={pregunta.video.trim()} />
+                                        </video>
+                                    }
+
+                                    {pregunta.imagen.trim() !== '' ||
+                                     pregunta.video.trim() !== '' ||
+                                     pregunta.audio.trim() !== ''
+                                    ?
                                         <span
-                                            onClick={handleQuitarImagenPregunta}
+                                            onClick={handleQuitarArchivoPregunta}
                                             style={{
                                                 position: 'absolute', 
                                                 top: -16, 
@@ -451,83 +541,105 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                                 color={"red"}
                                             />
                                         </span>
+                                    :
+                                        null
                                     }
                                 </div>
                             </Col>
-                            <Col>
+                            <Col xs="4" className="d-flex justify-content-center">
+                                <Nav variant="tabs" activeKey="opciones-pregunta">
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="opciones-pregunta">Opciones</Nav.Link>
+                                        <Container>     
+                                        <Row>
+                                            <Col>
+                                                <Form.Group>
+                                                    <Form.Label><small>Tiempo para responder (Segundos)</small></Form.Label>
+                                                    <Form.Control
+                                                        id="duracion"
+                                                        name="duracion"
+                                                        type="text" 
+                                                        placeholder="DURACIÓN SEGUNDOS" 
+                                                        value={pregunta.duracion}
+                                                        onChange={e => {
+                                                            setPregunta({
+                                                                ...pregunta,
+                                                            [e.target.name]: e.target.value.replace(/\D/,''),
+                                                            })
+                                                        }}
+                                                        isInvalid={errores.hasOwnProperty('duracion')}
+                                                    />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errores.hasOwnProperty('duracion') && errores.duracion}
+                                                    </Form.Control.Feedback>
+                                                </Form.Group>
+                                            </Col>
+                                        </Row>
+                                        </Container>
+                                        
+                                    </Nav.Item>
+                                </Nav>
+                            </Col>
+                            <Col xs="4" className="d-flex justify-content-center py-0 ">
                                 <Uploader 
-                                    titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                                    titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN, AUDIO O VIDEO"}
                                     getArchivos={getMultimediaPregunta}
-                                />
+                                /> 
                             </Col>  
                         </Row>  
                     </Form.Group> 
                 }  
-                <Row>
-                    <Col xs={9}>
-                        <Alert variant="info" className="text-muted"> 
-                            Aquí va la instrucción para crear las alternativas.
-                        </Alert> 
-                    </Col>
-                    <Col xs={3}>
+                <Row className="p-3">
+                    <Col>
                         <Button
                             variant="info"
-                            size="lg"
+                            size="sm"
                             onClick={handleAgregarAlternativa}
                             block
                         >
-                        + Alternativa
+                        + Pulsa para agregar Alternativas
                         </Button>
                     </Col>
                 </Row>
-                <Row className="px-3">
+                <Row className="px-2">
+                    
                     <AlternativaPregunta 
                         alternativas = {alternativas}
                         setAlternativas = {setAlternativas}
                     /> 
                 </Row>
-                <Row>
-                    <Col xs={9}>
-                        <Alert variant="info" className="text-muted"> 
-                            Aquí va la instrucción para crear la solución.
-                        </Alert> 
-                    </Col>
-                    <Col xs={3}>
+                <Row className="px-3"> 
+                    <Col>
                         <Button
                             variant="info"
-                            size="lg"
+                            size="sm"
                             onClick={handleAgregarSolucion}
                             block
                         >
-                        + Soluciones
+                        + Pulsa para agregar Soluciones
                         </Button>
                     </Col>
                 </Row>
-                <Row className="px-3">
+                <Row className="py-2">
                     <SolucionPregunta  
                         soluciones = {soluciones}
                         errores = {error_solucion}
                         setSoluciones = {setSoluciones}
                     />
                 </Row>
-                <Row>
-                    <Col xs={9}>
-                        <Alert variant="info" className="text-muted"> 
-                            Aquí va la instrucción para crear las pistas.
-                        </Alert> 
-                    </Col>
-                    <Col xs={3}>
+                <Row className="px-3">
+                    <Col>
                         <Button
                             variant="info"
-                            size="lg"
+                            size="sm"
                             onClick={handleAgregarPista}
                             block
                         >
-                        + Pistas
+                        + Pulsa para agregar Pistas
                         </Button>
                     </Col>
                 </Row>
-                <Row className="px-3">
+                <Row className="py-2">
                     <PistaPregunta  
                         pistas = {pistas}
                         errores = {error_pista}

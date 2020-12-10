@@ -1,23 +1,24 @@
 import React, { useState, useContext, createRef, useEffect} from 'react';
+import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
 import CustomDateInput from '../ui/CustomDateInput';
-import DatePicker, {CalendarContainer} from 'react-datepicker';
+import DatePicker from 'react-datepicker';
 import AuthContext from '../../context/auth/AuthContext';
 import InputSelectTipoJuego from '../ui/InputSelectTipoJuego';
-import InputSelectNivelAcademico from '../../components/ui/InputSelectNivelAcademico';
+import InputSelectNivelesAcademicosUsuarioInstitucion from '../../components/ui/InputSelectNivelesAcademicosUsuarioInstitucion';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectTipoDuracionPregunta from '../../components/ui/InputSelectTipoDuracionPregunta';
-import { date } from 'yup';
  
 
 const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
 
-    const {usuario} = useContext(AuthContext);
+    const router = useRouter();
+    const {usuario, institucion} = useContext(AuthContext);
+
     const [formulario, setFormulario] = useState({
         codigo: '',
         nombre: '',
@@ -25,7 +26,8 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         fecha_hora_inicio: new Date(),
         fecha_hora_fin: new Date(),
         rut_usuario_creador: usuario.rut,
-        cantidad_usuarios: '',
+        cantidad_usuarios: '5',
+        codigo_institucion: institucion.codigo,
         codigo_nivel_academico: '0',
         codigo_materia: '0',
         tipo_duracion_pregunta: '0',
@@ -47,6 +49,13 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
     
     const [errores, setErrores] = useState({});
 
+    //Si se cambia de institucion, vuelve a la pantalla anterior.
+    useEffect(() => {
+        if(ring_modificar && ring_modificar.codigo_institucion !== institucion.codigo){
+            handleMostrarBusquedaRings();
+        }
+    }, [institucion]);
+
     useEffect(() => {
         if(ring_modificar){
 
@@ -58,6 +67,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                 fecha_hora_fin: new Date(ring_modificar.fecha_hora_fin),
                 rut_usuario_creador: ring_modificar.rut_usuario_creador,
                 cantidad_usuarios: ring_modificar.cantidad_usuarios,
+                codigo_institucion: institucion.codigo,
                 codigo_nivel_academico: ring_modificar.codigo_nivel_academico,
                 codigo_materia: ring_modificar.codigo_materia,
                 tipo_duracion_pregunta: ring_modificar.tipo_duracion_pregunta,
@@ -69,9 +79,6 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         }
     }, [ring_modificar]);
 
-    
-
-
     const validarFormulario = () => {
         
         let errors = {}
@@ -82,18 +89,47 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                 nombre: 'Requerido'
             }
         }
-        
-        if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
-        }
 
         if(formulario.codigo_tipo_juego.trim() === '' || formulario.codigo_tipo_juego.trim() === '0'){
             errors = {
                 ...errors,
                 codigo_tipo_juego: 'Requerido'
+            }
+        }
+
+        if(formulario.cantidad_usuarios.trim() === '' || formulario.cantidad_usuarios.trim() === '0'){
+            errors = {
+                ...errors,
+                cantidad_usuarios: 'Requerido'
+            }
+        }
+
+        
+        if(formulario.codigo_nivel_academico.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_nivel_academico: 'Requerido',
+            }
+        }
+
+        if(formulario.codigo_materia.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_materia: 'Requerido',
+            }
+        }
+
+        if(formulario.tipo_duracion_pregunta.trim() === '0'){
+            errors = {
+               ...errors,
+               tipo_duracion_pregunta: 'Requerio',
+            }
+        }
+
+        if(formulario.tipo_duracion_pregunta.trim() === '2' && formulario.duracion_pregunta.trim() === '0' || formulario.duracion_pregunta.trim() === ''){
+            errors = {
+                ...errors,
+                duracion_pregunta: 'Requerido',
             }
         }
 
@@ -112,6 +148,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             fecha_hora_fin: new Date(),
             rut_usuario_creador: usuario.rut,
             cantidad_usuarios: '',
+            codigo_institucion: institucion.codigo,
             codigo_nivel_academico: '0',
             codigo_materia: '0',
             tipo_duracion_pregunta: '0',
@@ -176,170 +213,190 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         <Container>
         
         <Form>
-             <Form.Group>
-                 <Form.Label>Nombre</Form.Label>
-                 <Form.Control
-                     id="nombre"
-                     name="nombre"
-                     type="text" 
-                     placeholder="NOMBRE" 
-                     value={formulario.nombre}
-                     onChange={e => {setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     isInvalid={errores.hasOwnProperty('nombre')}
-                     onBlur={validarFormulario}
-                 />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('nombre') && errores.nombre}
-                 </Form.Control.Feedback>
-             </Form.Group>
-             <Form.Group>
-                <Form.Label>Tipo de Juego</Form.Label>
-                <InputSelectTipoJuego
-                    id="codigo_tipo_juego"
-                    name="codigo_tipo_juego"
-                    as="select"
-                    value={formulario.codigo_tipo_juego}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value
-                    })}
-                    isInvalid={errores.hasOwnProperty('codigo_tipo_juego')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_tipo_juego') && errores.codigo_tipo_juego}
-                </Form.Control.Feedback>
-            </Form.Group>
-             <Form.Group>
-                 <Form.Label>Instrucciones</Form.Label>
-                 <Form.Control
-                     id="descripcion"
-                     name="descripcion"
-                     as = "textarea"
-                     rows = "2"
-                     placeholder="INSTRUCCIONES" 
-                     value={formulario.descripcion}
-                     onChange={e => {setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     isInvalid={errores.hasOwnProperty('descripcion')}
-                     onBlur={validarFormulario}
-                 />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                 </Form.Control.Feedback>
-             </Form.Group>
-             <Form.Group>
-                 <Form.Label>Cantidad Usuario</Form.Label>
-                 <Form.Control
-                     id="cantidad_usuarios"
-                     name="cantidad_usuarios"
-                     type="text" 
-                     placeholder="CANTIDAD DE USUARIOS" 
-                     value={formulario.cantidad_usuarios}
-                     onChange={e => {setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     isInvalid={errores.hasOwnProperty('cantidad_usuarios')}
-                     onBlur={validarFormulario}
-                 />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('cantidad_usuarios') && errores.cantidad_usuarios}
-                 </Form.Control.Feedback>
-             </Form.Group>
-             <Form.Group>
-                <Form.Label>Nivel Academico</Form.Label>
-                <InputSelectNivelAcademico
-                    id="codigo_nivel_academico"
-                    name="codigo_nivel_academico"
-                    as="select"
-                    value={formulario.codigo_nivel_academico}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value
-                    })}
-                    isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Materia</Form.Label>
-                <InputSelectMateria
-                    id="codigo_materia"
-                    name="codigo_materia"
-                    as="select"
-                    value={formulario.codigo_materia}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value
-                    })}
-                    isInvalid={errores.hasOwnProperty('codigo_materia')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_materia') && errores.codigo_materia}
-                </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group>
-                <Form.Label>Tipo de duración de las preguntas</Form.Label>
-                <InputSelectTipoDuracionPregunta
-                    id="tipo_duracion_pregunta"
-                    name="tipo_duracion_pregunta"
-                    as="select"
-                    value={formulario.tipo_duracion_pregunta}
-                    onChange={e => {
-                        setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value,
-                            duracion_pregunta: '0',
-                        })
-                        if(e.target.value === '2'){
-                            setShowDuracionPregunta(true);
-                        }else{
-                            setShowDuracionPregunta(false);
-                        }
-                    }}
-                    isInvalid={errores.hasOwnProperty('tipo_duracion_pregunta')}
-                    onBlur={validarFormulario}
-                />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('tipo_duracion_pregunta') && errores.tipo_duracion_pregunta}
-                </Form.Control.Feedback>
-            </Form.Group>
-            {showDuracionPregunta && 
-               <Form.Group>
-               <Form.Label>Tiempo de duración de las preguntas</Form.Label>
-               <Form.Control
-                  id="duracion_pregunta"
-                  name="duracion_pregunta"
-                  type="text" 
-                  placeholder="DURACION DE PREGUNTA" 
-                  value={formulario.duracion_pregunta}
-                  onChange={e => {setFormulario({
-                        ...formulario,
-                    [e.target.name]: e.target.value.toUpperCase()
-                    })
-                  }}
-                  isInvalid={errores.hasOwnProperty('duracion_pregunta')}
-                  onBlur={validarFormulario}
-                />
-               <Form.Control.Feedback type="invalid">
-                {errores.hasOwnProperty('duracion_pregunta') && errores.duracion_pregunta}
-               </Form.Control.Feedback>
-               </Form.Group>
-            }
-             <Row className="ml-0">
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Nombre</Form.Label>
+                        <Form.Control
+                            id="nombre"
+                            name="nombre"
+                            type="text" 
+                            placeholder="NOMBRE" 
+                            value={formulario.nombre}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('nombre')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('nombre') && errores.nombre}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Tipo de Juego</Form.Label>
+                        <InputSelectTipoJuego
+                            id="codigo_tipo_juego"
+                            name="codigo_tipo_juego"
+                            as="select"
+                            value={formulario.codigo_tipo_juego}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_tipo_juego')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_tipo_juego') && errores.codigo_tipo_juego}
+                        </Form.Control.Feedback>
+                    </Form.Group>     
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Cantidad Usuario</Form.Label>
+                        <Form.Control
+                            id="cantidad_usuarios"
+                            name="cantidad_usuarios"
+                            type="number" 
+                            placeholder="CANTIDAD DE USUARIOS" 
+                            value={formulario.cantidad_usuarios}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('cantidad_usuarios')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('cantidad_usuarios') && errores.cantidad_usuarios}
+                        </Form.Control.Feedback>
+                    </Form.Group>          
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Instrucciones</Form.Label>
+                        <Form.Control
+                            id="descripcion"
+                            name="descripcion"
+                            as = "textarea"
+                            rows = "1"
+                            placeholder="INSTRUCCIONES" 
+                            value={formulario.descripcion}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row> 
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Nivel Academico</Form.Label>
+                        <InputSelectNivelesAcademicosUsuarioInstitucion
+                            id="codigo_nivel_academico"
+                            name="codigo_nivel_academico"
+                            as="select"
+                            //Listará los niveles academicos del rut_usuario logeado
+                            rut_usuario={usuario.rut}
+                            codigo_institucion={institucion.codigo}
+                            value={formulario.codigo_nivel_academico}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Materia</Form.Label>
+                        <InputSelectMateria
+                            id="codigo_materia"
+                            name="codigo_materia"
+                            as="select"
+                            value={formulario.codigo_materia}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_materia')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('codigo_materia') && errores.codigo_materia}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Tipo de duración para responder</Form.Label>
+                        <InputSelectTipoDuracionPregunta
+                            id="tipo_duracion_pregunta"
+                            name="tipo_duracion_pregunta"
+                            as="select"
+                            value={formulario.tipo_duracion_pregunta}
+                            onChange={e => {
+                                setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value,
+                                    duracion_pregunta: '0',
+                                })
+                                if(e.target.value === '2'){
+                                    setShowDuracionPregunta(true);
+                                }else{
+                                    setShowDuracionPregunta(false);
+                                }
+                            }}
+                            isInvalid={errores.hasOwnProperty('tipo_duracion_pregunta')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('tipo_duracion_pregunta') && errores.tipo_duracion_pregunta}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                {showDuracionPregunta && 
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Segundos</Form.Label>
+                        <Form.Control
+                            id="duracion_pregunta"
+                            name="duracion_pregunta"
+                            type="number" 
+                            placeholder="SEGUNDOS DURACIÓN DE PREGUNTA" 
+                            value={formulario.duracion_pregunta}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                [e.target.name]: e.target.value,
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('duracion_pregunta')}
+                            onBlur={validarFormulario}
+                            />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('duracion_pregunta') && errores.duracion_pregunta}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                }
+            </Row>
+            <Row className="ml-0">
                  <Col xs="auto">
                      <Row>
                         <Form.Label>Inicio del juego </Form.Label>
@@ -395,30 +452,27 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             </Row>
             
             <ButtonGroup toggle style={{zIndex: 0}}>
-        
-            {radios_estado_ring.map((radio, idx) => (
-                <ToggleButton
-                    key={idx}
-                    type="radio"
-                    variant="outline-info"
-                    name="privado"
-                    value={radio.value}
-                    checked={formulario.privado === radio.value}
-                    onChange={e => {
-                        setFormulario({
-                            ...formulario,
-                            [e.target.name]: radio.value,
-                        });
-                    }
-                    }
-                >
-                    {radio.name}
-                </ToggleButton>
-            ))}
-            
+                {radios_estado_ring.map((radio, idx) => (
+                    <ToggleButton
+                        key={idx}
+                        type="radio"
+                        variant="outline-info"
+                        name="privado"
+                        value={radio.value}
+                        checked={formulario.privado === radio.value}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: radio.value,
+                            });
+                        }
+                        }
+                    >
+                        {radio.name}
+                    </ToggleButton>
+                ))}
             </ButtonGroup>
-
-             <Form.Check 
+            <Form.Check 
                 id="inactivo"
                 name="inactivo"
                 type="checkbox"

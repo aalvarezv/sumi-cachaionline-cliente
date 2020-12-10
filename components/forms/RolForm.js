@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
 import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Nav } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
@@ -18,6 +18,19 @@ const RolForm = () => {
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
+        ver_menu_administrar: false,
+        ver_submenu_instituciones:false,
+        ver_submenu_niveles_academicos:false,
+        ver_submenu_roles:false,
+        ver_submenu_usuarios:false,
+        ver_menu_asignaturas:false,
+        ver_submenu_materias:false,
+        ver_submenu_unidades:false,
+        ver_submenu_modulos:false,
+        ver_submenu_temas:false,
+        ver_submenu_conceptos:false,
+        ver_menu_rings: false,
+        ver_menu_preguntas: false,
         inactivo: false
     });
 
@@ -44,6 +57,19 @@ const RolForm = () => {
             setFormulario({
                 codigo: result_select.codigo,
                 descripcion: result_select.descripcion,
+                ver_menu_administrar: result_select.ver_menu_administrar,
+                ver_submenu_instituciones: result_select.ver_submenu_instituciones,
+                ver_submenu_niveles_academicos: result_select.ver_submenu_niveles_academicos,
+                ver_submenu_roles: result_select.ver_submenu_roles,
+                ver_submenu_usuarios: result_select.ver_submenu_usuarios,
+                ver_menu_asignaturas: result_select.ver_menu_asignaturas,
+                ver_submenu_materias: result_select.ver_submenu_materias,
+                ver_submenu_unidades: result_select.ver_submenu_unidades,
+                ver_submenu_modulos: result_select.ver_submenu_modulos,
+                ver_submenu_temas: result_select.ver_submenu_temas,
+                ver_submenu_conceptos: result_select.ver_submenu_conceptos,
+                ver_menu_rings: result_select.ver_menu_rings,
+                ver_menu_preguntas: result_select.ver_menu_preguntas,
                 inactivo: result_select.inactivo
             });
         }else{
@@ -74,7 +100,20 @@ const RolForm = () => {
         setFormulario({
             codigo: '',
             descripcion: '',
-            inactivo: false
+            ver_menu_administrar: false,
+            ver_submenu_instituciones:false,
+            ver_submenu_niveles_academicos:false,
+            ver_submenu_roles:false,
+            ver_submenu_usuarios:false,
+            ver_menu_asignaturas:false,
+            ver_submenu_materias:false,
+            ver_submenu_unidades:false,
+            ver_submenu_modulos:false,
+            ver_submenu_temas:false,
+            ver_submenu_conceptos:false,
+            ver_menu_rings: false,
+            ver_menu_preguntas: false,
+            inactivo: false,
         });
     }
 
@@ -124,7 +163,6 @@ const RolForm = () => {
         }
     }
 
-
     return (
         <Container>
         <InputSearch
@@ -135,32 +173,246 @@ const RolForm = () => {
             label="descripcion"
         />
         <Form>
-             <Form.Group>
-                 <Form.Label>Descripcion</Form.Label>
-                 <Form.Control
-                     id="descripcion"
-                     name="descripcion"
-                     type="text" 
-                     placeholder="DESCRIPCIÓN" 
-                     value={formulario.descripcion}
-                     onChange={e => {setFormulario({
-                             ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                         })
-                     }}
-                     isInvalid={errores.hasOwnProperty('descripcion')}
-                     onBlur={validarFormulario}
-                 />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                 </Form.Control.Feedback>
-             </Form.Group>
-             <Form.Check 
+            <Form.Group>
+                <Form.Label>Descripcion</Form.Label>
+                <Form.Control
+                    id="descripcion"
+                    name="descripcion"
+                    type="text" 
+                    placeholder="DESCRIPCIÓN" 
+                    value={formulario.descripcion}
+                    onChange={e => {setFormulario({
+                            ...formulario,
+                        [e.target.name]: e.target.value.toUpperCase()
+                        })
+                    }}
+                    isInvalid={errores.hasOwnProperty('descripcion')}
+                    onBlur={validarFormulario}
+                />
+                <Form.Control.Feedback type="invalid">
+                {errores.hasOwnProperty('descripcion') && errores.descripcion}
+                </Form.Control.Feedback>
+            </Form.Group>
+            <Nav variant="tabs" activeKey="opciones-menu">
+                <Nav.Item>
+                    <Nav.Link eventKey="opciones-menu">Habilitar opciones de menú</Nav.Link>
+                    <Container>                 
+                        <Row className="mt-2">
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_menu_administrar"
+                                    name="ver_menu_administrar"
+                                    type="checkbox"
+                                    label="Menú Administrar"
+                                    checked={formulario.ver_menu_administrar}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_instituciones"
+                                    name="ver_submenu_instituciones"
+                                    type="checkbox"
+                                    label="Instituciones"
+                                    checked={formulario.ver_submenu_instituciones}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_niveles_academicos"
+                                    name="ver_submenu_niveles_academicos"
+                                    type="checkbox"
+                                    label="Niveles Académicos"
+                                    checked={formulario.ver_submenu_niveles_academicos}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_roles"
+                                    name="ver_submenu_roles"
+                                    type="checkbox"
+                                    label="Roles"
+                                    checked={formulario.ver_submenu_roles}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_usuarios"
+                                    name="ver_submenu_usuarios"
+                                    type="checkbox"
+                                    label="Usuarios"
+                                    checked={formulario.ver_submenu_usuarios}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_menu_asignaturas"
+                                    name="ver_menu_asignaturas"
+                                    type="checkbox"
+                                    label="Menú Asignaturas"
+                                    checked={formulario.ver_menu_asignaturas}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_materias"
+                                    name="ver_submenu_materias"
+                                    type="checkbox"
+                                    label="Materias"
+                                    checked={formulario.ver_submenu_materias}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_unidades"
+                                    name="ver_submenu_unidades"
+                                    type="checkbox"
+                                    label="Unidades"
+                                    checked={formulario.ver_submenu_unidades}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_modulos"
+                                    name="ver_submenu_modulos"
+                                    type="checkbox"
+                                    label="Módulos"
+                                    checked={formulario.ver_submenu_modulos}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_temas"
+                                    name="ver_submenu_temas"
+                                    type="checkbox"
+                                    label="Temas"
+                                    checked={formulario.ver_submenu_temas}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_submenu_conceptos"
+                                    name="ver_submenu_conceptos"
+                                    type="checkbox"
+                                    label="Conceptos"
+                                    checked={formulario.ver_submenu_conceptos}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_menu_preguntas"
+                                    name="ver_menu_preguntas"
+                                    type="checkbox"
+                                    label="Menú Preguntas"
+                                    checked={formulario.ver_menu_preguntas}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs="auto">
+                                <Form.Check 
+                                    id="ver_menu_rings"
+                                    name="ver_menu_rings"
+                                    type="checkbox"
+                                    label="Menú Rings"
+                                    checked={formulario.ver_menu_rings}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        });
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                    </Container>
+                </Nav.Item>
+            </Nav>
+            <Form.Check 
                 id="inactivo"
                 name="inactivo"
                 type="checkbox"
                 label="Inactivo"
-                className="mb-3"
+                className="mt-3"
                 checked={formulario.inactivo}
                 onChange={e => {
                     setFormulario({

@@ -3,7 +3,6 @@ import axios from 'axios';
 import Router from 'next/router';
 import ToastMultiline from '../components/ui/ToastMultiline';
 
-
 export const handleError = (e) => {
 
     console.log({e})
@@ -151,9 +150,14 @@ export const letras = [
 ]
 
 export const getBase64FromURL = async url => {
-    let image = await axios.get(url, {
+
+    
+    let file = await axios.get(url, {
         responseType: 'arraybuffer'
     });
-    let base64 = Buffer.from(image.data).toString('base64');
-    return `data:${image.headers['content-type']};base64,${base64}`
+
+   
+    //console.log(`CONTENT TYPE ${file.headers['content-type']}`)
+    let base64 = Buffer.from(file.data).toString('base64');
+    return `data:${file.headers['content-type']};base64,${base64}`
 }

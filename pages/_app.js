@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, Slide, Zoom, Flip, Bounce } from 'react-toastify';
@@ -9,6 +10,10 @@ import UnidadState from '../context/unidades/UnidadState';
 import NivelAcademicoState from '../context/niveles_academicos/NivelAcademicoState';
 
 function MyApp({ Component, pageProps }) {
+
+  useEffect(() => {
+    console.log('renderizo _app AQUI DEFINIR JUEGO DE ROL')
+  }, [])
 
   return (
     <>

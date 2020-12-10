@@ -1,5 +1,4 @@
 import React, {useState, useRef} from 'react';
-import { useRouter } from 'next/router';
 import { Table, Image, Button, Overlay, Popover, Row, Col } from 'react-bootstrap';
 import ModalImageView from './ModalImageView';
 
@@ -39,11 +38,11 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
             handleClose={handleCloseImageView}
         />
         {preguntas.length > 0 &&
-        <Table striped bordered hover variant="light">
+        <Table striped bordered hover variant="light" responsive>
         <thead>
             <tr>
             <th>#</th>
-            <th>Imagen</th>
+            <th>Multimedia</th>
             <th>Creador</th>
             <th>Creada</th>
             <th></th>
@@ -54,7 +53,7 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
             {
                 preguntas.map((pregunta, index) => {
                     
-                    const { codigo, imagen, usuario, 
+                    const { codigo, imagen, audio, video, usuario, 
                         createdAt, updatedAt} = pregunta;
                         
                         return (
@@ -63,16 +62,36 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                         >
                         <td>{index+1}</td>
                         <td>
-                            <Image 
-                                src={imagen} 
-                                style={{width: 40, height: 40, cursor: 'pointer'}} 
-                                onClick={() => handleShowImageView(imagen)}
-                                thumbnail
-                            />
+                            {imagen.trim() !== '' &&
+                                <Image 
+                                    src={imagen} 
+                                    style={{width: 150, cursor: 'pointer'}} 
+                                    onClick={() => handleShowImageView(imagen)}
+                                    thumbnail
+                                />
+                            }
+                            {audio.trim() !== '' &&
+                                <audio 
+                                    style={{width: 150, cursor: 'pointer'}}
+                                    controls
+                                >
+                                    <source src={audio.trim()} />
+                                </audio>
+                            }
+                            {video.trim() !== '' &&
+                                <video 
+                                    style={{width: 150, cursor: 'pointer'}}
+                                    controls
+                                >
+                                    <source src={video.trim()} />
+                                </video>
+                            }
+                            
                         </td>
-                        <td>{usuario.nombre}</td>
+                        <td className="d-flex justify-content-center">{usuario.nombre}</td>
                         <td><small>{createdAt}</small></td>
-                        <td>
+                        <td className="d-flex justify-content-around"
+                        >
                             <Button
                                 variant={"outline-info"}
                                 size={"md"}
@@ -80,15 +99,19 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                                 >
                                 Modificar
                             </Button>
+                            
                         </td>
-                        <td ref={ref_confirm_eliminar}>
-                            <Button
+                        <td 
+                            ref={ref_confirm_eliminar}
+                        >
+                           <Button
                                 variant={"danger"}
                                 size={"md"}
                                 onClick={e => handleClickEliminar(e, codigo)}
                             >
                                Eliminar
                             </Button>
+                        
                             <Overlay
                                 show={show_confirm_eliminar}
                                 target={target_confirm_eliminar}

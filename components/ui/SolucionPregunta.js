@@ -17,11 +17,40 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         setSoluciones(new_soluciones);
     } 
     
-    const handleChangeImagenSolucion = (numero_solucion, base64) => {
-        const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? ({
-            ...solucion,
-            imagen: base64
-        }): solucion);
+    const handleChangeArchivoSolucion = (numero_solucion, tipo_archivo, base64) => {
+        /*const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? (): solucion);*/
+        const new_soluciones = soluciones.map(solucion => {
+
+            if(solucion.numero === numero_solucion){
+                switch (tipo_archivo) {
+                    case 'image':
+                        return {
+                            ...solucion,
+                            imagen: base64,
+                            audio: '',
+                            video: '',
+                        }
+                    case 'audio':
+                        return {
+                            ...solucion,
+                            imagen: '',
+                            audio: base64,
+                            video: '',
+                        }
+                    case 'video':
+                        return {
+                            ...solucion,
+                            imagen: '',
+                            audio: '',
+                            video: base64,
+                        }
+                }
+            }else{
+                return solucion
+            }
+
+        })
+       
         setSoluciones(new_soluciones);
     }
 
@@ -38,10 +67,12 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         setSoluciones(new_soluciones);
     }
 
-    const handleQuitarImagen = (numero_solucion) => {
+    const handleQuitarArchivo = (numero_solucion) => {
         const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? ({
             ...solucion,
-            imagen: ''
+            imagen: '',
+            audio: '',
+            video: '',
         }): solucion);
         setSoluciones(new_soluciones);
     }
@@ -49,7 +80,9 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaSolucion = async  (numero_solucion, archivo) => {
         const base64 = await getBase64(archivo[0]);
-        handleChangeImagenSolucion(numero_solucion, base64);
+        const tipo_archivo = archivo[0].type.split('/')[0];
+
+        handleChangeArchivoSolucion(numero_solucion, tipo_archivo, base64);
     }
 
     return (
@@ -57,12 +90,13 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         <Container className= {`border-bottom border-light mt-2`}>
          {soluciones.map((solucion) => {
             
-            const {numero, texto, imagen} = solucion;
+            const {codigo, numero, texto, imagen, video, audio} = solucion;
             
             return (
             <Row
-                key={numero}
-                className={`d-flex align-items-center mb-3
+                key={codigo}
+                //d-flex align-items-center mb-3
+                className={` mb-3
                     ${errores.length > 0 
                         ? errores.filter(error => error.numero === numero).length > 0 ? 'text-danger' : 'text-secondary'
                         : 'text-secondary'
@@ -71,10 +105,13 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
             >
                 <Col 
                     xs="auto"
+                    className="d-flex justify-content-center"
                 >
                     <h4>#{numero}</h4>
                 </Col>
-                <Col>
+                <Col
+                    className="d-flex justify-content-center"
+                >
                     <Form.Control 
                         id="descripcion"
                         name="descripcion"
@@ -89,26 +126,52 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                         // onBlur={validarFormulario}
                     />
                 </Col>
-                <Col>       
+                <Col className="d-flex justify-content-center">       
                     <Row>
-                        <Col>
-                            <Uploader 
-                                titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
-                                index={numero}
-                                getArchivos={getMultimediaSolucion}
-                            />
-                        </Col>
-                        <Col xs="auto">
+                        
+                        <Col xs="auto" className="d-flex align-items-center">
                             <div
-                                 style={{width: 86, position:"relative"}}
-                            >
-                                <Image 
-                                    src={imagen.trim() === '' ? '/static/no-image.png' : imagen.trim()} 
-                                    thumbnail
-                                />
+                                 style={{maxWidth: "150px", position:"relative"}}
+                            >   
+                                {imagen.trim() === '' && audio.trim() === '' && video.trim() === ''
+                                ?
+                                    <Image 
+                                        src={'/static/img-pregunta.png'}
+                                        style={{opacity: 0.5}} 
+                                        thumbnail
+                                    />
+                                :
+                                    null
+                                }
+                                
                                 {imagen.trim() !== '' &&
+                                    <Image 
+                                        src={imagen.trim() === '' ? '/static/no-image.png' : imagen.trim()} 
+                                        thumbnail
+                                    />
+                                }
+                                {audio.trim() !== '' &&
+                                    <audio 
+                                        style={{maxWidth: '100%'}}
+                                        controls
+                                    >
+                                        <source src={audio.trim()} />
+                                    </audio>
+                                }
+                                {video.trim() !== '' &&
+                                    <video 
+                                        style={{maxWidth: '100%'}}
+                                        controls
+                                    >
+                                        <source src={video.trim()} />
+                                    </video>
+                                }
+                                {imagen.trim() !== '' ||
+                                 audio.trim() !== '' ||
+                                 video.trim() !== ''  
+                                ?
                                     <span
-                                        onClick={() => handleQuitarImagen(numero)}
+                                        onClick={() => handleQuitarArchivo(numero)}
                                         style={{
                                             position: 'absolute', 
                                             top: -15, 
@@ -121,13 +184,25 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                                             color={"red"}
                                         />
                                     </span>
+                                : 
+                                    null
                                 }
+                                
                             </div>
                         </Col>
+                       
                     </Row>  
+                </Col>
+                <Col className="d-flex justify-content-center p-0">
+                    <Uploader 
+                        titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                        index={numero}
+                        getArchivos={getMultimediaSolucion}
+                    />
                 </Col>
                 <Col 
                     xs="auto" 
+                    className="d-flex justify-content-center align-items-center"
                 >
                     <a  href="#"
                         className="nav-link"
@@ -135,7 +210,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                             handleQuitarSolucion(numero)
                         }}
                     >
-                        <RiDeleteBin5Line size={"1.5rem"} color={"gray"}/>
+                        <RiDeleteBin5Line size={"1.5rem"} color={"red"}/>
                     </a>
                 </Col>
             </Row>

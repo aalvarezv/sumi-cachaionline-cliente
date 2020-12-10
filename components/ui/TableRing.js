@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react';
 import {Table, Button, Badge, Overlay, Popover, Row, Col} from 'react-bootstrap';
-import ModalUsuariosRing from '../ui/ModalUsuariosRing';
+import ModalRingUsuarios from '../ui/ModalRingUsuarios';
+import ModalRingPreguntas from '../ui/ModalRingPreguntas';
 
 const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
 
@@ -9,31 +10,42 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
     const ref_confirm_eliminar = useRef(null);
 
     const [show_modal_usuarios, setShowModalUsuarios] = useState(false);
-    const handleCloseModalUsuarios = () => setShowModalUsuarios(false);
-    const handleShowModalUsuarios = () => setShowModalUsuarios(true);
-
-    const [codigo_ring_usuario, setCodigoRingUsuario] = useState('')
-
+    const [show_modal_preguntas, setShowModalPreguntas] = useState(false);
+    const [ring, setRing] = useState({})
     const [codigo_eliminar, setCodigoEliminar] = useState('');
     
-    const handleClickAgregarUsuario = (codigo) => {
-        setCodigoRingUsuario(codigo);
-    };
+    const handleCloseModalUsuarios = () => setShowModalUsuarios(false);
+    const handleCloseModalPreguntas = () => setShowModalPreguntas(false);
+  
+    const handleClickAgregarUsuarioRing = ring => {
+        setShowModalUsuarios(true);
+        setRing(ring);
+    }
+
+    const handleClickAgregarPreguntaRing = ring => {
+        setShowModalPreguntas(true);
+        setRing(ring);
+    }
 
     const handleClickEliminar = (e, codigo) => {
         setShowConfirmEliminar(!show_confirm_eliminar);
         setTargetConfirmEliminar(e.target);
         setCodigoEliminar(codigo);
-    };
+    }
 
     return (
         <>
-            <ModalUsuariosRing
+            <ModalRingUsuarios
                 show = {show_modal_usuarios}
                 handleClose = {handleCloseModalUsuarios}
-                codigo_ring = {codigo_ring_usuario}
+                ring = {ring}
             />
-            <Table striped bordered hover variant="light"> 
+            <ModalRingPreguntas 
+                show = {show_modal_preguntas}
+                handleClose = {handleCloseModalPreguntas}
+                ring = {ring}
+            />
+            <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
                     <th>#</th>
@@ -41,6 +53,7 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                     <th>Creador</th>
                     <th>Creado</th>
                     <th>Privado</th>
+                    <th>Nivel</th>
                     <th></th>
                     <th></th>
                     </tr>
@@ -49,7 +62,7 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                 <tbody>
                     {rings.length > 0 && 
                         rings.map((ring, index) =>{
-                            const {codigo, nombre, privado, createdAt, usuario} = ring
+                            const {codigo, nombre, privado, createdAt, usuario, nivel_academico} = ring
                            
                             return(
                                 <tr key={codigo}>
@@ -58,20 +71,32 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                                 <td>{usuario.nombre}</td>
                                 <td><small>{createdAt}</small></td>
                                 <td>
-                                    <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge></td>
+                                    <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge>
+                                </td>
+                                <td><small>{nivel_academico.descripcion}</small></td>
                                 <td>
                                     <Button 
                                         variant="outline-info"
                                         onClick={e => {
-                                            handleShowModalUsuarios(2)
-                                            handleClickAgregarUsuario(codigo)
+                                            handleClickAgregarUsuarioRing(ring)
                                             }  
                                         }
-                                        
                                     >
-                                     Agregar
+                                     Alumnos
                                     </Button>
-                                </td>                                
+                                </td>
+                                <td>
+                                    <Button 
+                                        variant="outline-info"
+                                        onClick={e => {
+                                            
+                                            handleClickAgregarPreguntaRing(ring)
+                                            }  
+                                        }
+                                    >
+                                     Preguntas
+                                    </Button>
+                                </td>                                 
                                 <td>
                                     <Button 
                                         variant="outline-info"

@@ -17,12 +17,42 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         setPistas(new_pistas);
     } 
     
-    const handleChangeImagenPista = (numero_pista, base64) => {
-        const new_pistas = pistas.map(pista => pista.numero === numero_pista ? ({
-            ...pista,
-            imagen: base64
-        }): pista);
+    const handleChangeArchivoPista = (numero_pista, tipo_archivo, base64) => {
+    
+        const new_pistas = pistas.map(pista => {
+
+            if(pista.numero === numero_pista){
+                switch (tipo_archivo) {
+                    case 'image':
+                        return {
+                            ...pista,
+                            imagen: base64,
+                            audio: '',
+                            video: '',
+                        }
+                    case 'audio':
+                        return {
+                            ...pista,
+                            imagen: '',
+                            audio: base64,
+                            video: '',
+                        }
+                    case 'video':
+                        return {
+                            ...pista,
+                            imagen: '',
+                            audio: '',
+                            video: base64,
+                        }
+                }
+            }else{
+                return pista;
+            }  
+
+        });
+        
         setPistas(new_pistas);
+
     }
 
     const handleQuitarPista = (numero_pista) => {
@@ -38,10 +68,12 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         setPistas(new_pistas);
     }
 
-    const handleQuitarImagen = (numero_pista) => {
+    const handleQuitarArchivo = (numero_pista) => {
         const new_pistas = pistas.map(pista => pista.numero === numero_pista ? ({
             ...pista,
-            imagen: ''
+            imagen: '',
+            audio: '',
+            video: '',
         }): pista);
         setPistas(new_pistas);
     }
@@ -49,20 +81,22 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPista = async  (numero_pista, archivo) => {
         const base64 = await getBase64(archivo[0]);
-        handleChangeImagenPista(numero_pista, base64);
+        const tipo_archivo = archivo[0].type.split('/')[0];
+        handleChangeArchivoPista(numero_pista, tipo_archivo, base64);
     }
 
     return (
 
         <Container className= {`border-bottom border-light mt-2`}>
         {pistas.map((pista) => {
-
-            const {numero, texto, imagen} = pista;
+            
+            const {numero, texto, imagen, audio, video} = pista;
     
             return (
             <Row
                 key={numero}
-                className={`d-flex align-items-center mb-3
+                className={`
+                    mb-3
                     ${errores.length > 0 
                         ? errores.filter(error => error.numero === numero).length > 0 ? 'text-danger' : 'text-secondary'
                         : 'text-secondary'
@@ -71,10 +105,11 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
             >
                 <Col 
                     xs="auto"
+                    className="d-flex justify-content-center"
                 >
                     <h4>#{numero}</h4>
                 </Col>
-                <Col>
+                <Col className="d-flex justify-content-center">
                     <Form.Control 
                         id="descripcion"
                         name="descripcion"
@@ -88,26 +123,52 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                         isInvalid={errores.length > 0 ? errores.filter(error => error.numero === numero).length > 0 : false}
                     />
                 </Col>
-                <Col>       
+                <Col className="d-flex justify-content-center">       
                     <Row>
-                        <Col>
-                            <Uploader 
-                                titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
-                                index={numero}
-                                getArchivos={getMultimediaPista}
-                            />
-                        </Col>
-                        <Col xs="auto">
+                        <Col xs="auto" className="d-flex align-items-center">
                             <div
-                                 style={{width: 86, position:"relative"}}
-                            >
-                                <Image 
-                                    src={imagen.trim() === '' ? '/static/no-image.png' : imagen.trim()} 
-                                    thumbnail
-                                />
+                                 style={{maxWidth: "150px", position:"relative"}}
+                            >   
+                                {imagen.trim() === '' && audio.trim() === '' && video.trim() === ''
+                                ?
+                                    <Image 
+                                        src={'/static/img-pregunta.png'} 
+                                        thumbnail
+                                        style={{opacity: 0.5}}
+                                    />
+                                :
+                                    null
+                                }
+
                                 {imagen.trim() !== '' &&
+                                    <Image 
+                                        src={imagen.trim()} 
+                                        thumbnail
+                                    />
+                                }
+                                {audio.trim() !== '' &&
+                                    <audio 
+                                        style={{maxWidth: '100%'}}
+                                        controls
+                                    >
+                                        <source src={audio.trim()} />
+                                    </audio>
+                                }
+                                {video.trim() !== '' &&
+                                    <video 
+                                        style={{maxWidth: '100%'}}
+                                        controls
+                                    >
+                                        <source src={video.trim()} />
+                                    </video>
+                                }
+
+                                {imagen.trim() !== '' ||
+                                 audio.trim() !== '' ||
+                                 video.trim() !== ''
+                                ?
                                     <span
-                                        onClick={() => handleQuitarImagen(numero)}
+                                        onClick={() => handleQuitarArchivo(numero)}
                                         style={{
                                             position: 'absolute', 
                                             top: -15, 
@@ -120,14 +181,24 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                                             color={"red"}
                                         />
                                     </span>
+                                :
+                                    null
                                 }
                             </div>
                            
                         </Col>
                     </Row>  
                 </Col>
+                <Col className="d-flex justify-content-center p-0">
+                    <Uploader 
+                        titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                        index={numero}
+                        getArchivos={getMultimediaPista}
+                    />
+                </Col>
                 <Col 
                     xs="auto" 
+                    className="d-flex justify-content-center  align-items-center"
                 >
                     <a  href="#"
                         className="nav-link"
@@ -135,7 +206,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                             handleQuitarPista(numero)
                         }}
                     >
-                        <RiDeleteBin5Line size={"1.5rem"} color={"gray"}/>
+                        <RiDeleteBin5Line size={"1.5rem"} color={"red"}/>
                     </a>
                 </Col>
             </Row>

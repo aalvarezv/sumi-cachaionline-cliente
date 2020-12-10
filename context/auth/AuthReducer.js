@@ -3,12 +3,15 @@ import {
     LOGIN_ERROR,
     CERRAR_SESION,
     USUARIO_AUTH_EXITO,
-    USUARIO_AUTH_ERROR
+    USUARIO_AUTH_ERROR,
+    SETEA_INSTITUCION,
+    SETEA_ROL,
 } from '../types';
 import tokenAuth from '../../config/token';
 
 
 const AuthReducer = (state, action) => {
+
    
     switch (action.type) {
       
@@ -28,6 +31,8 @@ const AuthReducer = (state, action) => {
                 ...state,
                 usuario: null,
                 autenticado: false,
+                institucion: null,
+                rol: null,
                 mensaje: action.payload,
             } 
         case CERRAR_SESION:
@@ -37,9 +42,20 @@ const AuthReducer = (state, action) => {
                 ...state,
                 usuario: null,
                 autenticado: false,
-                mensaje: null
+                institucion: null,
+                rol: null,
+                mensaje: null,
             }
-       
+        case SETEA_INSTITUCION:
+            return {
+                ...state,
+                institucion: action.payload,
+            }
+        case SETEA_ROL:
+            return {
+                ...state,
+                rol: action.payload,
+            }
       
         default:
             return state
