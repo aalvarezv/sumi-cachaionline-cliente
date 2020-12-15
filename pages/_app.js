@@ -9,11 +9,8 @@ import MateriaState from '../context/materias/MateriaState';
 import UnidadState from '../context/unidades/UnidadState';
 import NivelAcademicoState from '../context/niveles_academicos/NivelAcademicoState';
 
-function MyApp({ Component, pageProps }) {
 
-  useEffect(() => {
-    console.log('renderizo _app AQUI DEFINIR JUEGO DE ROL')
-  }, [])
+function MyApp({ Component, pageProps }) {
 
   return (
     <>

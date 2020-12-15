@@ -17,7 +17,7 @@ import InputSelectTipoDuracionPregunta from '../../components/ui/InputSelectTipo
 const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
 
     const router = useRouter();
-    const {usuario, institucion} = useContext(AuthContext);
+    const {usuario, institucion_select} = useContext(AuthContext);
 
     const [formulario, setFormulario] = useState({
         codigo: '',
@@ -27,7 +27,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         fecha_hora_fin: new Date(),
         rut_usuario_creador: usuario.rut,
         cantidad_usuarios: '5',
-        codigo_institucion: institucion.codigo,
+        codigo_institucion: institucion_select.codigo,
         codigo_nivel_academico: '0',
         codigo_materia: '0',
         tipo_duracion_pregunta: '0',
@@ -51,7 +51,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
 
     //Si se cambia de institucion, vuelve a la pantalla anterior.
     useEffect(() => {
-        if(ring_modificar && ring_modificar.codigo_institucion !== institucion.codigo){
+        if(ring_modificar && ring_modificar.codigo_institucion !== institucion_select.codigo){
             handleMostrarBusquedaRings();
         }
     }, [institucion]);
@@ -67,7 +67,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                 fecha_hora_fin: new Date(ring_modificar.fecha_hora_fin),
                 rut_usuario_creador: ring_modificar.rut_usuario_creador,
                 cantidad_usuarios: ring_modificar.cantidad_usuarios,
-                codigo_institucion: institucion.codigo,
+                codigo_institucion: institucion_select.codigo,
                 codigo_nivel_academico: ring_modificar.codigo_nivel_academico,
                 codigo_materia: ring_modificar.codigo_materia,
                 tipo_duracion_pregunta: ring_modificar.tipo_duracion_pregunta,
@@ -148,7 +148,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             fecha_hora_fin: new Date(),
             rut_usuario_creador: usuario.rut,
             cantidad_usuarios: '',
-            codigo_institucion: institucion.codigo,
+            codigo_institucion: institucion_select.codigo,
             codigo_nivel_academico: '0',
             codigo_materia: '0',
             tipo_duracion_pregunta: '0',
@@ -309,7 +309,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                             as="select"
                             //Listará los niveles academicos del rut_usuario logeado
                             rut_usuario={usuario.rut}
-                            codigo_institucion={institucion.codigo}
+                            codigo_institucion={institucion_select.codigo}
                             value={formulario.codigo_nivel_academico}
                             onChange={e => setFormulario({
                                 ...formulario,
@@ -513,7 +513,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                         size="lg"
                         className="btn-block"
                         onClick={handleMostrarBusquedaRings}
-                    >Ir a buscar</Button>
+                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

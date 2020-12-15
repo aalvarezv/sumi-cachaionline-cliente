@@ -1,72 +1,70 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {Container, Row, Col, Button, Form, ButtonGroup, ToggleButton} from 'react-bootstrap';
+import { Container, Row, Col, Button, Badge } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import DatePicker from 'react-datepicker';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
-import CustomDateInput from '../../components/ui/CustomDateInput';
-import AlertText from '../../components/ui/AlertText';
 import TableRing from '../../components/ui/TableRing';
+import AlertText from '../../components/ui/AlertText';
+import Paginador from '../../components/ui/Paginador';
 import RingForm from '../../components/forms/RingForm';
-import InputSelectNivelAcademico from '../../components/ui/InputSelectNivelAcademico';
-import InputSelectMateria from '../../components/ui/InputSelectMateria';
-
+import FiltrosBusquedaRings from '../../components/ui/FiltrosBusquedaRings';
 import { handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
 
 
-
 const Rings = () => {
 
-   const { autenticado, institucion, rol } = useContext(AuthContext);
+   const { autenticado, institucion_select } = useContext(AuthContext);
 
    const [rings, setRings] = useState([]);
-   const [filtros, setFiltros] = useState({
-      fecha_desde: new Date(),
-      fecha_hasta: new Date(),
-      codigo_materia: '0',
-      codigo_nivel_academico: '0',
-      nombre_ring: '',
-      nombre_usuario_creador: '',
-      privado: true,
-   });
-
-   const { fecha_desde, fecha_hasta, codigo_materia, 
-            codigo_nivel_academico, nombre_ring, nombre_usuario_creador, privado } = filtros;
-   
    const [crear_ring, setCrearRing] = useState(false);
    const [modificar_ring, setModificarRing] = useState(false);
    const [ring_modificar, setRingModificar] = useState(null);
    
-   const ref_custom_date_desde = React.createRef();
-   const ref_custom_date_hasta = React.createRef();
+   const [mensajeAlerta, fnSetMensajeAlerta] = useState('');
+   /**** Variables para paginación *****/
+   const [pagina_actual, setPaginaActual] = useState(1);
+   const [resultados_por_pagina, setResultadosPorPagina] = useState(1);
 
-   const radios_estado_ring = [
-      { name: 'Privado', value: true },
-      { name: 'Público', value: false },
-  ];
+   const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
+   const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
+   const resultados_pagina = rings.slice(indice_primer_resultado, indice_ultimo_resultado);
+   /*************************************/
 
-   const handleClickBuscar = async () => {
-      
+   useEffect(() => {
+      fnSetMensajeAlerta('');
+   }, [])
+
+   const listarRings = async filtros =>{
+
       try{
          const resp = await clienteAxios.get('/api/rings/listar', {
             params : { 
-               fecha_desde: fecha_desde.toDateString(),
-               fecha_hasta: fecha_hasta.toDateString(),
-               codigo_materia,
-               codigo_nivel_academico,
-               codigo_institucion: institucion.codigo,
-               nombre_ring,
-               nombre_usuario_creador,
-               privado,
+               fecha_desde: filtros.fecha_desde.toDateString(),
+               fecha_hasta: filtros.fecha_hasta.toDateString(),
+               codigo_materia: filtros.codigo_materia,
+               codigo_nivel_academico: filtros.codigo_nivel_academico,
+               codigo_institucion: institucion_select.codigo,
+               nombre_ring: filtros.nombre_ring,
+               nombre_usuario_creador: filtros.nombre_usuario_creador,
+               privado: filtros.privado,
              }
          });
          setRings(resp.data.ring);
+
+         if(resp.data.ring.length === 0){
+            fnSetMensajeAlerta('No hay resultados');
+         } 
+
       }catch(e){
          handleError(e);
       }
-     
+   }
+
+   const handleClickBuscar = async filtros => {
+      setPaginaActual(1);
+      listarRings(filtros);
    }
 
    const handleCrearRing = () => {
@@ -105,6 +103,11 @@ const Rings = () => {
       setRingModificar(null);
       setCrearRing(false);
       setModificarRing(false);
+      setPaginaActual(1);
+   }
+
+   const handleSetPaginaActual = numero_pagina => {
+      setPaginaActual(numero_pagina);
    }
         
    return ( 
@@ -112,202 +115,65 @@ const Rings = () => {
          <Privado>
             {autenticado 
             ?
-               <div>
+               <>
                   <h5 className="my-4 text-center">Administrar Rings</h5>
                   {!crear_ring && !modificar_ring 
                   ?
-                     <Container fluid>
-                     <Row className="mx-3">
-                        <Col>
-                           <Row>
-                              <Button
-                                 size="sm"
-                                 variant="info"
-                                 className="align-self-end mb-2"
-                                 onClick={handleClickBuscar}
-                                 block
-                              >
-                                 Buscar
-                              </Button>  
-                           </Row>
-                           <Row>
-                               <Col className="p-0">
-                                 <DatePicker
-                                    selected={fecha_desde}
-                                    dateFormat="dd/MM/yyyy"
-                                    popperPlacement="top-end"
-                                    popperModifiers={{
-                                       offset: {
-                                       enabled: true,
-                                       offset: "5px, 10px"
-                                       },
-                                       preventOverflow: {
-                                          enabled: true,
-                                          escapeWithReference: false,
-                                          boundariesElement: "viewport"
-                                       }
-                                    }}
-                                    onChange={date => setFiltros({
-                                       ...filtros,
-                                       fecha_desde: date,
-                                    })}
-                                    customInput={
-                                       <CustomDateInput 
-                                          label="Creación desde"
-                                          ref = {ref_custom_date_desde}
-                                       />
-                                    }
+                     <Container>
+                        <Row className="mx-0 mb-2">
+                           <Col className="d-flex justify-content-end">     
+                           <Button
+                              variant="info"
+                              onClick={handleCrearRing}
+                           >
+                              + Nuevo Ring
+                           </Button>
+                           </Col>
+                        </Row>
+                        <Row className="mb-2">
+                           <Col>           
+                              <FiltrosBusquedaRings
+                                 handleClickBuscar={handleClickBuscar}
+                              /> 
+                           </Col>
+                        </Row>
+                        {rings.length > 0 &&
+                        <Row className="mx-0">
+                           <Col className="d-flex justify-content-end">
+                              <Badge variant="dark">
+                                 Total rings encontrados: {rings.length} 
+                              </Badge>
+                           </Col>
+                        </Row>
+                        }
+                        <Row className="mx-0">
+                           <Col className={`d-flex flex-column align-items-center justify-content-center ${rings.length === 0 ? ' mt-5' : ''}`}>
+                           {rings.length === 0
+                           ?
+                              <AlertText  
+                                 text={mensajeAlerta}
+                              /> 
+                           :
+                           <>
+                              
+                              <TableRing 
+                                 rings={resultados_pagina}
+                                 handleEliminarRing = {handleEliminarRing}
+                                 handleModificarRing = {handleModificarRing}
+                              />
+                              
+                              {resultados_pagina.length > 0 &&
+                                 <Paginador
+                                       resultados_por_pagina = {resultados_por_pagina}
+                                       total_resultados = {rings.length}
+                                       handleSetPaginaActual = {handleSetPaginaActual}
                                  />
-                              </Col>
-                              <Col>
-                                 <DatePicker
-                                    selected={fecha_hasta}
-                                    dateFormat="dd/MM/yyyy"
-                                    popperPlacement="top-end"
-                                    popperModifiers={{
-                                       offset: {
-                                       enabled: true,
-                                       offset: "5px, 5px"
-                                       },
-                                       preventOverflow: {
-                                          enabled: true,
-                                          escapeWithReference: false,
-                                          boundariesElement: "viewport"
-                                       }
-                                    }}
-                                    onChange={date => setFiltros({
-                                       ...filtros,
-                                       fecha_hasta: date,
-                                    })}
-                                    customInput={
-                                       <CustomDateInput 
-                                          label="hasta"
-                                          ref = {ref_custom_date_hasta}
-                                       />
-                                    }
-                                 /> 
-                              </Col>
-                           </Row>
-                           <Row className="mb-2">
-                              <InputSelectMateria
-                                 id="codigo_materia"
-                                 name="codigo_materia"
-                                 as="select"
-                                 size="sm"
-                                 value={codigo_materia}
-                                 onChange={e => {
-                                    setFiltros({
-                                       ...filtros,
-                                       [e.target.name]: e.target.value,
-                                    })
-                                 }}
-                              />
-                           </Row>
-                           <Row className="mb-2">
-                              <InputSelectNivelAcademico
-                                 id="codigo_nivel_academico"
-                                 name="codigo_nivel_academico"
-                                 as="select"
-                                 size="sm"
-                                 value={codigo_nivel_academico}
-                                 onChange={e => {
-                                    setFiltros({
-                                       ...filtros,
-                                       [e.target.name]: e.target.value,
-                                    })
-                                 }}
-                              />
-                           </Row>
-                           <Row className="mb-2">
-                              <Form.Control
-                                 id="nombre_ring"
-                                 name="nombre_ring"
-                                 type="text" 
-                                 size="sm"
-                                 placeholder="NOMBRE RING..." 
-                                 value={nombre_ring}
-                                 onChange={e => {
-                                    setFiltros({
-                                       ...filtros,
-                                       [e.target.name]: e.target.value.toUpperCase()
-                                    })
-                                 }} 
-                              />
-                           </Row>
-                           <Row className="mb-2">
-                              <Form.Control
-                                 id="nombre_usuario_creador"
-                                 name="nombre_usuario_creador"
-                                 type="text" 
-                                 size="sm"
-                                 placeholder="CREADA POR USUARIO..." 
-                                 value={nombre_usuario_creador}
-                                 onChange={e => {
-                                    setFiltros({
-                                       ...filtros,
-                                       [e.target.name]: e.target.value.toUpperCase()
-                                    })
-                                 }} 
-                              />
-                           </Row>
-                           <Row>
-                           <ButtonGroup toggle style={{zIndex: 0}}>
-                              {radios_estado_ring.map((radio, idx) => (
-                                 <ToggleButton
-                                       key={idx}
-                                       type="radio"
-                                       variant="outline-info"
-                                       name="privado"
-                                       value={radio.value}
-                                       checked={privado === radio.value}
-                                       onChange={e => {
-                                          setFiltros({
-                                             ...filtros,
-                                             [e.target.name]: radio.value,
-                                          });
-                                       }
-                                       }
-                                 >
-                                       {radio.name}
-                                 </ToggleButton>
-                              ))}
-                           </ButtonGroup>
-                           </Row>        
-                        </Col>
-                        <Col xs="10" className="d-flex flex-column">
-                              <Row>
-                                 <Col
-                                    className="d-flex justify-content-end"
-                                 >
-                                    <Button
-                                       variant="outline-success"
-                                       size="sm"
-                                       onClick={handleCrearRing}
-                                    >
-                                       + Crear Ring
-                                    </Button>                              
-                                 </Col>  
-                              </Row>
-                              <Row className="flex-grow-1 px-3">
-                                 <Col xs="12" className={`bg-light ${rings.length === 0 ? 'd-flex align-items-center justify-content-center' : 'pt-3'}`}>
-                                 {rings.length === 0 
-                                 ?
-                                    <AlertText  
-                                       text="No se encontraron resultados"
-                                    />
-                                 :
-                                    <TableRing 
-                                       rings={rings}
-                                       handleEliminarRing = {handleEliminarRing}
-                                       handleModificarRing = {handleModificarRing}
-                                    /> 
-                                 }   
-                                 </Col>
-                              </Row>
-                           </Col> 
-                     </Row>
-                     </Container>
-                  
+                              } 
+                           </>
+                           }   
+                           </Col>
+                        </Row>
+                     </Container> 
                   :
                    <RingForm 
                      ring_modificar = {ring_modificar}
@@ -316,8 +182,7 @@ const Rings = () => {
 
                   }
 
-                  
-               </div>
+               </>
             :
                null
             }

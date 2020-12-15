@@ -7,33 +7,12 @@ import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap';
 
 const Navegacion = () => {
 
-    const { usuario, autenticado, rol, cerrarSesion} = useContext(AuthContext);
+    const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext);
 
-    const [permisos_menu, setPermisosMenu] = useState({
-        ver_menu_administrar: false,
-        ver_submenu_instituciones:false,
-        ver_submenu_niveles_academicos:false,
-        ver_submenu_roles:false,
-        ver_submenu_usuarios:false,
-        ver_menu_asignaturas:false,
-        ver_submenu_materias:false,
-        ver_submenu_unidades:false,
-        ver_submenu_modulos:false,
-        ver_submenu_temas:false,
-        ver_submenu_conceptos:false,
-        ver_menu_preguntas:false,
-        ver_menu_rings:false,
-    })
+    if(!usuario && autenticado) return <h1>sin usuario, pero autenticado</h1>;
 
-    useEffect(() => {
-        if(rol){
-            setPermisosMenu(rol);
-        }
-    },[rol]);
+    return (
 
-    
-
-    return ( 
         <Navbar collapseOnSelect expand="lg" bg="white" text="light">
         <Navbar.Brand>
             <img
@@ -48,65 +27,68 @@ const Navegacion = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
                 <Link href="/" passHref>
-                    <Nav.Link className="text-info">CachaiOnline</Nav.Link>
+            <Nav.Link className="text-info">CachaiOnline</Nav.Link>
                 </Link>
                 {autenticado
                 && 
-                <> 
-                    { permisos_menu.ver_menu_administrar &&  
+                <>  
+                    { rol_select.ver_menu_administrar &&  
                         <NavDropdown title="Administrar" id="administrar-nav-dropdown">
-                            {permisos_menu.ver_submenu_instituciones &&
+                            {rol_select.ver_submenu_instituciones &&
                                 <Link href="/administrar/instituciones" passHref>
                                     <NavDropdown.Item>Instituciones</NavDropdown.Item>
                                 </Link>
                             }
-                            {permisos_menu.ver_submenu_niveles_academicos &&
+                            {rol_select.ver_submenu_niveles_academicos &&
                                 <Link href="/administrar/niveles-academicos" passHref>
                                     <NavDropdown.Item>Niveles Académicos</NavDropdown.Item>
                                 </Link>
                             }
-                            {permisos_menu.ver_submenu_roles &&
+                            {rol_select.ver_submenu_roles &&
                                 <Link href="/administrar/roles" passHref>
                                     <NavDropdown.Item>Roles</NavDropdown.Item>
                                 </Link>
                             }
-                            {permisos_menu.ver_submenu_usuarios && 
+                            {rol_select.ver_submenu_usuarios && 
                                 <Link href="/administrar/usuarios" passHref>
                                     <NavDropdown.Item>Usuarios</NavDropdown.Item>
                                 </Link>
                             }
                         </NavDropdown>
                     }
-                    {permisos_menu.ver_menu_asignaturas &&
+                    {rol_select.ver_menu_asignaturas &&
                         <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
-                            {permisos_menu.ver_submenu_materias && 
+                            {rol_select.ver_submenu_materias && 
                                 <Link href="/administrar/materias" passHref>
                                     <NavDropdown.Item>Materias</NavDropdown.Item>
                                 </Link>
                             }
-                            {permisos_menu.ver_submenu_unidades && 
+                            {rol_select.ver_submenu_unidades && 
                                 <Link href="/administrar/unidades" passHref>
                                     <NavDropdown.Item>Unidades</NavDropdown.Item>
                                 </Link>
                             }
-                            {permisos_menu.ver_submenu_modulos &&
+                            {rol_select.ver_submenu_modulos &&
                                 <Link href="/administrar/modulos" passHref>
                                     <NavDropdown.Item>Módulos</NavDropdown.Item>
                                 </Link>
                             }
                     </NavDropdown>
                     }
-                    {permisos_menu.ver_menu_preguntas &&
+                    {rol_select.ver_menu_preguntas 
+                    ?
                         <Link href="/administrar/preguntas" passHref>
                             <Nav.Link>Preguntas</Nav.Link>
                         </Link>
+                    :
+                        null
                     }
-                    {permisos_menu.ver_menu_rings &&
+                    {rol_select.ver_menu_rings &&
                         <Link href="/administrar/rings" passHref>
                             <Nav.Link>Rings</Nav.Link>
                         </Link>
                     }
-                    <Link href="/testalan" passHref>
+                    <Link href="/test" passHref>
                         <Nav.Link>Test</Nav.Link>
                     </Link>
                     </>

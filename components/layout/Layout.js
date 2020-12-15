@@ -12,13 +12,15 @@ const backgroundColor_2 = addOpacityToColor(color.secondary, 0.3);
 
 const Layout = props => {
 
-    const {usuarioAuth} = useContext(AuthContext);
-
+    const { usuario, usuarioAuth } = useContext(AuthContext);
+    
     useEffect(() => {
-      usuarioAuth();
-    },[] );
-
-
+        console.log('render layout', usuario);
+        if(!usuario){
+            console.log('render layout ejecuta usuarioAuth')
+            usuarioAuth();
+        }
+    }, [])
 
     return ( 
         <>

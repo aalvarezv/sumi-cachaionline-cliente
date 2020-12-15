@@ -15,7 +15,7 @@ const TableRingPreguntas = ({ring}) => {
 
     /**** Variables para paginación *****/
     const [pagina_actual, setPaginaActual] = useState(1);
-    const [resultados_por_pagina, setResultadosPorPagina] = useState(5);
+    const [resultados_por_pagina, setResultadosPorPagina] = useState(4);
 
     const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
     const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;

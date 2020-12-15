@@ -49,7 +49,9 @@ const Preguntas = () => {
          });
          setPreguntas(resp.data.preguntas);
 
-         //Si no hay preguntas, mostrar un mensajillo.
+         if(resp.data.preguntas.length === 0){
+            fnSetMensajeAlerta('No hay resultados');
+         }
 
       }catch(e){
          handleError(e);
@@ -58,7 +60,6 @@ const Preguntas = () => {
 
    const handleClickBuscar = filtros => {
       setPaginaActual(1);
-      fnSetMensajeAlerta('No hay resultados');
       listarPreguntas(filtros);
    }
 
@@ -80,9 +81,13 @@ const Preguntas = () => {
    }
 
    const handleModificaPregunta = async codigo => {
-      const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`);
-      setPreguntaModificar(resp.data.pregunta);
-      setModificarPregunta(true);
+      try{
+         const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`);
+         setPreguntaModificar(resp.data.pregunta);
+         setModificarPregunta(true);
+      }catch(e){
+         handleError(e);
+      }
    }
 
    const handleCrearPregunta = () => {
@@ -99,7 +104,7 @@ const Preguntas = () => {
    }
 
    const handleSetPaginaActual = numero_pagina => {
-      setPaginaActual(numero_pagina)
+      setPaginaActual(numero_pagina);
    }
     
      return ( 
