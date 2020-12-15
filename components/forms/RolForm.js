@@ -6,15 +6,12 @@ import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button, Row, Col, Nav } from 'react-bootstrap';
 import {handleError } from '../../helpers';
 import clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
 import ButtonBack from '../ui/ButtonBack';
 
-const RolForm = () => {
+const RolForm = ({rol_modificar, handleClickVolver}) => {
 
     const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
@@ -36,48 +33,33 @@ const RolForm = () => {
 
     const [errores, setErrores] = useState({});
 
-    const buscarRol = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/roles/busqueda/${filtro_busqueda}`)
-            setResultBusqueda(resp.data.roles);
-        }catch(e){
-            handleError(e);
-        }
-    }
-
     useEffect(() => {
 
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarRol();
-        }else{
-            setResultBusqueda([]);
-        }
-
-        if(result_select){
+        if(rol_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                descripcion: result_select.descripcion,
-                ver_menu_administrar: result_select.ver_menu_administrar,
-                ver_submenu_instituciones: result_select.ver_submenu_instituciones,
-                ver_submenu_niveles_academicos: result_select.ver_submenu_niveles_academicos,
-                ver_submenu_roles: result_select.ver_submenu_roles,
-                ver_submenu_usuarios: result_select.ver_submenu_usuarios,
-                ver_menu_asignaturas: result_select.ver_menu_asignaturas,
-                ver_submenu_materias: result_select.ver_submenu_materias,
-                ver_submenu_unidades: result_select.ver_submenu_unidades,
-                ver_submenu_modulos: result_select.ver_submenu_modulos,
-                ver_submenu_temas: result_select.ver_submenu_temas,
-                ver_submenu_conceptos: result_select.ver_submenu_conceptos,
-                ver_menu_rings: result_select.ver_menu_rings,
-                ver_menu_preguntas: result_select.ver_menu_preguntas,
-                inactivo: result_select.inactivo
+                codigo: rol_modificar.codigo,
+                descripcion: rol_modificar.descripcion,
+                ver_menu_administrar: rol_modificar.ver_menu_administrar,
+                ver_submenu_instituciones: rol_modificar.ver_submenu_instituciones,
+                ver_submenu_niveles_academicos: rol_modificar.ver_submenu_niveles_academicos,
+                ver_submenu_roles: rol_modificar.ver_submenu_roles,
+                ver_submenu_usuarios: rol_modificar.ver_submenu_usuarios,
+                ver_menu_asignaturas: rol_modificar.ver_menu_asignaturas,
+                ver_submenu_materias: rol_modificar.ver_submenu_materias,
+                ver_submenu_unidades: rol_modificar.ver_submenu_unidades,
+                ver_submenu_modulos: rol_modificar.ver_submenu_modulos,
+                ver_submenu_temas: rol_modificar.ver_submenu_temas,
+                ver_submenu_conceptos: rol_modificar.ver_submenu_conceptos,
+                ver_menu_rings: rol_modificar.ver_menu_rings,
+                ver_menu_preguntas: rol_modificar.ver_menu_preguntas,
+                inactivo: rol_modificar.inactivo
             });
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select])
+    }, [rol_modificar])
 
     const validarFormulario = () => {
         
@@ -165,13 +147,6 @@ const RolForm = () => {
 
     return (
         <Container>
-        <InputSearch
-            setFilter={setFiltroBusqueda}
-            results={result_busqueda}
-            setResultSelect={setResultSelect}
-            id="codigo"
-            label="descripcion"
-        />
         <Form>
             <Form.Group>
                 <Form.Label>Descripcion</Form.Label>
@@ -423,7 +398,7 @@ const RolForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {rol_modificar
                     ?
                         <Button 
                             variant="outline-info"
@@ -443,7 +418,7 @@ const RolForm = () => {
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="success"
-                        disabled={!result_select}
+                        disabled={!rol_modificar}
                         size="lg"
                         className="btn-block"
                         onClick={() => {
@@ -456,8 +431,12 @@ const RolForm = () => {
                         }}
                     >+ Agregar Usuarios</Button>
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
+                <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

@@ -11,12 +11,10 @@ import Uploader from '../ui/Uploader';
 import ButtonBack from '../ui/ButtonBack';
 
 
-const MateriaForm = () => {
+const MateriaForm = ({materia_modificar, handleClickVolver}) => {
 
     const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         nombre: '',
@@ -27,37 +25,22 @@ const MateriaForm = () => {
     //1.- definir la variable que almacena los errores.
     const [errores, setErrores] = useState({});
 
-    const buscarMateria = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/materias/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.materias);
-        }catch(e){
-            handleError(e);
-        }
-    }
-
     useEffect(() => {
 
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarMateria();
-        }else{
-            setResultBusqueda([]);
-        }
-
-        if(result_select){
+        if(materia_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                nombre: result_select.nombre,
-                descripcion: result_select.descripcion,
-                imagen: result_select.imagen,
-                inactivo: result_select.inactivo
+                codigo: materia_modificar.codigo,
+                nombre: materia_modificar.nombre,
+                descripcion: materia_modificar.descripcion,
+                imagen: materia_modificar.imagen,
+                inactivo: materia_modificar.inactivo
             });
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select])
+    }, [materia_modificar])
 
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
@@ -157,13 +140,6 @@ const MateriaForm = () => {
 
     return ( 
         <Container>
-            <InputSearch
-                setFilter={setFiltroBusqueda}
-                results={result_busqueda}
-                setResultSelect={setResultSelect}
-                id="codigo"
-                label="nombre"
-            />
             <Form>
                 <Form.Group as={Row}>
                     <Col xs="auto">
@@ -239,7 +215,7 @@ const MateriaForm = () => {
                 />
                 <Row className="justify-content-center">
                     <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                        {result_select
+                        {materia_modificar
                         ?
                             <Button 
                                 variant="outline-info"
@@ -259,7 +235,7 @@ const MateriaForm = () => {
                     <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>     
                         <Button 
                             variant="success"
-                            disabled={!result_select}
+                            disabled={!materia_modificar}
                             size="lg"
                             className="btn-block"
                             onClick={() => {
@@ -270,9 +246,13 @@ const MateriaForm = () => {
                             }}
                         >+ Agregar Unidades</Button>
                     </Col>
-                    <Col xs={12} sm={"auto"}>
-                        <ButtonBack />
-                    </Col>
+                    <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
+                </Col>
                 </Row>
             </Form>
         </Container> );

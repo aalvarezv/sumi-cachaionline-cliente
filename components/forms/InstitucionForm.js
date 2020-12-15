@@ -5,16 +5,15 @@ import ToastMultiline from '../ui/ToastMultiline';
 import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap';
 import {handleError, getBase64 } from '../../helpers';
 import  clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
 import Uploader from '../ui/Uploader';
 
 
-const InstitucionForm = () => {
+const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
 
     const router = useRouter(); 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
+    //const [result_busqueda, setResultBusqueda] = useState([]);
+    //const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
@@ -24,6 +23,7 @@ const InstitucionForm = () => {
 
     const [errores, setErrores] = useState({});
    
+    /*
     const buscarInstitucion = async () => {
         try{
             const resp = await clienteAxios.get(`/api/instituciones/busqueda/${filtro_busqueda}`);
@@ -31,29 +31,30 @@ const InstitucionForm = () => {
         }catch(e){
             handleError(e);
         }
-    }
+    }*/
 
     useEffect(() => {
 
+        /*
         if(filtro_busqueda.trim() !== '' && !result_select){
             buscarInstitucion();
         }else{
             setResultBusqueda([]);
-        }
+        }*/
 
-        if(result_select){
+        if(institucion_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                descripcion: result_select.descripcion,
-                logo: result_select.logo,
-                inactivo: result_select.inactivo
+                codigo: institucion_modificar.codigo,
+                descripcion: institucion_modificar.descripcion,
+                logo: institucion_modificar.logo,
+                inactivo: institucion_modificar.inactivo
             });
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select])
+    }, [institucion_modificar])
 
     const validarFormulario = () => {
         
@@ -146,13 +147,13 @@ const InstitucionForm = () => {
 
     return ( 
         <Container>
-            <InputSearch
+            {/* <InputSearch
                 setFilter={setFiltroBusqueda}
                 results={result_busqueda}
                 setResultSelect={setResultSelect}
                 id="codigo"
                 label="descripcion"
-            />
+            /> */}
         <Form>
             <Form.Group as={Row}>
                 <Col xs="auto">
@@ -183,8 +184,7 @@ const InstitucionForm = () => {
                             ...formulario,
                         [e.target.name]: e.target.value.toUpperCase()
                         })
-                    }}
-                    readOnly={result_select} 
+                    }} 
                     isInvalid={errores.hasOwnProperty('codigo')}
                     onBlur={validarFormulario}
                 />
@@ -212,8 +212,6 @@ const InstitucionForm = () => {
                     {errores.hasOwnProperty('descripcion') && errores.descripcion}
                  </Form.Control.Feedback>
              </Form.Group>
-
-               
             <Form.Check 
                     id="inactivo"
                     name="inactivo"
@@ -230,7 +228,7 @@ const InstitucionForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-2 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {institucion_modificar
                     ?  
                         <Button 
                             variant="outline-info"
@@ -252,7 +250,7 @@ const InstitucionForm = () => {
                         variant="success"
                         size="lg"
                         className="btn-block"
-                        disabled={!result_select}
+                        disabled={!institucion_modificar}
                         onClick={() => {
                             router.push({
                                 pathname: '/administrar/cursos',
@@ -260,6 +258,13 @@ const InstitucionForm = () => {
                             })
                         }}
                     >+Administrar Cursos</Button>
+                </Col>
+                <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

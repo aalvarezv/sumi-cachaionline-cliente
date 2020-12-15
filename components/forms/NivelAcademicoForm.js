@@ -8,7 +8,7 @@ import  clienteAxios from '../../config/axios';
 import InputSearch from '../ui/InputSearch';
 import ButtonBack from '../ui/ButtonBack';
 
-const NivelAcademicoForm = () => {
+const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
 
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
     const [result_busqueda, setResultBusqueda] = useState([]);
@@ -22,36 +22,22 @@ const NivelAcademicoForm = () => {
 
     const [errores, setErrores] = useState({});
 
-    const buscarNivelAcademico = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/nivel-academico/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.nivelesAcademicos);
-        }catch(e){
-            handleError(e);
-        }
-    }
-
     useEffect(() => {
 
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarNivelAcademico();
-        }else{
-            setResultBusqueda([]);
-        }
 
-        if(result_select){
+        if(nivelacademico_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                descripcion: result_select.descripcion,
-                nivel: result_select.nivel,
-                inactivo: result_select.inactivo
+                codigo: nivelacademico_modificar.codigo,
+                descripcion: nivelacademico_modificar.descripcion,
+                nivel: nivelacademico_modificar.nivel,
+                inactivo: nivelacademico_modificar.inactivo
             });
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select])
+    }, [nivelacademico_modificar])
 
     const validarFormulario = () => {
         
@@ -134,13 +120,6 @@ const NivelAcademicoForm = () => {
 
     return ( 
         <Container>
-            <InputSearch
-                setFilter={setFiltroBusqueda}
-                results={result_busqueda}
-                setResultSelect={setResultSelect}
-                id="codigo"
-                label="descripcion"
-            />
         <Form>
             <Form.Group>
                  <Form.Label>Descripcion</Form.Label>
@@ -220,8 +199,12 @@ const NivelAcademicoForm = () => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
+                <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

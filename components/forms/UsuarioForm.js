@@ -10,12 +10,10 @@ import Uploader from '../ui/Uploader';
 import ButtonBack from '../ui/ButtonBack';
 import UsuarioFormTabConfig from './UsuarioFormTabConfig';
 
-const UsuarioForm = () => {
+const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
 
     const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         rut: '',
         nombre: '',
@@ -32,39 +30,22 @@ const UsuarioForm = () => {
     //1.- definir la variable que almacena los errores.
     const [errores, setErrores] = useState({});
 
-    const buscarUsuario = async () => {
-
-        try{
-            const resp = await clienteAxios.get(`/api/usuarios/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.usuarios);
-        }catch(e){
-            handleError(e);
-        }
-    }
-
     //cuando cambia el filtro de búsqueda.
     useEffect(() => {
 
-        //si tengo un filtro de búsqueda y no hay un usuario seleccionado, entonces busca.
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarUsuario();
-        }else{
-            setResultBusqueda([]);
-        }
-
         //cuando se selecciona o cambia el result_select
-        if(result_select){
+        if(usuario_modificar){
 
             setFormulario({
-                rut: rutFormat(result_select.rut),
-                nombre: result_select.nombre,
-                clave: result_select.clave,
-                clave_confirm: result_select.clave,
-                email: result_select.email,
-                telefono: result_select.telefono,
-                codigo_rol: result_select.codigo_rol,
-                imagen: result_select.imagen,
-                inactivo: result_select.inactivo
+                rut: rutFormat(usuario_modificar.rut),
+                nombre: usuario_modificar.nombre,
+                clave: usuario_modificar.clave,
+                clave_confirm: usuario_modificar.clave,
+                email: usuario_modificar.email,
+                telefono: usuario_modificar.telefono,
+                codigo_rol: usuario_modificar.codigo_rol,
+                imagen: usuario_modificar.imagen,
+                inactivo: usuario_modificar.inactivo
             });
    
         }else{
@@ -72,7 +53,7 @@ const UsuarioForm = () => {
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select]);
+    }, [usuario_modificar]);
 
     //carga el rol en el formulario si existe en la url.
     useEffect(() => {
@@ -234,13 +215,6 @@ const UsuarioForm = () => {
 
     return ( 
     <Container>
-        <InputSearch
-            setFilter={setFiltroBusqueda}
-            results={result_busqueda}
-            setResultSelect={setResultSelect}
-            id="rut"
-            label="nombre"
-        />
         <Tabs 
             id="tab_usuario"
             activeKey={tab_key}
@@ -264,7 +238,7 @@ const UsuarioForm = () => {
                                 ...formulario,
                                 [e.target.name]: rutFormat(e.target.value.toUpperCase()),
                             })}}
-                            readOnly={result_select}
+                            readOnly={usuario_modificar}
                             isInvalid={errores.hasOwnProperty('rut')}
                             onBlur={validarFormulario}
                         />
@@ -405,7 +379,7 @@ const UsuarioForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {usuario_modificar
                     ?
                         <Button 
                             variant="outline-info"
@@ -422,16 +396,20 @@ const UsuarioForm = () => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
+                <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
                 </Col>
             </Row>
        </Form>
        </Tab>
-       {result_select &&
+       {usuario_modificar &&
             <Tab eventKey="tab_configuracion" title="Configuración">
                 <UsuarioFormTabConfig
-                    rut_usuario = {result_select.rut}
+                    rut_usuario = {usuario_modificar.rut}
                 />
             </Tab> 
         }    
