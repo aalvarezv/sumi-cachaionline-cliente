@@ -8,32 +8,34 @@ import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
 import Paginador from '../../components/ui/Paginador';
-import ModuloForm from '../../components/forms/ModuloForm';
-import TableModulo from '../../components/ui/TableModulo';
+import ContenidoForm from '../../components/forms/ContenidoForm';
+import TableContenido from '../../components/ui/TableContenido';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria';
+import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad';
 
 
 
 
-const Modulos = () => {
+const Contenidos = () => {
 
     const { autenticado } = useContext(AuthContext);
 
 
     const [filtro, setFiltroBusqueda] = useState('');
-    const [modulos, setModulos] = useState([]);
-    const [modulo_modificar, setModuloModificar] = useState({});
+    const [contenidos, setContenidos] = useState([]);
+    const [contenido_modificar, setContenidoModificar] = useState({});
     const [mostrar_busqueda, setMostrarBusqueda] = useState(true);
     const [codigo_materia, setCodigoMateria] = useState('0');
     const [codigo_unidad, setCodigoUnidad] = useState('0');
+    const [codigo_modulo, setCodigoModulo] = useState('0');
     /**** Variables para paginación *****/
    const [pagina_actual, setPaginaActual] = useState(1);
    const [resultados_por_pagina, setResultadosPorPagina] = useState(10);
 
    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
-   const resultados_pagina = modulos.slice(indice_primer_resultado, indice_ultimo_resultado);
+   const resultados_pagina = contenidos.slice(indice_primer_resultado, indice_ultimo_resultado);
    /*************************************/
 
 
@@ -43,28 +45,31 @@ const Modulos = () => {
         return;
       } */
        try{
-           const resp = await clienteAxios.get(`/api/modulos/unidad-materia/${codigo_unidad}/${codigo_materia}`);
-           setModulos(resp.data.modulos);
+
+           const resp = await clienteAxios.get(`/api/modulo-contenidos/modulo/${codigo_modulo}/${codigo_unidad}/${codigo_materia}`);
+           setContenidos(resp.data.modulo_contenido);
+           setPaginaActual(1);
+           
        }catch(e){
            handleError(e);
        }
    }
 
-   const handleClickModificarModulo = async codigo => {
+   const handleClickModificarContenido = async codigo => {
       
-      const modulo = modulos.filter(modulo => modulo.codigo === codigo)
-      if(modulo.length > 0){
+      const contenido = contenidos.filter(contenido => contenido.codigo === codigo)
+      if(contenido.length > 0){
          setMostrarBusqueda(false);
-         setModuloModificar(modulo[0]);
+         setContenidoModificar(contenido[0]);
       }
     }
 
-    const handleClickEliminarModulo = async codigo => {
+    const handleClickEliminarContenido = async codigo => {
        try {
-         await clienteAxios.delete(`/api/modulos/eliminar/${codigo}`);
-         const new_modulos = modulos.filter(modulo => modulo.codigo !== codigo);
-         setModulos(new_modulos);
-         toast.success('MODULO ELIMINADO', {containerId: 'sys_msg'});
+         await clienteAxios.delete(`/api/modulo-contenidos/eliminar/${codigo}`);
+         const new_contenidos = contenidos.filter(contenido => contenido.codigo !== codigo);
+         setModulos(new_contenidos);
+         toast.success('CONTENIDO ELIMINADO', {containerId: 'sys_msg'});
       } catch (e) {
          handleError(e);
       }
@@ -84,7 +89,7 @@ const Modulos = () => {
              {autenticado 
              ?
                 <>
-                    <h5 className="my-4 text-center">Administrar Módulos</h5>
+                    <h5 className="my-4 text-center">Administrar Contenidos</h5>
                     
                <Container>
                   {mostrar_busqueda 
@@ -102,7 +107,7 @@ const Modulos = () => {
                         onChange={e => {
                            setCodigoMateria(e.target.value)
                            setCodigoUnidad('0')
-                           
+                           setCodigoModulo('0')
                         }}
                      />
                      </Col>
@@ -117,8 +122,25 @@ const Modulos = () => {
                         size="sm"
                         label="TODAS LAS UNIDADES"
                         value={codigo_unidad}
-                        onChange={e => setCodigoUnidad(e.target.value)}
+                        onChange={e => {
+                           setCodigoUnidad(e.target.value)
+                           setCodigoModulo('0')
+                        }}
                      />
+                     </Col>
+                     <Col>
+                     <InputSelectModulosUnidad
+                           id="codigo_modulo"
+                           name="codigo_modulo"
+                           /*codigo unidad se le pasa a las props del componente
+                           para filtrar los modulos de la unidad seleccionada.*/
+                           codigo_unidad= {codigo_unidad}
+                           as="select"
+                           size="sm"
+                           label="TODOS LOS MÓDULOS"
+                           value={codigo_modulo}
+                           onChange={e => setCodigoModulo(e.target.value)}
+                     />  
                      </Col>
                      <Col>
                         <Button 
@@ -131,19 +153,19 @@ const Modulos = () => {
                      </Col>
                   </Row>
                   <Row>
-                     {modulos.length > 0 
+                     {contenidos.length > 0 
                         ?
                         <Row>
-                           <TableModulo
-                              modulos={resultados_pagina}
-                              handleClickModificarModulo = {handleClickModificarModulo}
-                              handleClickEliminarModulo = {handleClickEliminarModulo}
+                           <TableContenido
+                              contenidos={resultados_pagina}
+                              handleClickModificarContenido = {handleClickModificarContenido}
+                              handleClickEliminarContenido = {handleClickEliminarContenido}
 
                            />
                            {resultados_pagina.length > 0 &&
                               <Paginador
                                  resultados_por_pagina = {resultados_por_pagina}
-                                 total_resultados = {modulos.length}
+                                 total_resultados = {contenidos.length}
                                  handleSetPaginaActual = {handleSetPaginaActual}
                                  pagina_activa = {pagina_actual}
                               />
@@ -159,8 +181,8 @@ const Modulos = () => {
                   </>
                   :
                   <Row>
-                     <ModuloForm
-                        modulo_modificar = {modulo_modificar}
+                     <ContenidoForm
+                        contenido_modificar = {contenido_modificar}
                         handleClickVolver = {handleClickVolver}
                      />
                   </Row>
@@ -175,4 +197,4 @@ const Modulos = () => {
      );
 }
  
-export default Modulos;
+export default Contenidos;

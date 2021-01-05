@@ -12,21 +12,51 @@ import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad';
 import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido';
 
 
-const TemaForm = () => {
+const TemaForm = ({tema_modificar, handleClickVolver}) => {
     
     const [codigo_materia, setCodigoMateria] = useState('0');
     const [codigo_unidad, setCodigoUnidad] = useState('0');
     const [codigo_modulo, setCodigoModulo] = useState('0');
+    const [codigo_modulo_contenido, setCodigoModuloContenido] = useState('0')
 
     const router = useRouter();
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
         codigo_modulo_contenido: '',
+        codigo_modulo: '',
+        codigo_unidad: '',
+        codigo_materia: '',
         inactivo: false,
     });
 
     const [errores, setErrores] = useState({});
+
+
+    useEffect(() => {
+        
+
+        //cuando se selecciona o cambia el result_select
+        if(tema_modificar){
+
+            setCodigoModulo(tema_modificar.modulo_contenido.codigo_modulo);
+            setCodigoUnidad(tema_modificar.modulo_contenido.modulo.codigo_unidad);
+            setCodigoMateria(tema_modificar.modulo_contenido.modulo.unidad.codigo_materia);
+
+            setFormulario({
+                codigo: tema_modificar.codigo,
+                descripcion: tema_modificar.descripcion,
+                codigo_modulo_contenido: tema_modificar.codigo_modulo_contenido,
+                inactivo: tema_modificar.inactivo
+            });
+
+
+        }else{
+            reseteaFormulario();
+        }
+        setErrores({});
+
+    }, [tema_modificar]);
 
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
@@ -91,6 +121,28 @@ const TemaForm = () => {
      
     }
 
+    const handleClickActualizar = async e => {
+        
+        try{
+            e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return;
+            }
+            //tema a enviar
+            let tema = formulario;
+
+            await clienteAxios.put('/api/modulo-contenido-temas/actualizar', tema);
+            //respuesta del usuario recibido.
+            toast.success(<ToastMultiline mensajes={[{msg: 'TEMA ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+    }
+
 
 
 
@@ -103,7 +155,7 @@ const TemaForm = () => {
                             id="codigo"
                             name="codigo"
                             type="text" 
-                            placeholder="DESCRIPCIÓN" 
+                            placeholder="CODIGO" 
                             value={formulario.codigo}
                             onChange={e => setFormulario({
                                 ...formulario,
@@ -143,7 +195,12 @@ const TemaForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_materia}
-                            onChange={e => setCodigoMateria(e.target.value)}
+                            onChange={e => {
+                                setCodigoMateria(e.target.value)
+                                setCodigoUnidad('0')
+                                setCodigoModulo('0')
+                                setCodigoModuloContenido('0')
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -157,7 +214,11 @@ const TemaForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_unidad}
-                            onChange={e => setCodigoUnidad(e.target.value)}
+                            onChange={e => {
+                                setCodigoUnidad(e.target.value)
+                                setCodigoModulo('0')
+                                setCodigoModuloContenido('0')
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -171,7 +232,10 @@ const TemaForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_modulo}
-                            onChange={e => setCodigoModulo(e.target.value)}
+                            onChange={e => {
+                                setCodigoModulo(e.target.value)
+                                setCodigoModuloContenido('0')
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -208,18 +272,29 @@ const TemaForm = () => {
                 />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    
+                {tema_modificar
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                            
+                        >Actualizar</Button>
+                    :
                         <Button 
                             variant="info"
                             size="lg"
                             className="btn-block"
                             onClick={handleClickCrear}
                         >Crear</Button>
-                    
+                    }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
-                </Col>
+                <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
             </Row>
             </Form>
         </Container> 

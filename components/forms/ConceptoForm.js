@@ -13,22 +13,53 @@ import InputSelectModulosContenido from '../../components/ui/InputSelectModulosC
 import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema';
 
 
-const ConceptoForm = () => {
+const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
     
     const [codigo_materia, setCodigoMateria] = useState('0');
     const [codigo_unidad, setCodigoUnidad] = useState('0');
     const [codigo_modulo, setCodigoModulo] = useState('0');
     const [codigo_modulo_contenido, setCodigoModuloContenido] = useState('0');
+    const [codigo_modulo_contenido_tema, setCodigoModuloContenidoTema] = useState('0');
 
     const router = useRouter();
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
         codigo_modulo_contenido_tema: '',
+        codigo_modulo_contenido: '',
+        codigo_modulo: '',
+        codigo_unidad: '',
+        codigo_materia: '',
         inactivo: false,
     });
 
     const [errores, setErrores] = useState({});
+
+    useEffect(() => {
+        
+
+        //cuando se selecciona o cambia el result_select
+        if(concepto_modificar){
+
+            setCodigoModuloContenido(concepto_modificar.modulo_contenido_tema.codigo_modulo_contenido);
+            setCodigoModulo(concepto_modificar.modulo_contenido_tema.modulo_contenido.codigo_modulo);
+            setCodigoUnidad(concepto_modificar.modulo_contenido_tema.modulo_contenido.modulo.codigo_unidad);
+            setCodigoMateria(concepto_modificar.modulo_contenido_tema.modulo_contenido.modulo.unidad.codigo_materia);
+
+            setFormulario({
+                codigo: concepto_modificar.codigo,
+                descripcion: concepto_modificar.descripcion,
+                codigo_modulo_contenido_tema: concepto_modificar.codigo_modulo_contenido_tema,
+                inactivo: concepto_modificar.inactivo
+            });
+
+
+        }else{
+            reseteaFormulario();
+        }
+        setErrores({});
+
+    }, [concepto_modificar]);
 
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
@@ -76,12 +107,12 @@ const ConceptoForm = () => {
             if(Object.keys(errors).length > 0){
                 return;
             }
-            //contenido a enviar
+            //concepto a enviar
             let concepto = {
                 ...formulario,
              }
 
-             const resp = await clienteAxios.post('/api/modulo-contenido-tema-conceptos/crear', concepto);
+             const resp = await clienteAxios.post('/api/modulo-contenidos/crear', concepto);
              //respuesta del concepto recibido.
              concepto = resp.data;
              reseteaFormulario();
@@ -93,7 +124,27 @@ const ConceptoForm = () => {
      
     }
 
+    const handleClickActualizar = async e => {
+        
+        try{
+            e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return;
+            }
+            //concepto a enviar
+            let concepto = formulario;
 
+            await clienteAxios.put('/api/modulo-contenido-tema-conceptos/actualizar', concepto);
+            //respuesta del usuario recibido.
+            toast.success(<ToastMultiline mensajes={[{msg: 'CONCEPTO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+    }
 
 
     return ( 
@@ -105,7 +156,7 @@ const ConceptoForm = () => {
                             id="codigo"
                             name="codigo"
                             type="text" 
-                            placeholder="DESCRIPCIÓN" 
+                            placeholder="CODIGO" 
                             value={formulario.codigo}
                             onChange={e => setFormulario({
                                 ...formulario,
@@ -145,7 +196,13 @@ const ConceptoForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_materia}
-                            onChange={e => setCodigoMateria(e.target.value)}
+                            onChange={e => {
+                                setCodigoMateria(e.target.value)
+                                setCodigoUnidad('0')
+                                setCodigoModulo('0')
+                                setCodigoModuloContenido('0')
+                                setCodigoModuloContenidoTema('0')  
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -159,7 +216,12 @@ const ConceptoForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_unidad}
-                            onChange={e => setCodigoUnidad(e.target.value)}
+                            onChange={e => {
+                                setCodigoUnidad(e.target.value)
+                                setCodigoModulo('0')
+                                setCodigoModuloContenido('0')
+                                setCodigoModuloContenidoTema('0')  
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -173,7 +235,11 @@ const ConceptoForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_modulo}
-                            onChange={e => setCodigoModulo(e.target.value)}
+                            onChange={e => {
+                                setCodigoModulo(e.target.value)
+                                setCodigoModuloContenido('0')
+                                setCodigoModuloContenidoTema('0')  
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -188,7 +254,10 @@ const ConceptoForm = () => {
                             size="sm"
                             label="TODOS LOS CONTENIDOS"
                             value={codigo_modulo_contenido}
-                            onChange={e => setCodigoModuloContenido(e.target.value)}
+                            onChange={e => {
+                                setCodigoModuloContenido(e.target.value)
+                                setCodigoModuloContenidoTema('0') 
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -226,18 +295,29 @@ const ConceptoForm = () => {
                 />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    
+                {concepto_modificar
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                            
+                        >Actualizar</Button>
+                    :
                         <Button 
                             variant="info"
                             size="lg"
                             className="btn-block"
                             onClick={handleClickCrear}
                         >Crear</Button>
-                    
+                    }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
-                </Col>
+                <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
             </Row>
             </Form>
         </Container> 

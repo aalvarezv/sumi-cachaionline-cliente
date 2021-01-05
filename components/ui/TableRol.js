@@ -1,7 +1,21 @@
 import React, {useState, useRef} from 'react';
-import {Table, Button, Row, Col, Form} from 'react-bootstrap';
+import {Table, Button, Row, Col, Form, Overlay, Popover} from 'react-bootstrap';
 
-const TableRol = ({roles, handleClickModificar}) => {
+const TableRol = ({roles, handleClickModificar, handleClickEliminarRol}) => {
+
+    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
+    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
+    const ref_confirm_eliminar = useRef(null);
+
+    const [codigo_eliminar, setCodigoEliminar] = useState('');
+
+
+    const handleClickEliminar = (e, codigo) => {
+        setShowConfirmEliminar(!show_confirm_eliminar);
+        setTargetConfirmEliminar(e.target);
+        setCodigoEliminar(codigo);
+    };
+
 
     return (
         <>
@@ -33,12 +47,54 @@ const TableRol = ({roles, handleClickModificar}) => {
                                      Modificar
                                     </Button>
                                 </td>
-                                <td>
+                                <td
+                                    ref={ref_confirm_eliminar}
+                                >
                                     <Button 
                                         variant="danger"
+                                        size={"md"}
+                                        onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar
                                     </Button>
+                                    <Overlay
+                                    show={show_confirm_eliminar}
+                                    target={target_confirm_eliminar}
+                                    placement="bottom"
+                                    container={ref_confirm_eliminar.current}
+                                    containerPadding={20}
+                            >   
+                                <Popover id="popover-contained">
+                                <Popover.Title as="h3"><small>¿Desea eliminar el rol?</small></Popover.Title>
+                                <Popover.Content>
+                                    <Row>
+                                        <Col>
+                                            <Button
+                                                variant={"success"}
+                                                size={"md"}
+                                                onClick={e => {
+                                                    setShowConfirmEliminar(!show_confirm_eliminar);
+                                                    handleClickEliminarRol(codigo);
+                                                }}
+                                                block
+                                            >
+                                                Si
+                                            </Button>
+                                        </Col>
+                                        <Col>
+                                            <Button
+                                                variant={"info"}
+                                                size={"md"}
+                                                onClick={() => setShowConfirmEliminar(!show_confirm_eliminar)}
+                                                block
+                                            >
+                                                No
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Popover.Content>
+                                </Popover>
+                                </Overlay>
                                 </td>
                                 </tr>
                             )

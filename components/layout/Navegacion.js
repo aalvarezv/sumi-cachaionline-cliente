@@ -73,6 +73,21 @@ const Navegacion = () => {
                                     <NavDropdown.Item>Módulos</NavDropdown.Item>
                                 </Link>
                             }
+                            {rol_select.ver_submenu_modulos &&
+                                <Link href="/administrar/contenidos" passHref>
+                                    <NavDropdown.Item>Contenidos</NavDropdown.Item>
+                                </Link>
+                            }
+                            {rol_select.ver_submenu_modulos &&
+                                <Link href="/administrar/temas" passHref>
+                                    <NavDropdown.Item>Temas</NavDropdown.Item>
+                                </Link>
+                            }
+                            {rol_select.ver_submenu_modulos &&
+                                <Link href="/administrar/conceptos" passHref>
+                                    <NavDropdown.Item>Conceptos</NavDropdown.Item>
+                                </Link>
+                            }
                     </NavDropdown>
                     }
                     {rol_select.ver_menu_preguntas 

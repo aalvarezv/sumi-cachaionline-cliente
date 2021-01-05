@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react';
 import {Table, Button, Row, Col, Form, Popover, Overlay} from 'react-bootstrap';
 
-const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handleClickEliminarInstitucion}) => {  
+const TableModulo = ({modulos, handleClickModificarModulo, handleClickEliminarModulo}) => {  
     
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
@@ -30,9 +30,9 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
     
                 </thead>
                 <tbody>
-                    {instituciones.length > 0 &&
-                        instituciones.map((institucion, index) =>{
-                            const {codigo, descripcion} = institucion
+                    {modulos.length > 0 &&
+                        modulos.map((modulo, index) =>{
+                            const {codigo, descripcion} = modulo
                             return(
                                 <tr >
                                 <td>{index+1}</td>      
@@ -41,7 +41,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                     <Button 
                                         variant="outline-info"
                                         onClick={() => {
-                                            handleClickModificarInstitucion(codigo);    
+                                            handleClickModificarModulo(codigo);    
                                         }}
                                     >
                                      Modificar
@@ -65,7 +65,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                     containerPadding={20}
                             >   
                                 <Popover id="popover-contained">
-                                <Popover.Title as="h3"><small>¿Desea eliminar la institución?</small></Popover.Title>
+                                <Popover.Title as="h3"><small>¿Desea eliminar el modulo?</small></Popover.Title>
                                 <Popover.Content>
                                     <Row>
                                         <Col>
@@ -74,7 +74,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                                 size={"md"}
                                                 onClick={e => {
                                                     setShowConfirmEliminar(!show_confirm_eliminar);
-                                                    handleClickEliminarInstitucion(codigo);
+                                                    handleClickEliminarModulo(codigo);
                                                 }}
                                                 block
                                             >
@@ -106,4 +106,4 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
     )
 }
 
-export default TableInstitucion;
+export default TableModulo;

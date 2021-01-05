@@ -7,6 +7,7 @@ import {handleError} from '../../helpers';
 import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
+import Paginador from '../../components/ui/Paginador';
 import UsuarioForm from '../../components/forms/UsuarioForm';
 import TableUsuario from '../../components/ui/TableUsuario';
 
@@ -19,6 +20,14 @@ const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [usuario_modificar, setUsuarioModificar] = useState({});
     const [mostrar_busqueda, setMostrarBusqueda] = useState(true);
+    /**** Variables para paginación *****/
+   const [pagina_actual, setPaginaActual] = useState(1);
+   const [resultados_por_pagina, setResultadosPorPagina] = useState(10);
+
+   const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
+   const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
+   const resultados_pagina = usuarios.slice(indice_primer_resultado, indice_ultimo_resultado);
+   /*************************************/
 
 
     const handleClickBuscar = async () => {
@@ -43,8 +52,25 @@ const Usuarios = () => {
      }
    }
 
+   const handleClickEliminarUsuario = async rut => {
+      try {
+        await clienteAxios.delete(`/api/usuarios/eliminar/${rut}`);
+        const new_usuarios = usuarios.filter(usuario => usuario.rut !== rut);
+        setUsuarios(new_usuarios);
+        toast.success('USUARIO ELIMINADO', {containerId: 'sys_msg'});
+     } catch (e) {
+        handleError(e);
+     }
+   }
+
+   
+
    const handleClickVolver = async =>{
       setMostrarBusqueda(true);
+   }
+
+   const handleSetPaginaActual = numero_pagina => {
+      setPaginaActual(numero_pagina);
    }
         
     return ( 
@@ -86,9 +112,19 @@ const Usuarios = () => {
                      ?
                      <Row>
                         <TableUsuario 
-                           usuarios={usuarios}
+                           usuarios={resultados_pagina}
                            handleClickModificar = {handleClickModificar}
+                           handleClickEliminarUsuario = {handleClickEliminarUsuario}
                         />
+                        {resultados_pagina.length > 0 &&
+                           <Paginador
+                              resultados_por_pagina = {resultados_por_pagina}
+                              total_resultados = {usuarios.length}
+                              handleSetPaginaActual = {handleSetPaginaActual}
+                              pagina_activa = {pagina_actual}
+                           />
+
+                        }
                      </Row>
                      :
                      <AlertText

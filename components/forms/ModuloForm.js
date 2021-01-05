@@ -6,62 +6,48 @@ import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import ToastMultiline from '../ui/ToastMultiline';
 import { handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
 import InputSelectMateria from '../ui/InputSelectMateria';
-import ButtonBack from '../ui/ButtonBack';
 
-const ModuloForm = () => {
+const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
 
     const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
         codigo_unidad: '',
+        codigo_materia: '',
         inactivo: false
     });
-    const [codigo_materia, setCodigoMateria] = useState('');
+    const [codigo_unidad, setCodigoUnidad] = useState('0');
+    const [codigo_materia, setCodigoMateria] = useState('0');
     const [tab_key, setTabKey] = useState("tab_modulo");
 
     const [errores, setErrores] = useState({});
 
-    const buscarModulo = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/modulos/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.modulos);
-        }catch(e){
-            handleError(e);
-        }
-    }
 
     useEffect(() => {
         
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarModulo();
-        }else{
-            setResultBusqueda([]);
-        }
 
         //cuando se selecciona o cambia el result_select
-        if(result_select){
+        if(modulo_modificar){
+
+            setCodigoMateria(modulo_modificar.unidad.codigo_materia);
 
             setFormulario({
-                codigo: result_select.codigo,
-                descripcion: result_select.descripcion,
-                codigo_unidad: result_select.codigo_unidad,
-                inactivo: result_select.inactivo
+                codigo: modulo_modificar.codigo,
+                descripcion: modulo_modificar.descripcion,
+                codigo_unidad: modulo_modificar.codigo_unidad,
+                inactivo: modulo_modificar.inactivo
             });
-            setCodigoMateria(result_select.unidad.codigo_materia);
+
 
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select]);
+    }, [modulo_modificar]);
 
     //carga la materia en el formulario si existe en la url.
     useEffect(() => {
@@ -167,13 +153,6 @@ const ModuloForm = () => {
     return ( 
     <Container>
 
-        <InputSearch
-            setFilter={setFiltroBusqueda}
-            results={result_busqueda}
-            setResultSelect={setResultSelect}
-            id="codigo"
-            label="descripcion"
-        />
         <Form className="p-3">
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
@@ -209,7 +188,10 @@ const ModuloForm = () => {
                             name="codigo_materia"
                             as="select"
                             value={codigo_materia}
-                            onChange={e => setCodigoMateria(e.target.value)}
+                            onChange={e => {
+                                setCodigoMateria(e.target.value)
+                                setCodigoUnidad('0')
+                            }}
                             disabled={router.query.materia}
                         />
                     </Col>
@@ -246,6 +228,7 @@ const ModuloForm = () => {
                                 ...formulario,
                                 [e.target.name]: e.target.value
                             })}
+                        
                             isInvalid={errores.hasOwnProperty('codigo_unidad')}
                             onBlur={validarFormulario}
                             disabled={router.query.unidad}
@@ -279,7 +262,7 @@ const ModuloForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {modulo_modificar
                     ?
                         <Button 
                             variant="outline-info"
@@ -297,9 +280,11 @@ const ModuloForm = () => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
-                </Col>
+                <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
             </Row>
         </Form>
     </Container> );

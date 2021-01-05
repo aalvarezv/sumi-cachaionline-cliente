@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Pagination} from 'react-bootstrap';
 
-const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActual}) => {
+const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActual, pagina_activa}) => {
 
-    const [pagina_activa, setPaginaActiva] = useState(1);
+    
     const [paginas_visible, setPaginasVisible] = useState(1);
 
     let paginas = [];
@@ -15,7 +15,6 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
                 key={i} 
                 active={i === pagina_activa}
                 onClick={() => {
-                    setPaginaActiva(i)
                     handleSetPaginaActual(i)
                 }}
             >
@@ -47,14 +46,12 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
             </Pagination.Item>
             <Pagination.First 
                 onClick={() => {
-                    setPaginaActiva(1);
                     handleSetPaginaActual(1);
                 }}
             />
             <Pagination.Prev 
                 onClick={() => {
                     if(pagina_activa > 1){
-                        setPaginaActiva(pagina_activa - 1);
                         handleSetPaginaActual(pagina_activa - 1);
                     }
                 }}
@@ -63,14 +60,12 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
             <Pagination.Next 
                 onClick={() => {
                     if(pagina_activa < total_paginas){
-                        setPaginaActiva(pagina_activa + 1);
                         handleSetPaginaActual(pagina_activa + 1);
                     }
                 }}
             />
             <Pagination.Last 
                 onClick={() => {
-                    setPaginaActiva(total_paginas);
                     handleSetPaginaActual(total_paginas);
                 }}
             />

@@ -8,32 +8,36 @@ import AuthContext from '../../context/auth/AuthContext';
 import Layout from '../../components/layout/Layout';
 import Privado from '../../components/layout/Privado';
 import Paginador from '../../components/ui/Paginador';
-import ModuloForm from '../../components/forms/ModuloForm';
-import TableModulo from '../../components/ui/TableModulo';
+import TemaForm from '../../components/forms/TemaForm';
+import TableTema from '../../components/ui/TableTema';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria';
+import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad';
+import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido';
 
 
 
 
-const Modulos = () => {
+const Temas = () => {
 
     const { autenticado } = useContext(AuthContext);
 
 
     const [filtro, setFiltroBusqueda] = useState('');
-    const [modulos, setModulos] = useState([]);
-    const [modulo_modificar, setModuloModificar] = useState({});
+    const [temas, setTemas] = useState([]);
+    const [tema_modificar, setTemaModificar] = useState({});
     const [mostrar_busqueda, setMostrarBusqueda] = useState(true);
     const [codigo_materia, setCodigoMateria] = useState('0');
     const [codigo_unidad, setCodigoUnidad] = useState('0');
+    const [codigo_modulo, setCodigoModulo] = useState('0');
+    const [codigo_modulo_contenido, setCodigoContenido] = useState('0')
     /**** Variables para paginación *****/
    const [pagina_actual, setPaginaActual] = useState(1);
    const [resultados_por_pagina, setResultadosPorPagina] = useState(10);
 
    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
-   const resultados_pagina = modulos.slice(indice_primer_resultado, indice_ultimo_resultado);
+   const resultados_pagina = temas.slice(indice_primer_resultado, indice_ultimo_resultado);
    /*************************************/
 
 
@@ -43,28 +47,29 @@ const Modulos = () => {
         return;
       } */
        try{
-           const resp = await clienteAxios.get(`/api/modulos/unidad-materia/${codigo_unidad}/${codigo_materia}`);
-           setModulos(resp.data.modulos);
+           const resp = await clienteAxios.get(`/api/modulo-contenido-temas/temas/${codigo_modulo_contenido}/${codigo_modulo}/${codigo_unidad}/${codigo_materia}`);
+           setTemas(resp.data.contenido_tema);
        }catch(e){
            handleError(e);
        }
    }
 
-   const handleClickModificarModulo = async codigo => {
+   const handleClickModificarTema = async codigo => {
       
-      const modulo = modulos.filter(modulo => modulo.codigo === codigo)
-      if(modulo.length > 0){
+      const tema = temas.filter(tema => tema.codigo === codigo)
+      if(tema.length > 0){
          setMostrarBusqueda(false);
-         setModuloModificar(modulo[0]);
+         setTemaModificar(tema[0]);
+         console.log(tema_modificar);
       }
     }
 
-    const handleClickEliminarModulo = async codigo => {
+    const handleClickEliminarTema = async codigo => {
        try {
-         await clienteAxios.delete(`/api/modulos/eliminar/${codigo}`);
-         const new_modulos = modulos.filter(modulo => modulo.codigo !== codigo);
-         setModulos(new_modulos);
-         toast.success('MODULO ELIMINADO', {containerId: 'sys_msg'});
+         await clienteAxios.delete(`/api/modulo-contenido-temas/eliminar/${codigo}`);
+         const new_temas = temas.filter(tema => tema.codigo !== codigo);
+         setModulos(new_temas);
+         toast.success('TEMA ELIMINADO', {containerId: 'sys_msg'});
       } catch (e) {
          handleError(e);
       }
@@ -84,7 +89,7 @@ const Modulos = () => {
              {autenticado 
              ?
                 <>
-                    <h5 className="my-4 text-center">Administrar Módulos</h5>
+                    <h5 className="my-4 text-center">Administrar Temas</h5>
                     
                <Container>
                   {mostrar_busqueda 
@@ -102,7 +107,8 @@ const Modulos = () => {
                         onChange={e => {
                            setCodigoMateria(e.target.value)
                            setCodigoUnidad('0')
-                           
+                           setCodigoModulo('0')
+                           setCodigoContenido('0')
                         }}
                      />
                      </Col>
@@ -117,9 +123,45 @@ const Modulos = () => {
                         size="sm"
                         label="TODAS LAS UNIDADES"
                         value={codigo_unidad}
-                        onChange={e => setCodigoUnidad(e.target.value)}
+                        onChange={e => {
+                           setCodigoUnidad(e.target.value)
+                           setCodigoModulo('0')
+                           setCodigoContenido('0')
+                        }}
                      />
                      </Col>
+                     <Col>
+                     <InputSelectModulosUnidad
+                        id="codigo_modulo"
+                        name="codigo_modulo"
+                        /*codigo unidad se le pasa a las props del componente
+                        para filtrar los modulos de la unidad seleccionada.*/
+                        codigo_unidad= {codigo_unidad}
+                        as="select"
+                        size="sm"
+                        label="TODOS LOS MODULOS"
+                        value={codigo_modulo}
+                        onChange={e => {
+                           setCodigoModulo(e.target.value)
+                           setCodigoContenido('0')
+                        }}
+                     />
+                     </Col>
+                     <Col>
+                <InputSelectModulosContenido
+                    id="codigo_modulo_contenido"
+                    name="codigo_modulo_contenido"
+                
+                    /*codigo modulo se le pasa a las props del componente
+                    para filtrar las propiedades del modulo seleccionado.*/
+                    codigo_modulo={codigo_modulo}
+                    as="select"
+                    size="sm"
+                    label="TODOS LOS CONTENIDOS"
+                    value={codigo_modulo_contenido}
+                    onChange={e => setCodigoContenido(e.target.value)}
+                />
+            </Col>
                      <Col>
                         <Button 
                            variant="info"
@@ -131,19 +173,19 @@ const Modulos = () => {
                      </Col>
                   </Row>
                   <Row>
-                     {modulos.length > 0 
+                     {temas.length > 0 
                         ?
                         <Row>
-                           <TableModulo
-                              modulos={resultados_pagina}
-                              handleClickModificarModulo = {handleClickModificarModulo}
-                              handleClickEliminarModulo = {handleClickEliminarModulo}
+                           <TableTema
+                              temas={resultados_pagina}
+                              handleClickModificarTema = {handleClickModificarTema}
+                              handleClickEliminarTema = {handleClickEliminarTema}
 
                            />
                            {resultados_pagina.length > 0 &&
                               <Paginador
                                  resultados_por_pagina = {resultados_por_pagina}
-                                 total_resultados = {modulos.length}
+                                 total_resultados = {temas.length}
                                  handleSetPaginaActual = {handleSetPaginaActual}
                                  pagina_activa = {pagina_actual}
                               />
@@ -159,8 +201,8 @@ const Modulos = () => {
                   </>
                   :
                   <Row>
-                     <ModuloForm
-                        modulo_modificar = {modulo_modificar}
+                     <TemaForm
+                        tema_modificar = {tema_modificar}
                         handleClickVolver = {handleClickVolver}
                      />
                   </Row>
@@ -175,4 +217,4 @@ const Modulos = () => {
      );
 }
  
-export default Modulos;
+export default Temas;

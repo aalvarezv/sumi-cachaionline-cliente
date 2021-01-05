@@ -1,8 +1,8 @@
 import React, {useState, useRef} from 'react';
 import {Table, Button, Row, Col, Form, Popover, Overlay} from 'react-bootstrap';
 
-const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handleClickEliminarInstitucion}) => {  
-    
+
+const TableUnidad = ({unidades, handleClickModificarUnidad, handleClickEliminarUnidad}) => { 
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
@@ -10,12 +10,14 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
 
     const [codigo_eliminar, setCodigoEliminar] = useState('');
 
-
     const handleClickEliminar = (e, codigo) => {
         setShowConfirmEliminar(!show_confirm_eliminar);
         setTargetConfirmEliminar(e.target);
         setCodigoEliminar(codigo);
     };
+
+
+
 
     return (
         <>
@@ -25,30 +27,29 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                     <th>#</th>
                     <th>Descripcion</th>
                     <th></th>
-                    <th></th>
                     </tr>
     
                 </thead>
                 <tbody>
-                    {instituciones.length > 0 &&
-                        instituciones.map((institucion, index) =>{
-                            const {codigo, descripcion} = institucion
+                    {unidades.length > 0 &&
+                        unidades.map((unidad, index) =>{
+                            const {codigo, descripcion} = unidad
                             return(
                                 <tr >
-                                <td>{index+1}</td>      
-                                <td>{descripcion}</td>                      
+                                <td>{index+1}</td>  
+                                <td>{descripcion}</td> 
+
                                 <td>
                                     <Button 
                                         variant="outline-info"
                                         onClick={() => {
-                                            handleClickModificarInstitucion(codigo);    
+                                            handleClickModificarUnidad(codigo);    
                                         }}
                                     >
                                      Modificar
                                     </Button>
                                 </td>
                                 <td
-                                    ref={ref_confirm_eliminar}
                                 >
                                     <Button 
                                         variant="danger"
@@ -65,7 +66,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                     containerPadding={20}
                             >   
                                 <Popover id="popover-contained">
-                                <Popover.Title as="h3"><small>¿Desea eliminar la institución?</small></Popover.Title>
+                                <Popover.Title as="h3"><small>¿Desea eliminar la unidad?</small></Popover.Title>
                                 <Popover.Content>
                                     <Row>
                                         <Col>
@@ -74,7 +75,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                                 size={"md"}
                                                 onClick={e => {
                                                     setShowConfirmEliminar(!show_confirm_eliminar);
-                                                    handleClickEliminarInstitucion(codigo);
+                                                    handleClickEliminarUnidad(codigo);
                                                 }}
                                                 block
                                             >
@@ -99,11 +100,11 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                 </tr>
                             )
                         })
-                    }                
+                    }  
                 </tbody>
             </Table>
         </>
     )
 }
 
-export default TableInstitucion;
+export default TableUnidad;

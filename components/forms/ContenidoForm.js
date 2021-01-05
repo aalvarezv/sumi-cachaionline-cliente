@@ -7,23 +7,49 @@ import { handleError } from '../../helpers';
 import  clienteAxios from '../../config/axios';
 import InputSelectMateria from '../ui/InputSelectMateria';
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria';
-import ButtonBack from '../ui/ButtonBack';
 import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad';
 
-const ContenidoForm = () => {
-    
-    const [codigo_materia, setCodigoMateria] = useState('0');
-    const [codigo_unidad, setCodigoUnidad] = useState('0');
+const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
 
     const router = useRouter();
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
         codigo_modulo: '',
+        codigo_unidad: '',
+        codigo_materia: '',
         inactivo: false,
     });
 
+    const [codigo_materia, setCodigoMateria] = useState('0');
+    const [codigo_unidad, setCodigoUnidad] = useState('0');
+    const [codigo_modulo, setCodigoModulo] = useState('0');
+
     const [errores, setErrores] = useState({});
+
+    useEffect(() => {
+        
+
+        //cuando se selecciona o cambia el result_select
+        if(contenido_modificar){
+
+            setCodigoUnidad(contenido_modificar.modulo.codigo_unidad);
+            setCodigoMateria(contenido_modificar.modulo.unidad.codigo_materia);
+
+            setFormulario({
+                codigo: contenido_modificar.codigo,
+                descripcion: contenido_modificar.descripcion,
+                codigo_modulo: contenido_modificar.codigo_modulo,
+                inactivo: contenido_modificar.inactivo
+            });
+
+
+        }else{
+            reseteaFormulario();
+        }
+        setErrores({});
+
+    }, [contenido_modificar]);
 
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
@@ -88,6 +114,27 @@ const ContenidoForm = () => {
      
     }
 
+    const handleClickActualizar = async e => {
+        
+        try{
+            e.preventDefault();
+            //valida el formulario
+            const errors = validarFormulario();
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return;
+            }
+            //contenido a enviar
+            let contenido = formulario;
+
+            await clienteAxios.put('/api/modulo-contenidos/actualizar', contenido);
+            //respuesta del usuario recibido.
+            toast.success(<ToastMultiline mensajes={[{msg: 'CONTENIDO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+ 
+        }catch(e){
+             handleError(e);
+        }
+    }
 
 
 
@@ -100,7 +147,7 @@ const ContenidoForm = () => {
                             id="codigo"
                             name="codigo"
                             type="text" 
-                            placeholder="DESCRIPCIÓN" 
+                            placeholder="CODIGO" 
                             value={formulario.codigo}
                             onChange={e => setFormulario({
                                 ...formulario,
@@ -140,7 +187,11 @@ const ContenidoForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_materia}
-                            onChange={e => setCodigoMateria(e.target.value)}
+                            onChange={e => {
+                                setCodigoMateria(e.target.value)
+                                setCodigoUnidad('0')
+                                setCodigoModulo('0')
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -154,7 +205,10 @@ const ContenidoForm = () => {
                             as="select"
                             size="sm"
                             value={codigo_unidad}
-                            onChange={e => setCodigoUnidad(e.target.value)}
+                            onChange={e => {
+                                setCodigoUnidad(e.target.value)
+                                setCodigoModulo('0')
+                            }}
                         />
                 </Form.Group>
                 <Form.Group>
@@ -189,19 +243,30 @@ const ContenidoForm = () => {
                 })}
                 />
             <Row className="justify-content-center">
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    
+            <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
+                    {contenido_modificar
+                    ?
+                        <Button 
+                            variant="outline-info"
+                            size="lg"
+                            className="btn-block"
+                            onClick={handleClickActualizar}
+                            
+                        >Actualizar</Button>
+                    :
                         <Button 
                             variant="info"
                             size="lg"
                             className="btn-block"
                             onClick={handleClickCrear}
                         >Crear</Button>
-                    
+                    }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
-                </Col>
+                <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
             </Row>
             </Form>
         </Container> 

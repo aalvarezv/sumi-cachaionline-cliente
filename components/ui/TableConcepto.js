@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react';
 import {Table, Button, Row, Col, Form, Popover, Overlay} from 'react-bootstrap';
 
-const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handleClickEliminarInstitucion}) => {  
+const TableConcepto = ({conceptos, handleClickModificarConcepto, handleClickEliminarConcepto}) => {  
     
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
@@ -23,6 +23,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                 <thead>
                     <tr>
                     <th>#</th>
+                    <th>Codigo</th>
                     <th>Descripcion</th>
                     <th></th>
                     <th></th>
@@ -30,18 +31,19 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
     
                 </thead>
                 <tbody>
-                    {instituciones.length > 0 &&
-                        instituciones.map((institucion, index) =>{
-                            const {codigo, descripcion} = institucion
+                    {conceptos.length > 0 &&
+                        conceptos.map((concepto, index) =>{
+                            const {codigo, descripcion} = concepto
                             return(
                                 <tr >
-                                <td>{index+1}</td>      
+                                <td>{index+1}</td>    
+                                <td>{codigo}</td>  
                                 <td>{descripcion}</td>                      
                                 <td>
                                     <Button 
                                         variant="outline-info"
                                         onClick={() => {
-                                            handleClickModificarInstitucion(codigo);    
+                                            handleClickModificarConcepto(codigo);    
                                         }}
                                     >
                                      Modificar
@@ -65,7 +67,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                     containerPadding={20}
                             >   
                                 <Popover id="popover-contained">
-                                <Popover.Title as="h3"><small>¿Desea eliminar la institución?</small></Popover.Title>
+                                <Popover.Title as="h3"><small>¿Desea eliminar el concepto?</small></Popover.Title>
                                 <Popover.Content>
                                     <Row>
                                         <Col>
@@ -74,7 +76,7 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
                                                 size={"md"}
                                                 onClick={e => {
                                                     setShowConfirmEliminar(!show_confirm_eliminar);
-                                                    handleClickEliminarInstitucion(codigo);
+                                                    handleClickEliminarConcepto(codigo);
                                                 }}
                                                 block
                                             >
@@ -106,4 +108,4 @@ const TableInstitucion = ({instituciones, handleClickModificarInstitucion, handl
     )
 }
 
-export default TableInstitucion;
+export default TableConcepto;

@@ -11,12 +11,10 @@ import InputSelectMateria from '../ui/InputSelectMateria';
 import ButtonBack from '../ui/ButtonBack';
 
 
-const UnidadForm = () => {
+const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
 
     const router = useRouter();
     const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
@@ -26,36 +24,21 @@ const UnidadForm = () => {
     
     const [errores, setErrores] = useState({});
 
-    const buscarUnidad = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/unidades/busqueda/${filtro_busqueda}`);
-            setResultBusqueda(resp.data.unidades);
-        }catch(e){
-            handleError(e);
-        }
-    }
-
     useEffect(() => {
-
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarUnidad();
-        }else{
-            setResultBusqueda([]);
-        }
         
-        if(result_select){
+        if(unidad_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                descripcion: result_select.descripcion,
-                codigo_materia: result_select.codigo_materia,
-                inactivo: result_select.inactivo
+                codigo: unidad_modificar.codigo,
+                descripcion: unidad_modificar.descripcion,
+                codigo_materia: unidad_modificar.codigo_materia,
+                inactivo: unidad_modificar.inactivo
             });
         }else{
             reseteaFormulario();
         }
         setErrores({});
 
-    }, [filtro_busqueda, result_select]);
+    }, [unidad_modificar]);
 
     //carga la materia en el formulario si existe en la url.
     useEffect(() => {
@@ -149,14 +132,6 @@ const UnidadForm = () => {
     return ( 
     <Container>
 
-        <InputSearch
-            setFilter={setFiltroBusqueda}
-            results={result_busqueda}
-            setResultSelect={setResultSelect}
-            id="codigo"
-            label="descripcion"
-        />
-
        <Form>
             <Form.Group>
                 <Form.Label>Descripción</Form.Label>
@@ -210,7 +185,7 @@ const UnidadForm = () => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {unidad_modificar
                     ?
                         <Button 
                             variant="outline-info"
@@ -230,7 +205,7 @@ const UnidadForm = () => {
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="success"
-                        disabled={!result_select}
+                        disabled={!unidad_modificar}
                         size="lg"
                         className="btn-block"
                         onClick={() => {
@@ -244,8 +219,14 @@ const UnidadForm = () => {
                         }}
                     >+ Agregar Módulos</Button>
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
+                <Col>
+                <Col>
+                    <Button 
+                        variant="info"
+                        size="lg"
+                        onClick={handleClickVolver}
+                    >Volver</Button>
+                </Col>
                 </Col>
             </Row>
        </Form>
