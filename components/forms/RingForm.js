@@ -9,6 +9,7 @@ import CustomDateInput from '../ui/CustomDateInput';
 import DatePicker from 'react-datepicker';
 import AuthContext from '../../context/auth/AuthContext';
 import InputSelectTipoJuego from '../ui/InputSelectTipoJuego';
+import InputSelectModalidad from '../ui/InputSelectModalidad';
 import InputSelectNivelesAcademicosUsuarioInstitucion from '../../components/ui/InputSelectNivelesAcademicosUsuarioInstitucion';
 import InputSelectMateria from '../../components/ui/InputSelectMateria';
 import InputSelectTipoDuracionPregunta from '../../components/ui/InputSelectTipoDuracionPregunta';
@@ -26,18 +27,27 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         fecha_hora_inicio: new Date(),
         fecha_hora_fin: new Date(),
         rut_usuario_creador: usuario.rut,
-        cantidad_usuarios: '5',
+        cantidad_usuarios_minimo: '1',
+        cantidad_usuarios_maximo: '10',
         codigo_institucion: institucion_select.codigo,
         codigo_nivel_academico: '0',
         codigo_materia: '0',
         tipo_duracion_pregunta: '0',
         duracion_pregunta: '',
         codigo_tipo_juego: '0',
+        codigo_modalidad: '',
         privado: true,
+        revancha: false,
+        revancha_cantidad: '1',
+        tiempo_ring: '1',
+        cantidad_preguntas: '10',
+        retroceder: false,
+        pistas: false,
         inactivo: false,
     });
  
-    const [showDuracionPregunta, setShowDuracionPregunta] = useState(false)
+    const [showDuracionPregunta, setShowDuracionPregunta] = useState(false);
+    const [showRevanchaCantidad, setShowRevanchaCantidad] = useState(false);
 
     const radios_estado_ring = [
         { name: 'Privado', value: true },
@@ -54,7 +64,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
         if(ring_modificar && ring_modificar.codigo_institucion !== institucion_select.codigo){
             handleMostrarBusquedaRings();
         }
-    }, [institucion]);
+    }, [institucion_select]);
 
     useEffect(() => {
         if(ring_modificar){
@@ -97,13 +107,19 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             }
         }
 
-        if(formulario.cantidad_usuarios.trim() === '' || formulario.cantidad_usuarios.trim() === '0'){
+        if(formulario.cantidad_usuarios_minimo.trim() === '' || formulario.cantidad_usuarios_minimo.trim() === '0'){
             errors = {
                 ...errors,
-                cantidad_usuarios: 'Requerido'
+                cantidad_usuarios_minimo: 'Requerido'
             }
         }
 
+        if(formulario.cantidad_usuarios_maximo.trim() === '' || formulario.cantidad_usuarios_maximo.trim() === '0'){
+            errors = {
+                ...errors,
+                cantidad_usuarios_maximo: 'Requerido'
+            }
+        }
         
         if(formulario.codigo_nivel_academico.trim() === '0'){
             errors = {
@@ -116,6 +132,13 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             errors = {
                 ...errors,
                 codigo_materia: 'Requerido',
+            }
+        }
+
+        if(formulario.codigo_modalidad.trim() === '0'){
+            errors = {
+                ...errors,
+                codigo_modalidad: 'Requerido',
             }
         }
 
@@ -147,14 +170,22 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
             fecha_hora_inicio: new Date(),
             fecha_hora_fin: new Date(),
             rut_usuario_creador: usuario.rut,
-            cantidad_usuarios: '',
+            cantidad_usuarios_minimo: '',
+            cantidad_usuarios_maximo: '',
             codigo_institucion: institucion_select.codigo,
             codigo_nivel_academico: '0',
             codigo_materia: '0',
             tipo_duracion_pregunta: '0',
             duracion_pregunta: '',
             codigo_tipo_juego: '0',
+            codigo_modalidad: '',
             privado: true,
+            revancha: false,
+            revancha_cantidad: '0',
+            tiempo_ring: '0',
+            cantidad_preguntas: '0',
+            retroceder: false,
+            pistas: false,
             inactivo: false
         });
     }
@@ -258,51 +289,29 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                 </Col>
                 <Col>
                     <Form.Group>
-                        <Form.Label>Cantidad Usuario</Form.Label>
-                        <Form.Control
-                            id="cantidad_usuarios"
-                            name="cantidad_usuarios"
-                            type="number" 
-                            placeholder="CANTIDAD DE USUARIOS" 
-                            value={formulario.cantidad_usuarios}
-                            onChange={e => {setFormulario({
-                                    ...formulario,
-                                    [e.target.name]: e.target.value.toUpperCase()
-                                })
-                            }}
-                            isInvalid={errores.hasOwnProperty('cantidad_usuarios')}
+                        <Form.Label>Modalidad</Form.Label>
+                        <InputSelectModalidad
+                            id="codigo_modalidad"
+                            name="codigo_modalidad"
+                            as="select"
+                            value={formulario.codigo_modalidad}
+                            onChange={e => setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value
+                            })}
+                            isInvalid={errores.hasOwnProperty('codigo_modalidad')}
                             onBlur={validarFormulario}
                         />
                         <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('cantidad_usuarios') && errores.cantidad_usuarios}
+                            {errores.hasOwnProperty('codigo_modalidad') && errores.codigo_modalidad}
                         </Form.Control.Feedback>
-                    </Form.Group>          
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Form.Group>
-                        <Form.Label>Instrucciones</Form.Label>
-                        <Form.Control
-                            id="descripcion"
-                            name="descripcion"
-                            as = "textarea"
-                            rows = "1"
-                            placeholder="INSTRUCCIONES" 
-                            value={formulario.descripcion}
-                            onChange={e => {setFormulario({
-                                    ...formulario,
-                                    [e.target.name]: e.target.value.toUpperCase()
-                                })
-                            }}
-                        />
-                    </Form.Group>
+                    </Form.Group>     
                 </Col>
             </Row> 
             <Row>
                 <Col>
                     <Form.Group>
-                        <Form.Label>Nivel Academico</Form.Label>
+                        <Form.Label>Nivel Académico</Form.Label>
                         <InputSelectNivelesAcademicosUsuarioInstitucion
                             id="codigo_nivel_academico"
                             name="codigo_nivel_academico"
@@ -371,7 +380,6 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
-                {showDuracionPregunta && 
                 <Col>
                     <Form.Group>
                         <Form.Label>Segundos</Form.Label>
@@ -388,20 +396,132 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                             }}
                             isInvalid={errores.hasOwnProperty('duracion_pregunta')}
                             onBlur={validarFormulario}
+                            disabled = {!showDuracionPregunta}
                             />
                         <Form.Control.Feedback type="invalid">
                             {errores.hasOwnProperty('duracion_pregunta') && errores.duracion_pregunta}
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
-                }
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Instrucciones</Form.Label>
+                        <Form.Control
+                            id="descripcion"
+                            name="descripcion"
+                            as = "textarea"
+                            rows = "1"
+                            placeholder="INSTRUCCIONES" 
+                            value={formulario.descripcion}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Tiempo del Ring</Form.Label>
+                        <Form.Control
+                            id="tiempo_ring"
+                            name="tiempo_ring"
+                            type="number" 
+                            placeholder="TIEMPO DURACIÓN" 
+                            value={formulario.tiempo_ring}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('tiempo_ring')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('tiempo_ring') && errores.tiempo_ring}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Cantidad de preguntas</Form.Label>
+                        <Form.Control
+                            id="cantidad_preguntas"
+                            name="cantidad_preguntas"
+                            type="number" 
+                            placeholder="CANTIDAD DE PREGUNTAS" 
+                            value={formulario.cantidad_preguntas}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('cantidad_preguntas')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('cantidad_preguntas') && errores.cantidad_preguntas}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Cantidad de usuarios mínimo</Form.Label>
+                        <Form.Control
+                            id="cantidad_usuarios_minimo"
+                            name="cantidad_usuarios_minimo"
+                            type="number" 
+                            placeholder="CANTIDAD DE USUARIOS MÍNIMO" 
+                            value={formulario.cantidad_usuarios_minimo}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('cantidad_usuarios_minimo')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('cantidad_usuarios_minimo') && errores.cantidad_usuarios_minimo}
+                        </Form.Control.Feedback>
+                    </Form.Group>          
+                </Col>
+                <Col>
+                    <Form.Group>
+                        <Form.Label>Cantidad de usuarios máximo</Form.Label>
+                        <Form.Control
+                            id="cantidad_usuarios_maximo"
+                            name="cantidad_usuarios_maximo"
+                            type="number" 
+                            placeholder="CANTIDAD DE USUARIOS MÁXIMO" 
+                            value={formulario.cantidad_usuarios_maximo}
+                            onChange={e => {setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('cantidad_usuarios_maximo')}
+                            onBlur={validarFormulario}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('cantidad_usuarios_maximo') && errores.cantidad_usuarios_maximo}
+                        </Form.Control.Feedback>
+                    </Form.Group>          
+                </Col>
             </Row>
             <Row className="ml-0">
-                 <Col xs="auto">
-                     <Row>
+                <Col xs="auto">
+                    <Row>
                         <Form.Label>Inicio del juego </Form.Label>
-                     </Row>
-                     <Row>
+                    </Row>
+                    <Row>
                         <DatePicker
                             id="fecha_hora_inicio"
                             name="fecha_hora_inicio"
@@ -421,7 +541,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                                 />
                             }
                         />
-                     </Row>
+                    </Row>
                 </Col>
                 <Col className="ml-3">
                      <Row>
@@ -450,7 +570,93 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                      </Row>
                 </Col>
             </Row>
-            
+            <Row> 
+                <Col 
+                    xs="auto" 
+                    className="d-flex align-items-center"
+                >    
+                    <Form.Check
+                        id="revancha"
+                        name="revancha"
+                        type="checkbox"
+                        label="Revancha"
+                        className="my-3"
+                        checked={formulario.revancha}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.checked,
+                                revancha_cantidad : '0',
+                            });
+                            if(e.target.checked === true){
+                                setShowRevanchaCantidad(true);
+                            }else{
+                                setShowRevanchaCantidad(false);
+                            }
+                        }}
+                    />
+                </Col>
+                <Col xs="auto">
+                    <Form.Group>
+                        <Form.Label>Cantidad de revanchas</Form.Label>
+                        <Form.Control
+                            id="revancha_cantidad"
+                            name="revancha_cantidad"
+                            type="number" 
+                            placeholder="CANTIDAD DE REVANCHAS" 
+                            value={formulario.revancha_cantidad}
+                            onChange={e => {
+                                setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value.toUpperCase()
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('revancha_cantidad')}
+                            onBlur={validarFormulario}
+                            disabled = {!showRevanchaCantidad}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errores.hasOwnProperty('revancha_cantidad') && errores.revancha_cantidad}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Check 
+                        id="retroceder"
+                        name="retroceder"
+                        type="checkbox"
+                        label="Retroceder"
+                        className="my-3"
+                        checked={formulario.retroceder}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.checked
+                            });
+                        }}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Check 
+                        id="pistas"
+                        name="pistas"
+                        type="checkbox"
+                        label="Pistas"
+                        className="my-3"
+                        checked={formulario.pistas}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.checked
+                            });
+                        }}
+                    />
+                </Col>
+            </Row>
             <ButtonGroup toggle style={{zIndex: 0}}>
                 {radios_estado_ring.map((radio, idx) => (
                     <ToggleButton
@@ -516,6 +722,7 @@ const RingForm = ({ring_modificar, handleMostrarBusquedaRings}) => {
                     >Volver</Button>
                 </Col>
             </Row>
+           
         </Form>
      </Container> );
 }
