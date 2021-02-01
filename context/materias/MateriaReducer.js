@@ -2,7 +2,7 @@ import {
     LISTAR_MATERIAS_EXITO,
     LISTAR_MATERIAS_ERROR,
     SELECCIONA_MATERIA
-} from '../types';
+} from '../types'
 
 const MateriaReducer = (state, action) => {
 
@@ -33,4 +33,4 @@ const MateriaReducer = (state, action) => {
 
 }
 
-export default MateriaReducer;
+export default MateriaReducer

@@ -6,8 +6,8 @@ import {
     USUARIO_AUTH_ERROR,
     SELECT_INSTITUCION,
     SELECT_ROL,
-} from '../types';
-import tokenAuth from '../../config/token';
+} from '../types'
+import tokenAuth from '../../config/token'
 
 
 const AuthReducer = (state, action) => {
@@ -29,8 +29,8 @@ const AuthReducer = (state, action) => {
             }
         case LOGIN_ERROR:
         case USUARIO_AUTH_ERROR:
-            tokenAuth(null);
-            localStorage.removeItem('token');
+            tokenAuth(null)
+            localStorage.removeItem('token')
             return{
                 ...state,
                 usuario: null,
@@ -42,8 +42,8 @@ const AuthReducer = (state, action) => {
                 mensaje: action.payload,
             } 
         case CERRAR_SESION:
-            tokenAuth(null);
-            localStorage.removeItem('token');
+            tokenAuth(null)
+            localStorage.removeItem('token')
             return{
                 ...state,
                 usuario: null,
@@ -57,9 +57,9 @@ const AuthReducer = (state, action) => {
         case SELECT_INSTITUCION:
 
             //filtra las instituciones de acuerdo a la institucion_select.
-            let new_roles_institucion = state.usuario.usuario_institucion_rols.filter(usuario_institucion_rol => usuario_institucion_rol.codigo_institucion === action.payload);
+            let new_roles_institucion = state.usuario.usuario_institucion_rols.filter(usuario_institucion_rol => usuario_institucion_rol.codigo_institucion === action.payload)
            
-            let new_roles = [];  
+            let new_roles = []  
             for(let roles_institucion of new_roles_institucion){
                 new_roles.push(roles_institucion.rol)
             }
@@ -83,4 +83,4 @@ const AuthReducer = (state, action) => {
 
 }
 
-export default AuthReducer;
+export default AuthReducer

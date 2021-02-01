@@ -1,19 +1,18 @@
-import React,{ useContext, useEffect, useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
-import Link from 'next/link';
-import AuthContext from '../../context/auth/AuthContext';
-import MenuInstitucionPerfil from './MenuInstitucionPerfil';
-import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap';
+import React,{ useContext, useEffect, useState } from 'react'
+import { FaUserCircle } from 'react-icons/fa'
+import Link from 'next/link'
+import AuthContext from '../../context/auth/AuthContext'
+import MenuInstitucionPerfil from './MenuInstitucionPerfil'
+import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap'
 
 const Navegacion = () => {
 
-    const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext);
-
-    if(!usuario && autenticado) return <h1>sin usuario, pero autenticado</h1>;
-
+    const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext)
+    
     return (
 
         <Navbar collapseOnSelect expand="lg" bg="white" text="light">
+            
         <Navbar.Brand>
             <img
                 src="/static/logo.png"
@@ -29,7 +28,7 @@ const Navegacion = () => {
                 <Link href="/" passHref>
             <Nav.Link className="text-info">CachaiOnline</Nav.Link>
                 </Link>
-                {autenticado
+                {autenticado && rol_select
                 && 
                 <>  
                     { rol_select.ver_menu_administrar &&  
@@ -90,13 +89,10 @@ const Navegacion = () => {
                             }
                     </NavDropdown>
                     }
-                    {rol_select.ver_menu_preguntas 
-                    ?
+                    {rol_select.ver_menu_preguntas &&
                         <Link href="/administrar/preguntas" passHref>
                             <Nav.Link>Preguntas</Nav.Link>
                         </Link>
-                    :
-                        null
                     }
                     {rol_select.ver_menu_rings &&
                         <Link href="/administrar/rings" passHref>
@@ -110,7 +106,7 @@ const Navegacion = () => {
                 }
             </Nav> 
             <Nav>
-                {autenticado
+                {autenticado && rol_select
                 ?   
                     <>
                        <Row>
@@ -150,7 +146,7 @@ const Navegacion = () => {
             </Nav>
         </Navbar.Collapse>
         </Navbar>
-     );
+     )
 }
  
-export default Navegacion;
+export default Navegacion

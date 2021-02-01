@@ -1,6 +1,6 @@
-import React from 'react';
-import {Container, Row, Col} from 'react-bootstrap';
-import { RiAlertFill } from 'react-icons/ri';
+import React from 'react'
+import {Container, Row, Col} from 'react-bootstrap'
+import { RiAlertFill } from 'react-icons/ri'
 
 const AlertText = ({text}) => {
     return ( 
@@ -15,7 +15,7 @@ const AlertText = ({text}) => {
             </Container>
         }
         </>
-     );
+     )
 }
  
-export default AlertText;
+export default AlertText

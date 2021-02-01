@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {Modal, Container, Row, Col} from 'react-bootstrap';
-import FiltrosBusquedaPregunta from './FiltrosBusquedaPregunta';
-import TableRingPreguntas from './TableRingPreguntas';
-import Logo from './Logo';
+import React, {useState, useEffect} from 'react'
+import {Modal, Container, Row, Col} from 'react-bootstrap'
+import FiltrosBusquedaPregunta from './FiltrosBusquedaPregunta'
+import TableRingPreguntas from './TableRingPreguntas'
+import Logo from './Logo'
 
 
 const ModalRingPreguntas = ({show, handleClose, ring}) => {
@@ -35,7 +35,7 @@ const ModalRingPreguntas = ({show, handleClose, ring}) => {
         </Modal.Body>
        
       </Modal>
-     );
+     )
 }
  
-export default ModalRingPreguntas;
+export default ModalRingPreguntas

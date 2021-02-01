@@ -1,52 +1,58 @@
-import React, {useState, useRef} from 'react';
-import {Table, Button, Row, Col, Form, Popover, Overlay} from 'react-bootstrap';
+import React, {useState, useRef} from 'react'
+import {getNumeroFilaTabla} from '../../helpers'
+import {Table, Button, Row, Col, Badge, Popover, Overlay} from 'react-bootstrap'
 
-const TableMateria = ({materias, handleClickModificar, handleClickEliminarMateria}) => {    
+const TableMateria = ({materias, pagina_actual, resultados_por_pagina, handleClickModificar, handleClickEliminarMateria}) => {    
 
-    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
-    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
-    const ref_confirm_eliminar = useRef(null);
+    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
+    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
+    const ref_confirm_eliminar = useRef(null)
 
-    const [codigo_eliminar, setCodigoEliminar] = useState('');
-
+    const [codigo_eliminar, setCodigoEliminar] = useState('')
 
     const handleClickEliminar = (e, codigo) => {
-        setShowConfirmEliminar(!show_confirm_eliminar);
-        setTargetConfirmEliminar(e.target);
-        setCodigoEliminar(codigo);
-    };
+        setShowConfirmEliminar(!show_confirm_eliminar)
+        setTargetConfirmEliminar(e.target)
+        setCodigoEliminar(codigo)
+    }
 
     return (
         <>
-            <Table striped bordered hover variant="light"> 
+            <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Descripcion</th>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th className="text-center">Estado</th>
+                    <th></th>
                     <th></th>
                     </tr>
     
                 </thead>
                 <tbody>
-                    {materias.length > 0 &&
-                        materias.map((materia, index) =>{
-                            const {codigo, nombre} = materia
-                            return(
-                                <tr >
-                                <td>{index+1}</td>  
-                                <td>{nombre}</td> 
+                    {materias.length > 0 && materias.map((materia, index) => {
 
-                                <td>
+                            const {codigo, nombre, inactivo} = materia
+                            let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
+
+                            return(
+                                <tr key={index}>
+                                <td>{numFila}</td>  
+                                <td>{codigo}</td>
+                                <td>{nombre}</td> 
+                                <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>  
+                                <td className="text-center">
                                     <Button 
                                         variant="outline-info"
                                         onClick={() => {
-                                            handleClickModificar(codigo);
+                                            handleClickModificar(codigo)
                                         }}
                                     >
                                      Modificar
                                     </Button>
                                 </td>
-                                <td
+                                <td className="text-center"
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
@@ -69,11 +75,11 @@ const TableMateria = ({materias, handleClickModificar, handleClickEliminarMateri
                                     <Row>
                                         <Col>
                                             <Button
-                                                variant={"success"}
+                                                variant={"danger"}
                                                 size={"md"}
                                                 onClick={e => {
-                                                    setShowConfirmEliminar(!show_confirm_eliminar);
-                                                    handleClickEliminarMateria(codigo);
+                                                    setShowConfirmEliminar(!show_confirm_eliminar)
+                                                    handleClickEliminarMateria(codigo_eliminar)
                                                 }}
                                                 block
                                             >
@@ -82,7 +88,7 @@ const TableMateria = ({materias, handleClickModificar, handleClickEliminarMateri
                                         </Col>
                                         <Col>
                                             <Button
-                                                variant={"info"}
+                                                variant={"secondary"}
                                                 size={"md"}
                                                 onClick={() => setShowConfirmEliminar(!show_confirm_eliminar)}
                                                 block
@@ -105,4 +111,4 @@ const TableMateria = ({materias, handleClickModificar, handleClickEliminarMateri
     )
 }
 
-export default TableMateria;
+export default TableMateria

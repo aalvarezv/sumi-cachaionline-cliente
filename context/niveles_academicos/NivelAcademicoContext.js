@@ -1,5 +1,5 @@
-import { createContext } from 'react';
+import { createContext } from 'react'
 
-const NivelAcademicoContext = createContext(null);
+const NivelAcademicoContext = createContext(null)
 
-export default NivelAcademicoContext;
+export default NivelAcademicoContext

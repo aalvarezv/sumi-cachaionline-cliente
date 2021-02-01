@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {Pagination} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react'
+import {Pagination, Row, Col} from 'react-bootstrap'
 
 const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActual, pagina_activa}) => {
 
     
-    const [paginas_visible, setPaginasVisible] = useState(1);
+    const [paginas_visible, setPaginasVisible] = useState(1)
 
-    let paginas = [];
-    let total_paginas = Math.ceil(total_resultados / resultados_por_pagina);
+    let paginas = []
+    let total_paginas = Math.ceil(total_resultados / resultados_por_pagina)
     
     for(let i = 1; i <= total_paginas; i++){
         paginas.push(
@@ -20,59 +20,80 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
             >
             {i}
             </Pagination.Item>,
-        );
+        )
     }
 
-    const bloquePaginas = [];
+    const bloquePaginas = []
     while(paginas.length > 0){
-        bloquePaginas.push(paginas.splice(0, paginas_visible));     
+        bloquePaginas.push(paginas.splice(0, paginas_visible))     
     }
 
     const bloquePaginasActivo = bloquePaginas.filter(bloque => {
         if(bloque.filter(item => Number(item.key) === pagina_activa).length > 0){
-            return bloque;
+            return bloque
         }
-    });
+    })
 
     return ( 
-        <>
-        {total_paginas === 1 
-        ? 
-        null
-        :
-        <Pagination size="sm" className="m-0">
-            <Pagination.Item>
-            {`${total_paginas} págs.`}
-            </Pagination.Item>
-            <Pagination.First 
-                onClick={() => {
-                    handleSetPaginaActual(1);
-                }}
-            />
-            <Pagination.Prev 
-                onClick={() => {
-                    if(pagina_activa > 1){
-                        handleSetPaginaActual(pagina_activa - 1);
-                    }
-                }}
-            />
-            {bloquePaginasActivo[0]}
-            <Pagination.Next 
-                onClick={() => {
-                    if(pagina_activa < total_paginas){
-                        handleSetPaginaActual(pagina_activa + 1);
-                    }
-                }}
-            />
-            <Pagination.Last 
-                onClick={() => {
-                    handleSetPaginaActual(total_paginas);
-                }}
-            />
+       <>
+        <style type="text/css">{`
+            .page-item.active .page-link {
+                background-color: #34A2B8;
+                border-color: #34A2B8;
+            }
+            .page-link {
+                color: #34A2B8; 
+            }
+            .page-link:hover {
+                color: #34A2B8 
+            }
+        `}</style>  
+        <Pagination size="md" className="m-0">
+            <Row>
+            <Col xs={12} className="d-flex flex-column  align-items-end">
+                <Pagination.Item>
+                    {`Total Resultados ${total_resultados}`}
+                </Pagination.Item>
+            </Col>   
+            <Col xs={12} className="d-flex justify-content-end">
+                <Pagination.First 
+                    className="item-activo"
+                    onClick={() => {
+                        handleSetPaginaActual(1)
+                    }}
+                />
+                <Pagination.Prev 
+                    onClick={() => {
+                        if(pagina_activa > 1){
+                            handleSetPaginaActual(pagina_activa - 1)
+                        }
+                    }}
+                />
+                {bloquePaginasActivo[0]}
+                <Pagination.Next 
+                    onClick={() => {
+                        if(pagina_activa < total_paginas){
+                            handleSetPaginaActual(pagina_activa + 1)
+                        }
+                    }}
+                />
+                <Pagination.Last 
+                    onClick={() => {
+                        handleSetPaginaActual(total_paginas)
+                    }}
+                />
+                <Pagination.Item>
+                    {`Total Páginas ${total_paginas}`}
+                </Pagination.Item>
+                
+            </Col>
+                 
+          
+              
+            </Row>      
         </Pagination>
-        }
         </>
-     );
+     )
 }
  
-export default Paginador;
+export default Paginador

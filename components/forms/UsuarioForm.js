@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
-import { Container, Form, Button, Image, Row, Col, Tab, Tabs } from 'react-bootstrap';
-import { rutEsValido, rutFormat, handleError, getBase64 } from '../../helpers';
-import  clienteAxios from '../../config/axios';
-import ToastMultiline from '../ui/ToastMultiline';
-import InputSearch from '../ui/InputSearch';
-import Uploader from '../ui/Uploader';
-import ButtonBack from '../ui/ButtonBack';
-import UsuarioFormTabConfig from './UsuarioFormTabConfig';
+import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { Container, Form, Button, Image, Row, Col, Tab, Tabs } from 'react-bootstrap'
+import { rutEsValido, rutFormat, handleError, getBase64 } from '../../helpers'
+import  clienteAxios from '../../config/axios'
+import ToastMultiline from '../ui/ToastMultiline'
+import Uploader from '../ui/Uploader'
+import UsuarioFormTabConfig from './UsuarioFormTabConfig'
 
 const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
 
-    const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
+    const [usuarioValido, setUsuarioValido] = useState(false)
     const [formulario, setFormulario] = useState({
         rut: '',
         nombre: '',
@@ -21,14 +17,13 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
         clave_confirm: '',
         email: '',
         telefono: '',
-        codigo_rol: '',
         imagen: '',
         inactivo: true
-    });
-    const [tab_key, setTabKey] = useState("tab_perfil");
+    })
+    const [tab_key, setTabKey] = useState("tab_perfil")
 
     //1.- definir la variable que almacena los errores.
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     //cuando cambia el filtro de búsqueda.
     useEffect(() => {
@@ -43,27 +38,17 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
                 clave_confirm: usuario_modificar.clave,
                 email: usuario_modificar.email,
                 telefono: usuario_modificar.telefono,
-                codigo_rol: usuario_modificar.codigo_rol,
                 imagen: usuario_modificar.imagen,
                 inactivo: usuario_modificar.inactivo
-            });
-   
-        }else{
-            reseteaFormulario();
-        }
-        setErrores({});
-
-    }, [usuario_modificar]);
-
-    //carga el rol en el formulario si existe en la url.
-    useEffect(() => {
-        if(router.query.rol){
-            setFormulario({
-                ...formulario,
-                codigo_rol: router.query.rol
             })
+            setUsuarioValido(true)
+        }else{
+            setUsuarioValido(false)
+            reseteaFormulario()
         }
-    }, []);
+        setErrores({})
+
+    }, [usuario_modificar])
 
     const validarFormulario = () => {
         //setea los errores para que no exista ninguno.
@@ -128,9 +113,9 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
             }
         }
 
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
     }
 
     const reseteaFormulario = () => {
@@ -141,71 +126,68 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
             clave_confirm: '',
             email: '',
             telefono: '',
-            codigo_rol: '',
             imagen: '',
             inactivo: false
-        });
-        setTabKey('tab_perfil');
+        })
+        setTabKey('tab_perfil')
     }
 
     const handleClickCrear = async e => {
         
        try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
             //usuario a enviar
             let usuario = {
                 ...formulario,
                 rut: formulario.rut.replace('-','')
             }
-            const resp = await clienteAxios.post('/api/usuarios/crear', usuario);
+            const resp = await clienteAxios.post('/api/usuarios/crear', usuario)
+            setUsuarioValido(true)
             //respuesta del usuario recibido.
-            usuario = resp.data;
-            setResultSelect(usuario);
-
-            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO CREADO'}]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO CREADO'}]}/>, {containerId: 'sys_msg'})
 
        }catch(e){
-            handleError(e);
+            setUsuarioValido(false)
+            handleError(e)
        }
     }
 
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault();
-             //valida el formulario
-             const errors = validarFormulario();
-             //verifica que no hayan errores
-             if(Object.keys(errors).length > 0){
-                 return;
-             }
+            e.preventDefault()
+            //valida el formulario
+            const errors = validarFormulario()
+            //verifica que no hayan errores
+            if(Object.keys(errors).length > 0){
+                return
+            }
             //usuario a enviar
-
             let usuario = {
                 ...formulario,
                 rut: formulario.rut.replace('-','')
             }
 
-            await clienteAxios.put('/api/usuarios/actualizar', usuario);
+            await clienteAxios.put('/api/usuarios/actualizar', usuario)
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+            toast.success(<ToastMultiline mensajes={[{msg: 'USUARIO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
  
         }catch(e){
-             handleError(e);
+             handleError(e)
         }
     }
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getArchivos = async archivos => {
 
-        const base64 = await getBase64(archivos[0]);
+        const base64 = await getBase64(archivos[0])
         setFormulario({
             ...formulario,
             imagen: base64
@@ -222,62 +204,51 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
         >
         <Tab eventKey="tab_perfil" title="Información del Usuario">
         <Form className="p-3">
-            <Row>
-                <Col sm={12} md={5} lg={7}>
-                    <Form.Group>
-                        <Form.Label>Rut</Form.Label>
-                        <Form.Control 
-                            id="rut"
-                            name="rut"
-                            type="text" 
-                            placeholder="RUT" 
-                            //autoComplete="off"
-                            value={formulario.rut}
-                            onChange={e => {
-                                setFormulario({
-                                ...formulario,
-                                [e.target.name]: rutFormat(e.target.value.toUpperCase()),
-                            })}}
-                            readOnly={usuario_modificar}
-                            isInvalid={errores.hasOwnProperty('rut')}
-                            onBlur={validarFormulario}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('rut') && errores.rut}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group> 
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control
-                            id="nombre"
-                            name="nombre"
-                            type="text" 
-                            placeholder="NOMBRE COMPLETO" 
-                            //autoComplete="off"
-                            value={formulario.nombre}
-                            onChange={e => setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
-                            })}
-                            isInvalid={errores.hasOwnProperty('nombre')}
-                            onBlur={validarFormulario}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('nombre') && errores.nombre}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+            <Row className="d-flex mb-2">
+                <Col sm={12} md={5} lg={7} className="order-2 order-md-1">
+                    <Form.Label>Rut</Form.Label>
+                    <Form.Control 
+                        id="rut"
+                        name="rut"
+                        type="text" 
+                        placeholder="RUT" 
+                        //autoComplete="off"
+                        value={formulario.rut}
+                        onChange={e => {
+                            setFormulario({
+                            ...formulario,
+                            [e.target.name]: rutFormat(e.target.value.toUpperCase()),
+                        })}}
+                        readOnly={usuario_modificar}
+                        isInvalid={errores.hasOwnProperty('rut')}
+                        onBlur={validarFormulario}
+                    />                
+                    <Form.Label>Nombre</Form.Label>
+                    <Form.Control
+                        id="nombre"
+                        name="nombre"
+                        type="text" 
+                        placeholder="NOMBRE COMPLETO" 
+                        //autoComplete="off"
+                        value={formulario.nombre}
+                        onChange={e => setFormulario({
+                            ...formulario,
+                            [e.target.name]: e.target.value.toUpperCase()
+                        })}
+                        isInvalid={errores.hasOwnProperty('nombre')}
+                        onBlur={validarFormulario}
+                    />
                 </Col>
-                <Col className="pb-3">
+                <Col className="d-flex order-1 order-md-2 my-3 my-md-0">
+                    <Image 
+                        src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                        style={{width: 150}}
+                        thumbnail
+                    />       
                     <Uploader 
                         titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
                         getArchivos={getArchivos}
                     /> 
-                </Col>
-                <Col className="pb-3">
-                    <Image 
-                        src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
-                        thumbnail
-                    />       
                 </Col>
             </Row>
             <Row>
@@ -288,19 +259,16 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
                             id="email"
                             name="email"
                             type="email" 
-                            placeholder="TU.EMAIL@EJEMPLO.COM"
+                            placeholder="tu.email@email.com"
                             //autoComplete="off"
                             value={formulario.email}
                             onChange={e => setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value.toLowerCase()
                             })}
                             isInvalid={errores.hasOwnProperty('email')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('email') && errores.email}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
                 <Col xs={12} md={6}>
@@ -338,9 +306,6 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
                             isInvalid={errores.hasOwnProperty('clave')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('clave') && errores.clave}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
                 <Col xs={12} md={6}>
@@ -359,9 +324,6 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
                             isInvalid={errores.hasOwnProperty('clave_confirm')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('clave_confirm') && errores.clave_confirm}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
             </Row>
@@ -396,25 +358,26 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col>
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="info"
                         size="lg"
+                        className="btn-block"
                         onClick={handleClickVolver}
                     >Volver</Button>
                 </Col>
             </Row>
        </Form>
        </Tab>
-       {usuario_modificar &&
+       {usuarioValido &&
             <Tab eventKey="tab_configuracion" title="Configuración">
                 <UsuarioFormTabConfig
-                    rut_usuario = {usuario_modificar.rut}
+                    rut_usuario = {formulario.rut.replace('-','')}
                 />
             </Tab> 
         }    
        </Tabs>
-    </Container> );
+    </Container> )
 }
  
-export default UsuarioForm;
+export default UsuarioForm

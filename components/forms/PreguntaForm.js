@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { toast } from 'react-toastify';
-import { v4 as uuidv4 } from 'uuid';
-import { Container, Row, Col, Form, Image, Button, Card, Nav, Alert } from 'react-bootstrap';
-import { TiDelete } from 'react-icons/ti';
-import  clienteAxios from '../../config/axios';
-import { getBase64, letras, handleError, getBase64FromURL } from '../../helpers';
-import AuthContext from '../../context/auth/AuthContext';
-import PreguntaModalConfig from './PreguntaModalConfig';
-import AlternativaPregunta from '../ui/AlternativaPregunta';
-import PistaPregunta from '../ui/PistaPregunta';
-import SolucionPregunta from '../ui/SolucionPregunta';
-import Uploader from '../ui/Uploader';
+import React, { useState, useEffect, useContext } from 'react'
+import { toast } from 'react-toastify'
+import { v4 as uuidv4 } from 'uuid'
+import { Container, Row, Col, Form, Image, Button, Card, Nav, Alert } from 'react-bootstrap'
+import { TiDelete } from 'react-icons/ti'
+import  clienteAxios from '../../config/axios'
+import { getBase64, letras, handleError, getBase64FromURL } from '../../helpers'
+import AuthContext from '../../context/auth/AuthContext'
+import PreguntaModalConfig from './PreguntaModalConfig'
+import AlternativaPregunta from '../ui/AlternativaPregunta'
+import PistaPregunta from '../ui/PistaPregunta'
+import SolucionPregunta from '../ui/SolucionPregunta'
+import Uploader from '../ui/Uploader'
 
 
 const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
 
-    const { usuario:{rut}} = useContext(AuthContext);
+    const { usuario:{rut}} = useContext(AuthContext)
 
-    const [show_config, setShowConfig] = useState(true);
+    const [show_config, setShowConfig] = useState(true)
     
-    const [soluciones, setSoluciones] = useState([]);
-    const [modulos, setModulos] = useState([]);
-    const [contenidos, setContenidos] = useState([]);
-    const [temas, setTemas] = useState([]);
-    const [conceptos, setConceptos] = useState([]);
+    const [soluciones, setSoluciones] = useState([])
+    const [modulos, setModulos] = useState([])
+    const [contenidos, setContenidos] = useState([])
+    const [temas, setTemas] = useState([])
+    const [conceptos, setConceptos] = useState([])
 
     const [pregunta, setPregunta] = useState({
         rut_usuario_creador: rut,
@@ -32,24 +32,24 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         audio: '',
         video: '',
         duracion: 30,
-    });
+    })
 
-    const [alternativas, setAlternativas] = useState([]);
-    const [numero_alternativas, setNumeroAlternativas] = useState(5);
+    const [alternativas, setAlternativas] = useState([])
+    const [numero_alternativas, setNumeroAlternativas] = useState(5)
     const [tab_select, setTabSelect] = useState('#tab_pregunta_imagen')
 
-    const [pistas, setPistas] = useState([]);
+    const [pistas, setPistas] = useState([])
 
-    const [error_solucion, setErrorSolucion] = useState([]);
-    const [error_pista, setErrorPista] = useState([]);
+    const [error_solucion, setErrorSolucion] = useState([])
+    const [error_pista, setErrorPista] = useState([])
 
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     //setea por defecto con el numero_alternativas para la pregunta.
     const iniciarAlternativas = () => {
         const letras_default = [
             ...letras
-        ];
+        ]
          const alternativas_default = letras_default.splice(0, numero_alternativas).map( (letra, index) => {
             return {
                 codigo: uuidv4(),
@@ -57,12 +57,12 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 correcta: false,
                 numero: index + 1,
             }
-        });
-        setAlternativas(alternativas_default);
+        })
+        setAlternativas(alternativas_default)
     } 
 
     useEffect(() => {
-        iniciarAlternativas();
+        iniciarAlternativas()
     }, [])
     
     //efecto que obtiene los datos de la pregunta a modificar.
@@ -76,7 +76,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         codigo: pregunta_modulo.codigo_modulo,
                         descripcion: pregunta_modulo.modulo.descripcion,
                     }
-                });
+                })
                 setModulos(new_modulos)
 
                 let new_contenidos = pregunta_modificar.pregunta_modulo_contenidos.map(pregunta_modulo_contenido => {
@@ -85,8 +85,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         descripcion: pregunta_modulo_contenido.modulo_contenido.descripcion,
                         codigo_modulo: pregunta_modulo_contenido.modulo_contenido.codigo_modulo,
                     }
-                });
-                setContenidos(new_contenidos);
+                })
+                setContenidos(new_contenidos)
 
                 let new_temas = pregunta_modificar.pregunta_modulo_contenido_temas.map(pregunta_modulo_contenido_tema => {
                     return {
@@ -94,8 +94,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         descripcion: pregunta_modulo_contenido_tema.modulo_contenido_tema.descripcion,
                         codigo_contenido: pregunta_modulo_contenido_tema.modulo_contenido_tema.codigo_modulo_contenido,
                     }
-                });
-                setTemas(new_temas);
+                })
+                setTemas(new_temas)
 
                 let new_conceptos = pregunta_modificar.pregunta_modulo_contenido_tema_conceptos.map(pregunta_modulo_contenido_tema_concepto =>{
                     return {
@@ -104,7 +104,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         codigo_tema: pregunta_modulo_contenido_tema_concepto.modulo_contenido_tema_concepto.codigo_modulo_contenido_tema,
                     }
                 })
-                setConceptos(new_conceptos);
+                setConceptos(new_conceptos)
 
                 setPregunta({
                     ...pregunta,
@@ -114,30 +114,30 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     audio: pregunta_modificar.audio,
                     video: pregunta_modificar.video,
                     duracion: pregunta_modificar.duracion,
-                });
-                setAlternativas(pregunta_modificar.pregunta_alternativa);
-                setSoluciones(pregunta_modificar.pregunta_solucion);
-                setPistas(pregunta_modificar.pregunta_pista);
+                })
+                setAlternativas(pregunta_modificar.pregunta_alternativa)
+                setSoluciones(pregunta_modificar.pregunta_solucion)
+                setPistas(pregunta_modificar.pregunta_pista)
 
             }
-            getDatosPregunta();
+            getDatosPregunta()
 
         }
 
-    },[]);   
+    },[])   
     
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
 
         //setUploading(true)
-        const base64 = await getBase64(archivo[0]); 
+        const base64 = await getBase64(archivo[0]) 
         
         setPregunta({
             ...pregunta,
             imagen: '',
             video: '',
             audio: '',
-        });
+        })
 
         switch (archivo[0].type.split('/')[0]) {
             case 'image':
@@ -146,24 +146,24 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     imagen: base64,
                     video: '',
                     audio: '',
-                });
-                break;
+                })
+                break
             case 'video':
                 setPregunta({
                     ...pregunta,
                     imagen: '',
                     video: base64,
                     audio: '',
-                });
-                break;
+                })
+                break
             case 'audio':{
                 setPregunta({
                     ...pregunta,
                     imagen: '',
                     video: '',
                     audio: base64,
-                });
-                break;
+                })
+                break
             }
         }
         //setUploading(false)
@@ -175,7 +175,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             imagen: '',
             audio: '',
             video: '',
-        });
+        })
     }
 
     const handleAgregarAlternativa = () => {
@@ -187,7 +187,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 correcta: false,
                 numero: alternativas.length + 1,
             }
-        ]);
+        ])
     }
 
     const handleAgregarPista = () => {
@@ -201,7 +201,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 audio: '',
                 video: '',
             }
-        ]);
+        ])
     }
 
     const handleAgregarSolucion = () => {
@@ -215,26 +215,26 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 audio: '',
                 video: '',
             }
-        ]);
+        ])
     }
 
     const handleSetPropiedadesPregunta = (modulos, contenidos, temas, conceptos) => {
-        setModulos(modulos);
-        setContenidos(contenidos);
-        setTemas(temas);
-        setConceptos(conceptos);
+        setModulos(modulos)
+        setContenidos(contenidos)
+        setTemas(temas)
+        setConceptos(conceptos)
     }
     
     const validarFormulario = () => {
         //Almacena los errores de formulario.
         let errors = {}
 
-        setErrorSolucion([]);
-        setErrorPista([]);
+        setErrorSolucion([])
+        setErrorPista([])
         //Verifica que haya ingresado una imagen a la pregunta.
         if(pregunta.imagen.trim() === '' && pregunta.video.trim() === '' && pregunta.audio.trim() === ''){
-            toast.warning('Agregue una imagen, video ó audio de la pregunta.', {containerId: 'sys_msg'});
-            return false;
+            toast.warning('Agregue una imagen, video ó audio de la pregunta.', {containerId: 'sys_msg'})
+            return false
         }
 
         if(Number(pregunta.duracion) <= 0 && pregunta.duracion === ''){
@@ -242,35 +242,35 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 ...errors,
                 duracion: 'Requerido'
             }
-            setErrores(errors);
-            toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'});
-            return false;
+            setErrores(errors)
+            toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'})
+            return false
         }
-        setErrores(errors);
+        setErrores(errors)
         
         //Verifica que exista al menos 2 alternativas posibles.
         if(alternativas.length < 2){
-            toast.warning('La pregunta debe tener al menos dos alternativas posible.', {containerId: 'sys_msg'});
-            return false;
+            toast.warning('La pregunta debe tener al menos dos alternativas posible.', {containerId: 'sys_msg'})
+            return false
         }
         //Verifica que existe al menos 1 alternativa seleccionada como correcta.
         if(alternativas.filter(alternativa => alternativa.correcta === true).length === 0 ){
-            toast.warning('Seleccione al menos una alternativa como la opción correcta.', {containerId: 'sys_msg'});
-            return false;
+            toast.warning('Seleccione al menos una alternativa como la opción correcta.', {containerId: 'sys_msg'})
+            return false
         }
 
         //Verifica que existe al menos una solución.
         if(soluciones.length === 0){
-            toast.warning('La pregunta debe tener al menos una solución posible.', {containerId: 'sys_msg'});
-            return false;
+            toast.warning('La pregunta debe tener al menos una solución posible.', {containerId: 'sys_msg'})
+            return false
         }
 
         //Verifica que las soluciones tengan texto o una imagen.
         let new_error_solucion = soluciones.filter(solucion => solucion.texto === '' && solucion.imagen === '' && solucion.video === '' && solucion.audio === '')
         if(new_error_solucion.length > 0){
-            toast.warning('Verifique que todas las soluciones ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'});
-            setErrorSolucion(new_error_solucion);
-            return false;
+            toast.warning('Verifique que todas las soluciones ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
+            setErrorSolucion(new_error_solucion)
+            return false
         }
 
         //Si ha agregado alguna pista entonces.
@@ -278,19 +278,19 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             //Verifica que las soluciones tengan texto o una imagen.
             let new_error_pista = pistas.filter(pista => pista.texto === '' && pista.imagen === '' && pista.video === '' && pista.audio === '')
             if(new_error_pista.length > 0){
-                toast.warning('Verifique que todas las pistas ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'});
+                toast.warning('Verifique que todas las pistas ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
                 setErrorPista(new_error_pista)
-                return false;
+                return false
             }
         }
 
-        return true;
+        return true
 
     }
 
     const handleCreaPregunta = async () => {
 
-        if(!validarFormulario()) return;
+        if(!validarFormulario()) return
 
         try{
             //Al grabar recien se genera el id de la pregunta.
@@ -329,7 +329,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 })),
             }
 
-            await clienteAxios.post('/api/preguntas/crear', pregunta_full);
+            await clienteAxios.post('/api/preguntas/crear', pregunta_full)
             
             setPregunta({
                 rut_usuario_creador: rut,
@@ -338,15 +338,15 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 audio: '',
                 video: '',
                 duracion: 0,
-            });
-            iniciarAlternativas();
-            setPistas([]);
-            setSoluciones([]);
+            })
+            iniciarAlternativas()
+            setPistas([])
+            setSoluciones([])
 
-            toast.success('PREGUNTA CREADA', {containerId: 'sys_msg'});
+            toast.success('PREGUNTA CREADA', {containerId: 'sys_msg'})
         
         }catch(e){
-            handleError(e);
+            handleError(e)
         } 
     }
 
@@ -355,12 +355,12 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
       
         //Verifica que existe un código a modificar
         if(!pregunta_modificar){
-            toast.error('No existe una pregunta para actualizar', {containerId: 'sys_msg'});
-            return;
+            toast.error('No existe una pregunta para actualizar', {containerId: 'sys_msg'})
+            return
         } 
 
         //Valida que toda la información esté ingresada correctamente.
-        if(!validarFormulario()) return;
+        if(!validarFormulario()) return
         //Primero elimina la pregunta, con sus alternativas, soluciones, imagenes (en disco), etc.
         try{
             //Crea nuevamente la pregunta con el mismo identificador.
@@ -399,11 +399,11 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 })),
             }
 
-            await clienteAxios.put('/api/preguntas/actualizar', pregunta_full);
-            toast.success('PREGUNTA ACTUALIZADA', {containerId: 'sys_msg'});
+            await clienteAxios.put('/api/preguntas/actualizar', pregunta_full)
+            toast.success('PREGUNTA ACTUALIZADA', {containerId: 'sys_msg'})
 
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
 
     }
@@ -432,7 +432,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     variant="outline-dark"
                     size="lg"
                     onClick={() => {
-                        setShowConfig(true);
+                        setShowConfig(true)
                     }}
                 >
                    Configuración
@@ -569,9 +569,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                                         }}
                                                         isInvalid={errores.hasOwnProperty('duracion')}
                                                     />
-                                                    <Form.Control.Feedback type="invalid">
-                                                        {errores.hasOwnProperty('duracion') && errores.duracion}
-                                                    </Form.Control.Feedback>
                                                 </Form.Group>
                                             </Col>
                                         </Row>
@@ -651,7 +648,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         </Card>  
         </Container>
         </>
-     );
+     )
 }
  
-export default PreguntaForm;
+export default PreguntaForm

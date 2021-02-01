@@ -1,17 +1,19 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef} from 'react'
 import {Form} from 'react-bootstrap'
 
-const CustomDateInput = forwardRef(({ value, onClick, label }, ref ) => (
-    <Form.Group>
-    {label && <Form.Label><small>{label}</small></Form.Label>}
+const CustomDateInput = forwardRef(({ value, onClick, onBlur, isInvalid, label }, ref ) => (
+    <>
+    {label && <Form.Label>{label}</Form.Label>}
     <Form.Control
-            size="sm"
-            onClick={onClick}
-            onChange={onClick}
-            value={value}
-            ref={ref}
+        size="md"
+        className="w-100"
+        onClick={onClick}
+        onChange={onClick}
+        value={value}
+        isInvalid={isInvalid}
+        ref={ref}
     />
-    </Form.Group>
- ));
+    </>
+ ))
  
-export default CustomDateInput;
+export default CustomDateInput

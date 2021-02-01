@@ -1,48 +1,48 @@
-import React, {useEffect, useState, useMemo, useCallback } from 'react';
-import {Container, Form, Row, Col} from 'react-bootstrap';
-import { debounce } from 'lodash';
-import ListInfiniteScroll from './ListInfiniteScroll';
+import React, {useEffect, useState, useMemo, useCallback } from 'react'
+import {Container, Form, Row, Col} from 'react-bootstrap'
+import { debounce } from 'lodash'
+import ListInfiniteScroll from './ListInfiniteScroll'
 import {handleError} from '../../helpers'
-import clienteAxios from '../../config/axios';
-import InputSelectMateria from './InputSelectMateria';
+import clienteAxios from '../../config/axios'
+import InputSelectMateria from './InputSelectMateria'
 
 const ListSelectCursoModulos = ({codigo_curso}) => {
 
-    const [descripcion_modulo, setDescripcionModulo ] = useState('');
-    const [filtro_codigo_materia, setFiltroCodigoMateria] = useState('0');
-    const [filtro_descripcion_modulo, setFiltroDescripcionModulo] = useState('');
+    const [descripcion_modulo, setDescripcionModulo ] = useState('')
+    const [filtro_codigo_materia, setFiltroCodigoMateria] = useState('0')
+    const [filtro_descripcion_modulo, setFiltroDescripcionModulo] = useState('')
     
     useEffect(() => {
        
-        setFiltroCodigoMateria('0');
-        setFiltroDescripcionModulo('');
-        setDescripcionModulo('');
+        setFiltroCodigoMateria('0')
+        setFiltroDescripcionModulo('')
+        setDescripcionModulo('')
 
     },[codigo_curso])
 
     const handleSelect = (item, select) => {
 
         return new Promise(async (resolve, reject) => {
-            let resp = null;
+            let resp = null
             try{
                 if(select){
                     resp = await clienteAxios.post('/api/cursos-modulos/crear',{
                         codigo_curso, 
                         codigo_modulo: item.codigo
-                    });
+                    })
                 }else{
                     resp = await clienteAxios.delete(`/api/cursos-modulos/eliminar/${codigo_curso}`,{
                         params: { 
                             codigo_modulo: item.codigo
                         }
-                    });
+                    })
                 }
-                resolve(true);
+                resolve(true)
             }catch(e){
-                handleError(e);
-                reject(e);
+                handleError(e)
+                reject(e)
             }
-        });
+        })
         
     }
 
@@ -61,18 +61,18 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
                 }}
                 handleSelect={handleSelect}
             />
-        );
+        )
     }
 
     const ListInfiniteScrollMemo = useMemo(() => ListInfiniteScrollNoMemo(codigo_curso, filtro_descripcion_modulo, filtro_codigo_materia), [codigo_curso, filtro_codigo_materia, filtro_descripcion_modulo])
 
     const setFiltroDescripcionModuloDebounced = useCallback(debounce((val) => {
-        setFiltroDescripcionModulo(val);
-    }, 500),[]);
+        setFiltroDescripcionModulo(val)
+    }, 500),[])
 
     const handleChangeDescripcionModulo = e => {
-        setDescripcionModulo(e.target.value);
-        setFiltroDescripcionModuloDebounced(e.target.value);
+        setDescripcionModulo(e.target.value)
+        setFiltroDescripcionModuloDebounced(e.target.value)
     }
 
     return (
@@ -115,4 +115,4 @@ const ListSelectCursoModulos = ({codigo_curso}) => {
     )
 }
 
-export default React.memo(ListSelectCursoModulos);
+export default React.memo(ListSelectCursoModulos)

@@ -1,57 +1,57 @@
-import React, {useEffect, useState, useMemo, useCallback } from 'react';
-import {Container, Form, Row, Col} from 'react-bootstrap';
-import { debounce } from 'lodash';
+import React, {useEffect, useState, useMemo, useCallback } from 'react'
+import {Container, Form, Row, Col} from 'react-bootstrap'
+import { debounce } from 'lodash'
 import {handleError} from '../../helpers'
-import clienteAxios from '../../config/axios';
-import ListInfiniteScroll from './ListInfiniteScroll';
-import InputSelectRol from './InputSelectRol';
-import { resolveHref } from 'next/dist/next-server/lib/router/router';
+import clienteAxios from '../../config/axios'
+import ListInfiniteScroll from './ListInfiniteScroll'
+import InputSelectRol from './InputSelectRol'
+import { resolveHref } from 'next/dist/next-server/lib/router/router'
 
 const ListSelectCursoUsuarios = ({codigo_curso, codigo_institucion}) => {
     
-    //const [usuarios_inscritos_curso, setUsuariosInscritosCurso] = useState([]);
-    const [nombre_usuario, setNombreUsuario] = useState('');
-    const [filtro_nombre_usuario, setFiltroNombreUsuario] = useState('');
-    const [filtro_codigo_rol, setFiltroCodigoRol] = useState('0');
+    //const [usuarios_inscritos_curso, setUsuariosInscritosCurso] = useState([])
+    const [nombre_usuario, setNombreUsuario] = useState('')
+    const [filtro_nombre_usuario, setFiltroNombreUsuario] = useState('')
+    const [filtro_codigo_rol, setFiltroCodigoRol] = useState('0')
     
     //traer todos los items seleccionados
     useEffect(() => {
         
-        setNombreUsuario('');
-        setFiltroNombreUsuario('');
-        setFiltroCodigoRol('0');
+        setNombreUsuario('')
+        setFiltroNombreUsuario('')
+        setFiltroCodigoRol('0')
 
-    },[codigo_curso]);
+    },[codigo_curso])
     
     const handleSelect = async (item, select) => {
 
         return new Promise(async (resolve, reject) => {
 
-            let resp = null;
+            let resp = null
             try{
                 if(select){
                     resp = await clienteAxios.post('/api/cursos-usuarios-roles/crear',{
                         codigo_curso, 
                         rut_usuario: item.rut,
                         codigo_rol: item.codigo_rol
-                    });
+                    })
                 }else{
                     resp = await clienteAxios.delete(`/api/cursos-usuarios-roles/eliminar/${codigo_curso}`,{
                         params: { 
                             rut_usuario: item.rut,
                             codigo_rol: item.codigo_rol
                         }
-                    });
+                    })
                 }
-                resolve(true);
+                resolve(true)
             }catch(e){
                 //muestra el error.
-                handleError(e);
+                handleError(e)
                 //retorna el error.
-                reject(e);
+                reject(e)
             }
 
-        });
+        })
 
         
     }
@@ -72,21 +72,21 @@ const ListSelectCursoUsuarios = ({codigo_curso, codigo_institucion}) => {
             }}
             handleSelect={handleSelect}
         />
-        );
+        )
     }
 
     const ListInfiniteScrollMemo = useMemo(() => {
         return ListInfiniteScrollNoMemo(codigo_institucion, codigo_curso, filtro_nombre_usuario, filtro_codigo_rol)
-    }, [codigo_curso, filtro_codigo_rol, filtro_nombre_usuario]);
+    }, [codigo_curso, filtro_codigo_rol, filtro_nombre_usuario])
 
     const setFiltroNombreUsuarioDebounced = useCallback(debounce((val) => {
-        setFiltroNombreUsuario(val);
-    }, 500),[]);
+        setFiltroNombreUsuario(val)
+    }, 500),[])
 
 
     const handleChangeNombreUsuario = e => {
-        setNombreUsuario(e.target.value);
-        setFiltroNombreUsuarioDebounced(e.target.value);
+        setNombreUsuario(e.target.value)
+        setFiltroNombreUsuarioDebounced(e.target.value)
     }
 
     return (
@@ -126,7 +126,7 @@ const ListSelectCursoUsuarios = ({codigo_curso, codigo_institucion}) => {
         </Container>
         }
         </>
-    );
+    )
 }
 
-export default ListSelectCursoUsuarios;
+export default ListSelectCursoUsuarios

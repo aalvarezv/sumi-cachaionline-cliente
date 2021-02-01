@@ -1,29 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-toastify';
-import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
-import {handleError } from '../../helpers';
-import  clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
-import ButtonBack from '../ui/ButtonBack';
+import React, { useState, useEffect } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-toastify'
+import ToastMultiline from '../ui/ToastMultiline'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
+import {handleError } from '../../helpers'
+import  clienteAxios from '../../config/axios'
 
 const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
 
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
         nivel: '',
         inactivo: false
-    });
+    })
 
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     useEffect(() => {
-
 
         if(nivelacademico_modificar){
             setFormulario({
@@ -31,11 +25,11 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                 descripcion: nivelacademico_modificar.descripcion,
                 nivel: nivelacademico_modificar.nivel,
                 inactivo: nivelacademico_modificar.inactivo
-            });
+            })
         }else{
-            reseteaFormulario();
+            reseteaFormulario()
         }
-        setErrores({});
+        setErrores({})
 
     }, [nivelacademico_modificar])
 
@@ -57,9 +51,9 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
             }
         }
 
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
 
     }
 
@@ -69,19 +63,19 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
             descripcion: '',
             nivel: '',
             inactivo: false
-        });
+        })
     }
 
     const handleClickCrear = async e => {
         
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
             //Unidad a enviar
             let nivelacademico = {
@@ -89,32 +83,32 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/nivel-academico/crear', nivelacademico);
+            const resp = await clienteAxios.post('/api/nivel-academico/crear', nivelacademico)
             
-            nivelacademico = resp.data;
-            reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO CREADO'}]}/>, {containerId: 'sys_msg'});
+            nivelacademico = resp.data
+            reseteaFormulario()
+            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO CREADO'}]}/>, {containerId: 'sys_msg'})
         
         }catch(e){
-            handleError(e);
+            handleError(e)
         }                                                
     }
 
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
-            let nivelacademico = formulario;
-            await clienteAxios.put('/api/nivel-academico/actualizar', nivelacademico);
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+            let nivelacademico = formulario
+            await clienteAxios.put('/api/nivel-academico/actualizar', nivelacademico)
+            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADÉMICO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
@@ -137,16 +131,13 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                      isInvalid={errores.hasOwnProperty('descripcion')}
                      onBlur={validarFormulario}
                  />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                 </Form.Control.Feedback>
              </Form.Group>
              <Form.Group>
                  <Form.Label>Nivel Numérico</Form.Label>
                  <Form.Control
                      id="nivel"
                      name="nivel"
-                     type="text" 
+                     type="number" 
                      placeholder="NIVEL NUMÉRICO" 
                      value={formulario.nivel}
                      onChange={e => {
@@ -161,9 +152,6 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                      isInvalid={errores.hasOwnProperty('nivel')}
                      onBlur={validarFormulario}
                  />
-                 <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('nivel') && errores.nivel}
-                 </Form.Control.Feedback>
              </Form.Group>       
             <Form.Check 
                     id="inactivo"
@@ -176,13 +164,13 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                         setFormulario({
                         ...formulario,
                         [e.target.name]: e.target.checked
-                        });
+                        })
                     }}
             />
             
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {result_select
+                    {nivelacademico_modificar
                     ?
                         <Button 
                             variant="outline-info"
@@ -199,16 +187,17 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col>
+                <Col xs={12} sm={"auto"}>
                     <Button 
                         variant="info"
                         size="lg"
+                        className="btn-block"
                         onClick={handleClickVolver}
                     >Volver</Button>
                 </Col>
             </Row>
         </Form>
-        </Container> );
+        </Container> )
 }
  
-export default NivelAcademicoForm;
+export default NivelAcademicoForm

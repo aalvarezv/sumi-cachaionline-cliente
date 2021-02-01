@@ -1,14 +1,14 @@
-import React, { useReducer } from 'react';
+import React, { useReducer } from 'react'
 import { 
     LISTAR_MATERIAS_EXITO,
     LISTAR_MATERIAS_ERROR,
     SELECCIONA_MATERIA
-} from '../types';
-import {handleError} from '../../helpers';
+} from '../types'
+import {handleError} from '../../helpers'
 
-import MateriaContext from './MateriaContext';
-import MateriaReducer from './MateriaReducer';
-import clienteAxios from '../../config/axios';
+import MateriaContext from './MateriaContext'
+import MateriaReducer from './MateriaReducer'
+import clienteAxios from '../../config/axios'
 
 const MateriaState = props => {
 
@@ -25,19 +25,19 @@ const MateriaState = props => {
     const listarMaterias = async () => {
         
         try{
-            const resp = await clienteAxios.get('/api/materias/listar');
+            const resp = await clienteAxios.get('/api/materias/listar')
             dispatch({
                 type: LISTAR_MATERIAS_EXITO,
                 payload: resp.data.materias
             })
 
         }catch(e){
-            console.log(e);
-            const mensaje = handleError(e);
+            console.log(e)
+            const mensaje = handleError(e)
             dispatch({
                 type: LISTAR_MATERIAS_ERROR,
                 payload: mensaje
-            });
+            })
         }
 
     }

@@ -1,4 +1,4 @@
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 
 
 const LoginSchema = Yup.object().shape({
@@ -8,6 +8,6 @@ const LoginSchema = Yup.object().shape({
     .required('Requerido'),
     clave: Yup.string()
     .required('Requerida')
-});
+})
 
-export default LoginSchema;
+export default LoginSchema

@@ -1,31 +1,27 @@
-import React, { useContext, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
-import AuthContext from '../context/auth/AuthContext';
-import { Formik } from "formik";
-import LoginSchema from '../yup/LoginSchema';
-import Layout from '../components/layout/Layout';
+import React, { useContext, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
+import AuthContext from '../context/auth/AuthContext'
+import { Formik } from "formik"
+import LoginSchema from '../yup/LoginSchema'
+import Layout from '../components/layout/Layout'
+
 
 
 const Login = () => {
 
-    const router = useRouter();
+    const router = useRouter()
 
-    const { autenticado, iniciarSesion, cerrarSesion } = useContext(AuthContext);
+    const { autenticado, iniciarSesion } = useContext(AuthContext)
+     
     
     useEffect(() => {
-
-        //si no hay token cierra la sesión. Ya que cuando el token expira manda a la pagina de login.
-        //en el manejador de errores en helpers (handleError).
-        if(!localStorage.getItem('token')){
-            cerrarSesion();
-            return;
-        }
         //si está autenticado envía al HOME
         if(autenticado){
-            router.push('/');
+            router.push('/')
         }
-    }, [autenticado]);
+    }, [autenticado])
+    
     
     return ( 
         <Layout>
@@ -35,9 +31,9 @@ const Login = () => {
                         <Formik
                             initialValues={{ rut: "", clave: "" }}
                             validationSchema={LoginSchema}
-                            onSubmit={ async (values, {resetForm}) => {
-                                await new Promise(resolve => setTimeout(resolve, 1000));
-                                await iniciarSesion(values);               
+                            onSubmit={ (values, {resetForm}) => {
+                                //await new Promise(resolve => setTimeout(resolve, 1000))
+                                iniciarSesion(values)               
                             }}
                         >
                         {({
@@ -68,11 +64,7 @@ const Login = () => {
                                         value={values.rut}
                                         autoComplete="off"
                                         isInvalid={!!errors.rut}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.rut}
-                                    </Form.Control.Feedback>
-                                   
+                                    />                                   
                                 </Form.Group>
                                 <Form.Group controlId="formBasicPassword">
                                     <Form.Label>Clave</Form.Label>
@@ -86,9 +78,6 @@ const Login = () => {
                                         autoComplete="off"
                                         isInvalid={!!errors.clave}
                                     />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.clave}
-                                    </Form.Control.Feedback>
                                 </Form.Group>
                                 <Button 
                                     variant="info" 
@@ -97,6 +86,7 @@ const Login = () => {
                                 >
                                     {isSubmitting ? 'Ingresando...' : 'Ingresar'}
                                 </Button>
+                               
                             </Form>
                             </>
                         )}
@@ -105,7 +95,7 @@ const Login = () => {
                </Row>
            </Container>
        </Layout>
-    );
+    )
 }
  
-export default Login;
+export default Login

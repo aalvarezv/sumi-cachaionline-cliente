@@ -1,17 +1,17 @@
-import React, { useContext, useEffect } from 'react';
-import Link from 'next/link';
-import MateriaContext from '../context/materias/MateriaContext';
-import Layout from '../components/layout/Layout';
-import { Container, Row, Col, Card, Image } from 'react-bootstrap';
+import React, { useContext, useEffect } from 'react'
+import Link from 'next/link'
+import MateriaContext from '../context/materias/MateriaContext'
+import Layout from '../components/layout/Layout'
+import { Container, Row, Col, Card, Image } from 'react-bootstrap'
 
 
 const Home = () => {
 
-    const { materias, listarMaterias, seleccionarMateria } = useContext(MateriaContext);
+    const { materias, listarMaterias, seleccionarMateria } = useContext(MateriaContext)
 
     useEffect(()=> {
-      listarMaterias();
-    }, []);
+      listarMaterias()
+    }, [])
 
     return ( 
     <Layout>
@@ -48,7 +48,7 @@ const Home = () => {
       </Container>
     </Layout>
       
-    );
+    )
 }
  
-export default Home;
+export default Home

@@ -1,28 +1,28 @@
-import React, {useState, useEffect} from 'react';
-import {Container, Row, Col, Image, Button} from 'react-bootstrap';
-import clienteAxios from '../../config/axios';
-import { handleError } from '../../helpers';
+import React, {useState, useEffect} from 'react'
+import {Container, Row, Col, Image, Button} from 'react-bootstrap'
+import clienteAxios from '../../config/axios'
+import { handleError } from '../../helpers'
 
 const Pregunta = ({codigo_pregunta, respuestas, total_preguntas, numero_pregunta_actual, handleSetRespuesta, handlePreguntaAnterior, handlePreguntaSiguiente}) => {
 
-    const [pregunta, setPregunta] = useState(null);
-    const [alternativa_correcta, setAlternativaCorrecta] = useState('');
+    const [pregunta, setPregunta] = useState(null)
+    const [alternativa_correcta, setAlternativaCorrecta] = useState('')
 
     const getDatosPregunta = async codigo => {
       try{
-            const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`);
-            setPregunta(resp.data.pregunta);
+            const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`)
+            setPregunta(resp.data.pregunta)
             const {pregunta_alternativa } = resp.data.pregunta
-            setAlternativaCorrecta(pregunta_alternativa.filter(alternativa => alternativa.correcta === true)[0].letra);
+            setAlternativaCorrecta(pregunta_alternativa.filter(alternativa => alternativa.correcta === true)[0].letra)
       }catch(e){
-        handleError(e);
+        handleError(e)
       }
       
     }
 
     useEffect(() => {
       if(codigo_pregunta){
-          getDatosPregunta(codigo_pregunta);
+          getDatosPregunta(codigo_pregunta)
       }
     }, [codigo_pregunta])
 
@@ -61,7 +61,7 @@ const Pregunta = ({codigo_pregunta, respuestas, total_preguntas, numero_pregunta
                     <Col xs="2">
                         {numero_pregunta_actual > 0 &&
                             <Button 
-                            variant="dark" 
+                            variant="info" 
                             size="md"
                             onClick={handlePreguntaAnterior}
                             block
@@ -94,7 +94,7 @@ const Pregunta = ({codigo_pregunta, respuestas, total_preguntas, numero_pregunta
                                 <Button 
                                     variant="info" 
                                     size="md"
-                                    onClick={handlePreguntaSiguiente}
+                                    onClick={() => handlePreguntaSiguiente(pregunta.codigo)}
                                     block
                                 >{numero_pregunta_actual < total_preguntas - 1 ? 'Continuar' : 'Terminar'}</Button>
                             </Col>
@@ -109,7 +109,7 @@ const Pregunta = ({codigo_pregunta, respuestas, total_preguntas, numero_pregunta
         
         </Container>
 
-     );
+     )
 }
  
-export default Pregunta;
+export default Pregunta

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Form } from 'react-bootstrap';
-import  clienteAxios from '../../config/axios';
-import { handleError } from '../../helpers';
+import React, { useState, useEffect } from 'react'
+import { Form } from 'react-bootstrap'
+import  clienteAxios from '../../config/axios'
+import { handleError } from '../../helpers'
 
 const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
 
-    const { rut_usuario, codigo_nivel_academico, codigo_institucion} = props;
-    const [cursos_usuario_nivel_academico_institucion, setCursosUsuarioNivelAcademicoInstitucion] = useState([]);
+    const { rut_usuario, codigo_nivel_academico, codigo_institucion} = props
+    const [cursos_usuario_nivel_academico_institucion, setCursosUsuarioNivelAcademicoInstitucion] = useState([])
 
     useEffect(() => {
         
@@ -18,13 +18,13 @@ const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
                         codigo_nivel_academico,
                         codigo_institucion,
                     }
-                });
-                setCursosUsuarioNivelAcademicoInstitucion(resp.data.cursos_usuario_nivel_academico_institucion);
+                })
+                setCursosUsuarioNivelAcademicoInstitucion(resp.data.cursos_usuario_nivel_academico_institucion)
             }catch(e){
-                handleError(e);
+                handleError(e)
             }
         }
-        listarCursosUsuarioNivelAcademicoInstitucion();
+        listarCursosUsuarioNivelAcademicoInstitucion()
 
     }, [codigo_institucion, codigo_nivel_academico, rut_usuario])
 
@@ -32,17 +32,17 @@ const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
         <Form.Control
             {...props}
         >
-            <option key="0" value="0">{props.label ? props.label : 'SELECCIONE UN CURSO'}</option>
+            <option key="0" value="0">{props.label ? props.label : 'SELECCIONE CURSO'}</option>
             {cursos_usuario_nivel_academico_institucion.map(curso_usuario_nivel_academico_institucion => {
                 
-                const codigo = curso_usuario_nivel_academico_institucion["curso.codigo"];
-                const letra = curso_usuario_nivel_academico_institucion["curso.letra"];
-                const nivel_academico_descripcion = curso_usuario_nivel_academico_institucion["curso.nivel_academico.descripcion"];
+                const codigo = curso_usuario_nivel_academico_institucion["curso.codigo"]
+                const letra = curso_usuario_nivel_academico_institucion["curso.letra"]
+                const nivel_academico_descripcion = curso_usuario_nivel_academico_institucion["curso.nivel_academico.descripcion"]
                 return <option key={codigo} value={codigo}>{`${nivel_academico_descripcion} ${letra}`}</option>
             }
             )}
         </Form.Control>
-    );
+    )
 }
  
-export default InputSelectCursosUsuarioNivelAcademicoInstitucion;
+export default InputSelectCursosUsuarioNivelAcademicoInstitucion

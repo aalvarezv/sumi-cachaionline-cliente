@@ -1,21 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import { useDropzone } from 'react-dropzone';
-import Spinner from './Spinner';
-
-
+import React, {useEffect, useState} from 'react'
+import { useDropzone } from 'react-dropzone'
+import Spinner from './Spinner'
 
 const dropzoneStyle = {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     border : "3px dashed #DDE1E5",
     color: "#C0C0C0",
     textAlign: "center"
-};
-
+}
 
 function Uploader({titulo, index, getArchivos}) {
 
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false)
 
   const {getRootProps, getInputProps} = useDropzone({
     accept: "image/*,audio/*,video/*",
@@ -27,47 +24,38 @@ function Uploader({titulo, index, getArchivos}) {
    
         reader.onabort = () => console.log('file reading was aborted')
         reader.onerror = () => console.log('file reading has failed')
-        reader.onloadstart = () => setUploading(true);
-        reader.onloadend = () => setUploading(false);
+        reader.onloadstart = () => setUploading(true)
+        reader.onloadend = () => setUploading(false)
         
-        reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(file)
       })
 
       if(acceptedFiles.length > 0){
         //retorna los archivos al componente superior.
         if(index){
-            getArchivos(index, acceptedFiles);
+            getArchivos(index, acceptedFiles)
         }else{
-            getArchivos(acceptedFiles);
+            getArchivos(acceptedFiles)
         }
           
       }
     },
 
-  });
-
+  })
 
   return (
-      <div
-        style={{width: '100%', height: '100%'}}
-        className="d-flex flex-grow-1"
-      >
+      <>
       {!uploading
        ?
-        <section>
-            <div {...getRootProps({className: 'dropzone'})} style={dropzoneStyle}>
-                <input {...getInputProps()} />
-                <small>{titulo}{uploading}</small>
-            </div>
-        </section>
+        <div {...getRootProps({className: 'dropzone'})} style={dropzoneStyle}>
+            <input {...getInputProps()} />
+            <small>{titulo}{uploading}</small>
+        </div>
       :
-      
-        <Spinner />
-      
-        
+        <Spinner /> 
       }
-      </div>
-  );
+      </>
+  )
 }
 
-export default Uploader;
+export default Uploader

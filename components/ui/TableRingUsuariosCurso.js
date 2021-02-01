@@ -1,22 +1,22 @@
 import React, {useState, useEffect} from 'react'
-import {Table, Button, Row, Col} from 'react-bootstrap';
-import  clienteAxios from '../../config/axios';
-import { handleError } from '../../helpers';
-import AlertText from './AlertText';
-import Paginador from './Paginador';
+import {Table, Button, Row, Col} from 'react-bootstrap'
+import  clienteAxios from '../../config/axios'
+import { handleError } from '../../helpers'
+import AlertText from './AlertText'
+import Paginador from './Paginador'
 
 const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
     
 
-    const [usuarios_ring_curso, setUsuariosRingCurso] = useState([]);
+    const [usuarios_ring_curso, setUsuariosRingCurso] = useState([])
 
     /**** Variables para paginación *****/
-    const [pagina_actual, setPaginaActual] = useState(1);
-    const [resultados_por_pagina, setResultadosPorPagina] = useState(1);
+    const [pagina_actual, setPaginaActual] = useState(1)
+    const [resultados_por_pagina, setResultadosPorPagina] = useState(1)
 
-    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
-    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
-    const resultados_pagina = usuarios_ring_curso.slice(indice_primer_resultado, indice_ultimo_resultado);
+    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
+    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
+    const resultados_pagina = usuarios_ring_curso.slice(indice_primer_resultado, indice_ultimo_resultado)
     /*************************************/
 
     const listarUsuariosRingCurso = async () => {
@@ -26,17 +26,17 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                     codigo_ring: ring.codigo,
                     codigo_curso,
                 }
-            });
+            })
             setUsuariosRingCurso(resp.data.usuarios_ring_curso)
-            console.log(resp.data.usuarios_ring_curso);
+            console.log(resp.data.usuarios_ring_curso)
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     useEffect(() => {
-        listarUsuariosRingCurso();
-    }, [codigo_curso]);
+        listarUsuariosRingCurso()
+    }, [codigo_curso])
 
 
     const handleAgregarUsuarioRing = async rut =>  {
@@ -45,10 +45,10 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
             const resp = await clienteAxios.post('/api/ring-usuarios/crear',{
                 codigo_ring: ring.codigo,
                 rut_usuario: rut,
-            });
+            })
 
             const new_usuarios_ring_curso = usuarios_ring_curso.map(usuario_ring_curso => {  
-                const {usuario} = usuario_ring_curso;
+                const {usuario} = usuario_ring_curso
                 if(usuario.rut === rut){
                     return {
                         ...usuario_ring_curso,
@@ -58,21 +58,21 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                         }
                     }
                 }else{
-                    return usuario_ring_curso;
+                    return usuario_ring_curso
                 }
-            });
-            setUsuariosRingCurso(new_usuarios_ring_curso);
+            })
+            setUsuariosRingCurso(new_usuarios_ring_curso)
             
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     const handleQuitarUsuarioRing = async rut =>  {
         try{
-            await clienteAxios.delete(`/api/ring-usuarios/eliminar/${ring.codigo}/${rut}`);
+            await clienteAxios.delete(`/api/ring-usuarios/eliminar/${ring.codigo}/${rut}`)
             const new_usuarios_ring_curso = usuarios_ring_curso.map(usuario_ring_curso => {  
-                const {usuario} = usuario_ring_curso;
+                const {usuario} = usuario_ring_curso
                 if(usuario.rut === rut){
                     return {
                         ...usuario_ring_curso,
@@ -82,19 +82,19 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                         }
                     }
                 }else{
-                    return usuario_ring_curso;
+                    return usuario_ring_curso
                 }
-            });
-            setUsuariosRingCurso(new_usuarios_ring_curso);
+            })
+            setUsuariosRingCurso(new_usuarios_ring_curso)
 
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     const handleAgregarQuitarUsuariosRingMasivo = async resultados_pagina =>{
         
-        let ring_usuarios_add = [];
+        let ring_usuarios_add = []
         resultados_pagina.forEach(resultado_pagina => {
             if(resultado_pagina.usuario.ring_usuarios.length === 0){
                 ring_usuarios_add.push({
@@ -102,15 +102,15 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                     codigo_ring: ring.codigo
                 })
             }
-        });
+        })
        
         if(ring_usuarios_add.length > 0){
 
             try{
 
-                const resp = await clienteAxios.post('/api/ring-usuarios/crear/masivo',{ring_usuarios_add});
+                const resp = await clienteAxios.post('/api/ring-usuarios/crear/masivo',{ring_usuarios_add})
                 
-                let new_usuarios_ring = [...usuarios_ring_curso];
+                let new_usuarios_ring = [...usuarios_ring_curso]
 
                 for(let ring_usuario of ring_usuarios_add){
 
@@ -124,35 +124,35 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                                 }
                             }
                         }else{
-                            return usuario_ring;
+                            return usuario_ring
                         }
-                    });
+                    })
                 }
-                setUsuariosRingCurso(new_usuarios_ring);
+                setUsuariosRingCurso(new_usuarios_ring)
                 
             }catch(e){
-                handleError(e);
+                handleError(e)
             }
 
         }else{
            
             try{
 
-                let ring_usuarios_del = [];
+                let ring_usuarios_del = []
                 resultados_pagina.forEach(resultado_pagina => {
                     ring_usuarios_del.push({
                         rut_usuario: resultado_pagina.rut_usuario,
                         codigo_ring: ring.codigo
-                    });
-                });
+                    })
+                })
 
                 await clienteAxios.delete('/api/ring-usuarios/eliminar/masivo',{
                     params: {
                         ring_usuarios_del
                     }
-                });
+                })
 
-                let new_usuarios_ring = [...usuarios_ring_curso];
+                let new_usuarios_ring = [...usuarios_ring_curso]
 
                 for(let ring_usuario of ring_usuarios_del){
 
@@ -167,15 +167,15 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                                 }
                             }
                         }else{
-                            return usuario_ring;
+                            return usuario_ring
                         }
-                    });
+                    })
                 }
     
-                setUsuariosRingCurso(new_usuarios_ring);
+                setUsuariosRingCurso(new_usuarios_ring)
 
             }catch(e){
-                handleError(e);
+                handleError(e)
             }
         }
     }
@@ -229,8 +229,8 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                     <tbody>
                         {resultados_pagina.map((resultado_pagina, index) => {
                         
-                            const { usuario } = resultado_pagina;
-                            const {rut, nombre, email, ring_usuarios} = usuario;
+                            const { usuario } = resultado_pagina
+                            const {rut, nombre, email, ring_usuarios} = usuario
                             return(
                                 <tr key={rut}>
                                     <td>{index+1}</td>

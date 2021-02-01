@@ -1,36 +1,37 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {Card, Button, Row} from 'react-bootstrap';
-import { handleError } from '../../helpers';
-import clienteAxios from '../../config/axios';
-import AuthContext from '../../context/auth/AuthContext';
+import React, { useState, useEffect, useContext } from 'react'
+import {Card, Button, Row} from 'react-bootstrap'
+import { handleError } from '../../helpers'
+import clienteAxios from '../../config/axios'
+import AuthContext from '../../context/auth/AuthContext'
 
 const CardRingsUsuario = ({handleObtenerPreguntasRing}) => {
 
-    const { usuario } = useContext(AuthContext);
-    const [rings_usuario, setRingsUsuario] = useState([]);
+    const { usuario, institucion_select } = useContext(AuthContext)
+    const [rings_usuario, setRingsUsuario] = useState([])
 
     const listarRingsUsuario = async () => {
         try {
-    
-            const resp = await clienteAxios.get(`/api/ring-usuarios/listar/rings-usuario/${usuario.rut}`);
-            setRingsUsuario(resp.data.rings_usuario);
+            console.log(usuario.rut, institucion_select.codigo)
+            const resp = await clienteAxios.get(`/api/ring-usuarios/listar/rings-usuario-institucion/${usuario.rut}/${institucion_select.codigo}`)
+            console.log(resp.data.rings_usuario)
+            setRingsUsuario(resp.data.rings_usuario)
            
         } catch (e) {
-            handleError(e);
+            handleError(e)
         }
     }
 
     useEffect(() => {
         if(usuario){
-            listarRingsUsuario();
+            listarRingsUsuario()
         }
-    }, []);
+    }, [])
 
 
     return ( 
         <>
             {rings_usuario.map((ring_usuario, index) => {
-                const {ring} = ring_usuario;
+                const {ring} = ring_usuario
                 return(
                     <Card
                         bg={'light'}
@@ -48,10 +49,10 @@ const CardRingsUsuario = ({handleObtenerPreguntasRing}) => {
                             {ring.descripcion}
                         </Card.Text>
                         <Row className="d-flex justify-content-end">
-                            <small>Inicio:&nbsp;{ring.fecha_hora_inicio}</small>
+                            <small>{`Inicio: ${ring.fecha_hora_inicio}`}</small>
                         </Row>
                         <Row className="d-flex justify-content-end"> 
-                            <small>Fin:&nbsp;{ring.fecha_hora_fin}</small>
+                            <small>{`Fin: ${ring.fecha_hora_fin}`}</small>
                         </Row>
                         
                         </Card.Body>
@@ -68,7 +69,7 @@ const CardRingsUsuario = ({handleObtenerPreguntasRing}) => {
             })}
         </>
 
-     );
+     )
 }
  
-export default CardRingsUsuario;
+export default CardRingsUsuario

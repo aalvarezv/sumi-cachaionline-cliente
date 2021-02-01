@@ -24,4 +24,4 @@ const UnidadReducer = (state, action) => {
         }
 } 
 
-export default UnidadReducer;
+export default UnidadReducer

@@ -1,33 +1,33 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-toastify';
-import { Container, Form, Card, Button, Row, Col } from 'react-bootstrap';
-import {handleError } from '../../helpers';
-import  clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
-import ToastMultiline from '../ui/ToastMultiline';
-import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico';
-import InputSelectInstitucion from '../ui/InputSelectInstitucion';
-import ListSelectCursoModulos from '../ui/ListSelectCursoModulos';
-import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios';
-import ButtonBack from '../ui/ButtonBack';
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-toastify'
+import { Container, Form, Card, Button, Row, Col } from 'react-bootstrap'
+import {handleError } from '../../helpers'
+import  clienteAxios from '../../config/axios'
+import InputSearch from '../ui/InputSearch'
+import ToastMultiline from '../ui/ToastMultiline'
+import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico'
+import InputSelectInstitucion from '../ui/InputSelectInstitucion'
+import ListSelectCursoModulos from '../ui/ListSelectCursoModulos'
+import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios'
+import ButtonBack from '../ui/ButtonBack'
 
 const CursoForm = () => {
 
-    const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
-    const [result_busqueda, setResultBusqueda] = useState([]);
-    const [result_select, setResultSelect]     = useState(null);
+    const router = useRouter()
+    const [filtro_busqueda, setFiltroBusqueda] = useState('')
+    const [result_busqueda, setResultBusqueda] = useState([])
+    const [result_select, setResultSelect]     = useState(null)
     const [formulario, setFormulario] = useState({
         codigo: '',
         letra: '',
         codigo_institucion: '0',
         codigo_nivel_academico: '0',
         inactivo: false
-    });
+    })
     
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     const buscarCurso = async () => {
         try{
@@ -35,10 +35,10 @@ const CursoForm = () => {
                 { params: { 
                     codigo_institucion: router.query.institucion 
                 } 
-            });
-            setResultBusqueda(resp.data.cursos);
+            })
+            setResultBusqueda(resp.data.cursos)
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
         
     }
@@ -46,9 +46,9 @@ const CursoForm = () => {
     useEffect(() => {
 
         if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarCurso();
+            buscarCurso()
         }else{
-            setResultBusqueda([]);
+            setResultBusqueda([])
         }
         
         if(result_select){
@@ -58,13 +58,13 @@ const CursoForm = () => {
                 codigo_institucion: result_select.codigo_institucion,
                 codigo_nivel_academico: result_select.codigo_nivel_academico,
                 inactivo: result_select.inactivo
-            });
+            })
         }else{
-            reseteaFormulario();
+            reseteaFormulario()
         }
-        setErrores({});
+        setErrores({})
 
-    }, [filtro_busqueda, result_select]);
+    }, [filtro_busqueda, result_select])
     //filtro_busqueda, result_select
 
     //carga la institución en el formulario si existe en la url.
@@ -73,9 +73,9 @@ const CursoForm = () => {
             setFormulario({
                 ...formulario,
                 codigo_institucion: router.query.institucion
-            });
+            })
         }
-    }, []);
+    }, [])
     
     const validarFormulario = () => {
         
@@ -102,9 +102,9 @@ const CursoForm = () => {
             }
         }
 
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
 
     }
 
@@ -115,19 +115,19 @@ const CursoForm = () => {
             codigo_institucion: (router.query.institucion ? router.query.institucion : '0'),
             codigo_nivel_academico: '0',
             inactivo: false
-        });
+        })
     }
 
     const handleClickCrear = async e => {
         
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
             //curso a enviar
             let curso = {
@@ -135,31 +135,31 @@ const CursoForm = () => {
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/cursos/crear', curso);
-            curso = resp.data;
-            reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO CREADO'}]}/>, {containerId: 'sys_msg'});
+            const resp = await clienteAxios.post('/api/cursos/crear', curso)
+            curso = resp.data
+            reseteaFormulario()
+            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO CREADO'}]}/>, {containerId: 'sys_msg'})
         
         }catch(e){
-            handleError(e);
+            handleError(e)
         }                                                
     }
 
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
-            let curso = formulario;
-            await clienteAxios.put('/api/cursos/actualizar', curso);
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+            let curso = formulario
+            await clienteAxios.put('/api/cursos/actualizar', curso)
+            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
     
@@ -203,9 +203,6 @@ const CursoForm = () => {
                     onBlur={validarFormulario}
                     disabled={router.query.institucion} 
                 />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_institucion') && errores.codigo_institucion}
-                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Row}>
                 <Col sm={8}>
@@ -223,9 +220,6 @@ const CursoForm = () => {
                             isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('codigo_nivel_academico') && errores.codigo_nivel_academico}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
                 <Col sm={4}>
@@ -244,9 +238,6 @@ const CursoForm = () => {
                             isInvalid={errores.hasOwnProperty('letra')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('letra') && errores.letra}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
             </Form.Group>
@@ -339,7 +330,7 @@ const CursoForm = () => {
     
     </Container>
   
-    );
+    )
 }
  
-export default CursoForm;
+export default CursoForm

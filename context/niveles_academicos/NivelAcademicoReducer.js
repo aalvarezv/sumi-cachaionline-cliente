@@ -1,7 +1,7 @@
 import {
     LISTAR_NA_EXITO,
     LISTAR_NA_ERROR
-} from '../types';
+} from '../types'
 
 const NivelAcademicoReducer = (state, action) => {
 
@@ -19,10 +19,10 @@ const NivelAcademicoReducer = (state, action) => {
                 mensaje: action.payload
             }
         default:
-            return state;
+            return state
     }
 
 
 }
 
-export default NivelAcademicoReducer;
+export default NivelAcademicoReducer

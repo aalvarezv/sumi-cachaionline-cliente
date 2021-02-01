@@ -1,29 +1,30 @@
-import React, {useState, useEffect} from 'react';
-import { Table, Image, Button, Row, Col, Badge } from 'react-bootstrap';
-import {handleError} from '../../helpers';
-import clienteAxios from '../../config/axios';
-import ModalImageView from './ModalImageView';
-import AlertText from './AlertText';
-import Paginador from './Paginador';
-import FiltrosBusquedaPregunta from './FiltrosBusquedaPregunta';
+import React, {useState, useEffect} from 'react'
+import { Table, Image, Button, Row, Col, Badge } from 'react-bootstrap'
+import {handleError} from '../../helpers'
+import clienteAxios from '../../config/axios'
+import ModalImageView from './ModalImageView'
+import AlertText from './AlertText'
+import Paginador from './Paginador'
+import FiltrosBusquedaPregunta from './FiltrosBusquedaPregunta'
 
 const TableRingPreguntas = ({ring}) => {
 
-    const [preguntas_ring, setPreguntasRing] = useState([]);
-    const [show_imagen, setShowImagen] = useState(false);
-    const [img_url, setImagenUrl] = useState('');
+    const [preguntas_ring, setPreguntasRing] = useState([])
+    const [show_imagen, setShowImagen] = useState(false)
+    const [img_url, setImagenUrl] = useState('')
 
     /**** Variables para paginación *****/
-    const [pagina_actual, setPaginaActual] = useState(1);
-    const [resultados_por_pagina, setResultadosPorPagina] = useState(4);
+    const [pagina_actual, setPaginaActual] = useState(1)
+    const [resultados_por_pagina, setResultadosPorPagina] = useState(4)
 
-    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina;
-    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina;
-    const resultados_pagina = preguntas_ring.slice(indice_primer_resultado, indice_ultimo_resultado);
+    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
+    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
+    const resultados_pagina = preguntas_ring.slice(indice_primer_resultado, indice_ultimo_resultado)
     /*************************************/
 
     const listarPreguntasRing = async (ring, filtros) => {
 
+        
         try{
             const resp = await clienteAxios.get('/api/preguntas/listar/ring', {
                     params: {
@@ -38,22 +39,22 @@ const TableRingPreguntas = ({ring}) => {
                         page: 1, 
                         limit: 1, 
                     }
-            });
+            })
             //Si no hay preguntas, mostrar un mensajillo.
-            setPreguntasRing(resp.data.preguntas);
+            setPreguntasRing(resp.data.preguntas)
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     const handleShowImageView = img_url => {
-        setShowImagen(true);
-        setImagenUrl(img_url);
+        setShowImagen(true)
+        setImagenUrl(img_url)
     } 
 
     const handleCloseImageView = () => {
-        setShowImagen(false);
-        setImagenUrl('');
+        setShowImagen(false)
+        setImagenUrl('')
     }
 
     const handleAgregarPreguntaRing = async codigo =>  {
@@ -62,7 +63,7 @@ const TableRingPreguntas = ({ring}) => {
             const resp = await clienteAxios.post('/api/ring-preguntas/crear',{
                 codigo_ring: ring.codigo,
                 codigo_pregunta: codigo,
-            });
+            })
 
             const new_preguntas_ring = preguntas_ring.map(pregunta_ring => {  
               
@@ -72,20 +73,20 @@ const TableRingPreguntas = ({ring}) => {
                         ring_pregunta:  [resp.data.ring_pregunta],
                     }
                 }else{
-                    return pregunta_ring;
+                    return pregunta_ring
                 }
-            });
-            setPreguntasRing(new_preguntas_ring);
+            })
+            setPreguntasRing(new_preguntas_ring)
             
             
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     const handleQuitarPreguntaRing = async codigo =>  {
         try{
-            await clienteAxios.delete(`/api/ring-preguntas/eliminar/${ring.codigo}/${codigo}`);
+            await clienteAxios.delete(`/api/ring-preguntas/eliminar/${ring.codigo}/${codigo}`)
             const new_preguntas_ring = preguntas_ring.map(pregunta_ring => {  
               
                 if(pregunta_ring.codigo === codigo){
@@ -94,19 +95,19 @@ const TableRingPreguntas = ({ring}) => {
                         ring_pregunta: [],
                     }
                 }else{
-                    return pregunta_ring;
+                    return pregunta_ring
                 }
-            });
-            setPreguntasRing(new_preguntas_ring);
+            })
+            setPreguntasRing(new_preguntas_ring)
 
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
     const handleAgregarQuitarPreguntasRingMasivo = async resultados_pagina => {
         
-        let ring_preguntas_add = [];
+        let ring_preguntas_add = []
         resultados_pagina.forEach(resultado_pagina => {
             if(resultado_pagina.ring_pregunta.length === 0){
                 ring_preguntas_add.push({
@@ -114,14 +115,14 @@ const TableRingPreguntas = ({ring}) => {
                     codigo_ring: ring.codigo
                 })
             }
-        });
+        })
        
         if(ring_preguntas_add.length > 0){
             
             try{
-                const resp = await clienteAxios.post('/api/ring-preguntas/crear/masivo',{ring_preguntas_add});
+                const resp = await clienteAxios.post('/api/ring-preguntas/crear/masivo',{ring_preguntas_add})
                 
-                let new_preguntas_ring = [...preguntas_ring];
+                let new_preguntas_ring = [...preguntas_ring]
 
                 for(let ring_pregunta of ring_preguntas_add){
 
@@ -132,35 +133,35 @@ const TableRingPreguntas = ({ring}) => {
                                 ring_pregunta: [ring_pregunta],
                             }
                         }else{
-                            return pregunta_ring;
+                            return pregunta_ring
                         }
-                    });
+                    })
                 }
-                setPreguntasRing(new_preguntas_ring);
+                setPreguntasRing(new_preguntas_ring)
                 
             }catch(e){
-                handleError(e);
+                handleError(e)
             }
 
         }else{
             
             try{
 
-                let ring_preguntas_del = [];
+                let ring_preguntas_del = []
                 resultados_pagina.forEach(resultado_pagina => {
                     ring_preguntas_del.push({
                         codigo_pregunta: resultado_pagina.codigo,
                         codigo_ring: ring.codigo
-                    });
-                });
+                    })
+                })
 
                 await clienteAxios.delete('/api/ring-preguntas/eliminar/masivo',{
                     params: {
                         ring_preguntas_del
                     }
-                });
+                })
 
-                let new_preguntas_ring = [...preguntas_ring];
+                let new_preguntas_ring = [...preguntas_ring]
 
                 for(let ring_pregunta of ring_preguntas_del){
                     new_preguntas_ring = new_preguntas_ring.map(pregunta_ring => {  
@@ -170,15 +171,15 @@ const TableRingPreguntas = ({ring}) => {
                                 ring_pregunta: [],
                             }
                         }else{
-                            return pregunta_ring;
+                            return pregunta_ring
                         }
-                    });
+                    })
                 }
 
-                setPreguntasRing(new_preguntas_ring);
+                setPreguntasRing(new_preguntas_ring)
 
             }catch(e){
-                handleError(e);
+                handleError(e)
             }
 
         }
@@ -204,6 +205,15 @@ const TableRingPreguntas = ({ring}) => {
         <>
         <Row className="mb-2">
             <FiltrosBusquedaPregunta
+                filtros_default= {{
+                    codigo_materia: ring.codigo_materia,
+                    codigo_unidad: '0',
+                    codigo_modulo: '0',
+                    codigo_modulo_contenido: '0',
+                    codigo_modulo_contenido_tema: '0',
+                    codigo_modulo_contenido_tema_concepto: '0',
+                    nombre_usuario_creador: '',
+                }}
                 handleClickBuscar={handleClickBuscar}
             />
         </Row>
@@ -247,7 +257,7 @@ const TableRingPreguntas = ({ring}) => {
                         {resultados_pagina.map((pregunta_ring, index) => {
                                 
                             const { codigo, imagen, audio, video, usuario, 
-                                    createdAt, updatedAt, ring_pregunta} = pregunta_ring;
+                                    createdAt, updatedAt, ring_pregunta} = pregunta_ring
                                 return (
                                 <tr
                                     key={codigo}
@@ -317,7 +327,7 @@ const TableRingPreguntas = ({ring}) => {
         </Row>
         </>
         </>
-     );
+     )
 }
  
-export default TableRingPreguntas;
+export default TableRingPreguntas

@@ -1,5 +1,5 @@
-import React from 'react';
-import { TiDelete } from 'react-icons/ti';
+import React from 'react'
+import { TiDelete } from 'react-icons/ti'
 
 const AlternativaPregunta = ({alternativas, setAlternativas}) => { 
 
@@ -7,21 +7,21 @@ const AlternativaPregunta = ({alternativas, setAlternativas}) => {
     const handleQuitarAlternativa = letra => {
        let new_alternativas = [
             ...alternativas
-        ];
-        new_alternativas.splice(alternativas.findIndex(alternativa => alternativa.letra === letra), new_alternativas.length);
-        setAlternativas(new_alternativas);
+        ]
+        new_alternativas.splice(alternativas.findIndex(alternativa => alternativa.letra === letra), new_alternativas.length)
+        setAlternativas(new_alternativas)
     }
 
     const handleSetAlternativaCorrecta = letra => {
-        const new_alternativas = alternativas.map(alternativa => alternativa.letra === letra ? { ...alternativa, correcta : !alternativa.correcta } : alternativa);
-        setAlternativas(new_alternativas);
+        const new_alternativas = alternativas.map(alternativa => alternativa.letra === letra ? { ...alternativa, correcta : !alternativa.correcta } : alternativa)
+        setAlternativas(new_alternativas)
     }
     
     return ( 
         <>
             {alternativas.map( (alternativa, index) => {
                 
-                const {letra, correcta} = alternativa;
+                const {letra, correcta} = alternativa
 
                 return (
                     <div
@@ -46,20 +46,20 @@ const AlternativaPregunta = ({alternativas, setAlternativas}) => {
             })}
             <style jsx>{`
                 div{
-                    position: relative;
-                    margin: 10px;
-                    width: 40px; 
-                    height: 40px;
+                    position: relative
+                    margin: 10px
+                    width: 40px 
+                    height: 40px
                 }
                 span{
-                    position: absolute; 
-                    top: -17px;
-                    right: -9px;
-                    cursor: pointer;
+                    position: absolute 
+                    top: -17px
+                    right: -9px
+                    cursor: pointer
                 }
             `}</style>
         </>
     )
 }
 
-export default AlternativaPregunta;
+export default AlternativaPregunta

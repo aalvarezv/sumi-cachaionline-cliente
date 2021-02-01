@@ -1,5 +1,5 @@
-import React from 'react';
-import {Modal, Image} from 'react-bootstrap';
+import React from 'react'
+import {Modal, Image} from 'react-bootstrap'
 
 const ModalImageView = ({img_url, show, handleClose}) => {
 
@@ -15,7 +15,7 @@ const ModalImageView = ({img_url, show, handleClose}) => {
          <Image src={img_url} style={{width: '100%'}}/> 
         </Modal.Body>
         </Modal>
-     );
+     )
 }
  
-export default ModalImageView;
+export default ModalImageView

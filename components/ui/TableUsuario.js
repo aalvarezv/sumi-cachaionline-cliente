@@ -1,32 +1,32 @@
-import React, {useState, useRef} from 'react';
-import {Table, Button, Row, Col, Form, Overlay, Popover} from 'react-bootstrap';
+import React, {useState, useRef} from 'react'
+import {getNumeroFilaTabla} from '../../helpers'
+import {Table, Button, Row, Col, Badge, Overlay, Popover} from 'react-bootstrap'
 
 
-const TableUsuario = ({usuarios, handleClickModificar, handleClickEliminarUsuario}) => {
+const TableUsuario = ({usuarios, pagina_actual, resultados_por_pagina, handleClickModificar, handleClickEliminarUsuario}) => {
 
-    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
-    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
-    const ref_confirm_eliminar = useRef(null);
+    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
+    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
+    const ref_confirm_eliminar = useRef(null)
 
-    const [rut_eliminar, setRutEliminar] = useState('');
-
+    const [rut_eliminar, setRutEliminar] = useState('')
 
     const handleClickEliminar = (e, rut) => {
-        setShowConfirmEliminar(!show_confirm_eliminar);
-        setTargetConfirmEliminar(e.target);
-        setRutEliminar(rut);
-    };
-
+        setShowConfirmEliminar(!show_confirm_eliminar)
+        setTargetConfirmEliminar(e.target)
+        setRutEliminar(rut)
+    }
  
     return (
         <>
-            
-            <Table striped bordered hover variant="light"> 
+            <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
                     <th>#</th>
                     <th>Rut</th>
                     <th>Nombre</th>
+                    <th>Email</th>
+                    <th className="text-center">Estado</th>
                     <th></th>
                     </tr>
     
@@ -34,24 +34,28 @@ const TableUsuario = ({usuarios, handleClickModificar, handleClickEliminarUsuari
                 <tbody>
                     {usuarios.length > 0 &&
                         usuarios.map((usuario, index) =>{
-                            const {rut, nombre} = usuario
+
+                            const {rut, nombre, email, inactivo} = usuario
+                            let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
+
                             return(
-                                <tr >
-                                <td>{index+1}</td>  
+                                <tr key={index}>
+                                <td>{numFila}</td>  
                                 <td>{rut}</td>    
                                 <td>{nombre}</td> 
-
-                                <td>
+                                <td>{email}</td>
+                                <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>
+                                <td className="text-center">
                                     <Button 
                                         variant="outline-info"
                                         onClick={() => {
-                                            handleClickModificar(rut);
+                                            handleClickModificar(rut)
                                         }}
                                     >
                                      Modificar
                                     </Button>
                                 </td>
-                                <td
+                                <td className="text-center"
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
@@ -74,11 +78,11 @@ const TableUsuario = ({usuarios, handleClickModificar, handleClickEliminarUsuari
                                     <Row>
                                         <Col>
                                             <Button
-                                                variant={"success"}
+                                                variant={"danger"}
                                                 size={"md"}
                                                 onClick={e => {
-                                                    setShowConfirmEliminar(!show_confirm_eliminar);
-                                                    handleClickEliminarUsuario(rut);
+                                                    setShowConfirmEliminar(!show_confirm_eliminar)
+                                                    handleClickEliminarUsuario(rut_eliminar)
                                                 }}
                                                 block
                                             >
@@ -87,7 +91,7 @@ const TableUsuario = ({usuarios, handleClickModificar, handleClickEliminarUsuari
                                         </Col>
                                         <Col>
                                             <Button
-                                                variant={"info"}
+                                                variant={"secondary"}
                                                 size={"md"}
                                                 onClick={() => setShowConfirmEliminar(!show_confirm_eliminar)}
                                                 block
@@ -111,4 +115,4 @@ const TableUsuario = ({usuarios, handleClickModificar, handleClickEliminarUsuari
     )
 }
 
-export default TableUsuario;
+export default TableUsuario

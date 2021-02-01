@@ -1,33 +1,34 @@
-import React, {useState, useRef} from 'react';
-import { Table, Image, Button, Overlay, Popover, Row, Col } from 'react-bootstrap';
-import ModalImageView from './ModalImageView';
+import React, {useState, useRef} from 'react'
+import {getNumeroFilaTabla} from '../../helpers'
+import { Table, Image, Button, Overlay, Popover, Row, Col } from 'react-bootstrap'
+import ModalImageView from './ModalImageView'
 
-const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta}) => {
+const TablePregunta = ({preguntas, pagina_actual, resultados_por_pagina, handleEliminaPregunta, handleModificaPregunta}) => {
     
-    const [show_imagen, setShowImagen] = useState(false);
-    const [img_url, setImagenUrl] = useState('');
+    const [show_imagen, setShowImagen] = useState(false)
+    const [img_url, setImagenUrl] = useState('')
 
-    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
-    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
-    const ref_confirm_eliminar = useRef(null);
+    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
+    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
+    const ref_confirm_eliminar = useRef(null)
 
-    const [codigo_eliminar, setCodigoEliminar] = useState('');
+    const [codigo_eliminar, setCodigoEliminar] = useState('')
 
 
     const handleClickEliminar = (e, codigo) => {
-        setShowConfirmEliminar(!show_confirm_eliminar);
-        setTargetConfirmEliminar(e.target);
-        setCodigoEliminar(codigo);
-    };
+        setShowConfirmEliminar(!show_confirm_eliminar)
+        setTargetConfirmEliminar(e.target)
+        setCodigoEliminar(codigo)
+    }
 
     const handleShowImageView = img_url => {
-        setShowImagen(true);
-        setImagenUrl(img_url);
+        setShowImagen(true)
+        setImagenUrl(img_url)
     } 
 
     const handleCloseImageView = () => {
-        setShowImagen(false);
-        setImagenUrl('');
+        setShowImagen(false)
+        setImagenUrl('')
     }
 
     return (
@@ -54,13 +55,15 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                 preguntas.map((pregunta, index) => {
                     
                     const { codigo, imagen, audio, video, usuario, 
-                        createdAt, updatedAt} = pregunta;
+                        createdAt, updatedAt} = pregunta
+                    let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
+
                         
                         return (
                         <tr
                             key={codigo}
                         >
-                        <td>{index+1}</td>
+                        <td>{numFila}</td>
                         <td>
                             {imagen.trim() !== '' &&
                                 <Image 
@@ -128,8 +131,8 @@ const TablePregunta = ({preguntas, handleEliminaPregunta, handleModificaPregunta
                                                 variant={"success"}
                                                 size={"md"}
                                                 onClick={e => {
-                                                    handleEliminaPregunta(codigo_eliminar);
-                                                    setShowConfirmEliminar(!show_confirm_eliminar);
+                                                    handleEliminaPregunta(codigo_eliminar)
+                                                    setShowConfirmEliminar(!show_confirm_eliminar)
                                                 }}
                                                 block
                                             >

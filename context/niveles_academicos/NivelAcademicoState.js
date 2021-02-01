@@ -1,12 +1,12 @@
-import React, { useReducer } from 'react';
+import React, { useReducer } from 'react'
 import {
     LISTAR_NA_EXITO,
     LISTAR_NA_ERROR
-} from '../types';
+} from '../types'
 import { handleError } from '../../helpers'
-import NivelAcademicoContext from './NivelAcademicoContext';
-import NivelAcademicoReducer from './NivelAcademicoReducer';
-import clienteAxios from '../../config/axios';
+import NivelAcademicoContext from './NivelAcademicoContext'
+import NivelAcademicoReducer from './NivelAcademicoReducer'
+import clienteAxios from '../../config/axios'
 
 const NivelAcademicoState = props => {
 
@@ -15,25 +15,25 @@ const NivelAcademicoState = props => {
         mensaje: null
     }
 
-    const [state, dispatch] = useReducer(NivelAcademicoReducer, initialState);
+    const [state, dispatch] = useReducer(NivelAcademicoReducer, initialState)
 
     const listarNievelesAcademicos = async () => {
       
         try {
             
-            const resp = await clienteAxios.get('/api/nivel-academico/listar');
+            const resp = await clienteAxios.get('/api/nivel-academico/listar')
             dispatch({
                 type: LISTAR_NA_EXITO,
                 payload: resp.data.niveles_academicos
-            });
+            })
 
         }catch(e){
-            console.log(e);
-            const mensaje = handleError(e);
+            console.log(e)
+            const mensaje = handleError(e)
             dispatch({
                 type: LISTAR_NA_ERROR,
                 payload: mensaje
-            });
+            })
         }
     
     }
@@ -49,7 +49,7 @@ const NivelAcademicoState = props => {
             {props.children}
         </NivelAcademicoContext.Provider>
 
-     );
+     )
 }
  
-export default NivelAcademicoState;
+export default NivelAcademicoState

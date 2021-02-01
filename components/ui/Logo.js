@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Logo = () => {
     return ( 
@@ -9,7 +9,7 @@ const Logo = () => {
             className="d-inline-block align-top mr-1"
             alt="CachaiOnline"
         />
-     );
+     )
 }
  
-export default Logo;
+export default Logo

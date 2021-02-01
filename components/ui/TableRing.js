@@ -1,36 +1,37 @@
-import React, {useState, useRef} from 'react';
-import {Table, Button, Badge, Overlay, Popover, Row, Col} from 'react-bootstrap';
-import ModalRingUsuarios from '../ui/ModalRingUsuarios';
-import ModalRingPreguntas from '../ui/ModalRingPreguntas';
+import React, {useState, useRef} from 'react'
+import {getNumeroFilaTabla} from '../../helpers'
+import {Table, Button, Badge, Overlay, Popover, Row, Col} from 'react-bootstrap'
+import ModalRingUsuarios from '../ui/ModalRingUsuarios'
+import ModalRingPreguntas from '../ui/ModalRingPreguntas'
 
-const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
+const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarRing, handleModificarRing}) => {
 
-    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false);
-    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null);
-    const ref_confirm_eliminar = useRef(null);
+    const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
+    const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
+    const ref_confirm_eliminar = useRef(null)
 
-    const [show_modal_usuarios, setShowModalUsuarios] = useState(false);
-    const [show_modal_preguntas, setShowModalPreguntas] = useState(false);
+    const [show_modal_usuarios, setShowModalUsuarios] = useState(false)
+    const [show_modal_preguntas, setShowModalPreguntas] = useState(false)
     const [ring, setRing] = useState({})
-    const [codigo_eliminar, setCodigoEliminar] = useState('');
+    const [codigo_eliminar, setCodigoEliminar] = useState('')
     
-    const handleCloseModalUsuarios = () => setShowModalUsuarios(false);
-    const handleCloseModalPreguntas = () => setShowModalPreguntas(false);
+    const handleCloseModalUsuarios = () => setShowModalUsuarios(false)
+    const handleCloseModalPreguntas = () => setShowModalPreguntas(false)
   
     const handleClickAgregarUsuarioRing = ring => {
-        setShowModalUsuarios(true);
-        setRing(ring);
+        setShowModalUsuarios(true)
+        setRing(ring)
     }
 
     const handleClickAgregarPreguntaRing = ring => {
-        setShowModalPreguntas(true);
-        setRing(ring);
+        setShowModalPreguntas(true)
+        setRing(ring)
     }
 
     const handleClickEliminar = (e, codigo) => {
-        setShowConfirmEliminar(!show_confirm_eliminar);
-        setTargetConfirmEliminar(e.target);
-        setCodigoEliminar(codigo);
+        setShowConfirmEliminar(!show_confirm_eliminar)
+        setTargetConfirmEliminar(e.target)
+        setCodigoEliminar(codigo)
     }
 
     return (
@@ -62,11 +63,13 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                 <tbody>
                     {rings.length > 0 && 
                         rings.map((ring, index) =>{
-                            const {codigo, nombre, privado, createdAt, usuario, nivel_academico} = ring
                            
+                            const {codigo, nombre, privado, createdAt, usuario, nivel_academico} = ring
+                            let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
+
                             return(
                                 <tr key={codigo}>
-                                <td>{index+1}</td>
+                                <td>{numFila}</td>
                                 <td>{nombre}</td>
                                 <td>{usuario.nombre}</td>
                                 <td><small>{createdAt}</small></td>
@@ -152,7 +155,7 @@ const TableRing = ({rings, handleEliminarRing, handleModificarRing}) => {
                                     </Overlay>
                                 </td>
                                 </tr>
-                            );
+                            )
                         }) 
                         
                     }

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Container, Row, Col, Form, Image } from 'react-bootstrap';
-import { TiDelete } from 'react-icons/ti';
-import { getBase64 } from '../../helpers';
-import Uploader from './Uploader';
-import { RiDeleteBin5Line } from 'react-icons/ri';
+import React from 'react'
+import { Container, Row, Col, Form, Image } from 'react-bootstrap'
+import { TiDelete } from 'react-icons/ti'
+import { getBase64 } from '../../helpers'
+import Uploader from './Uploader'
+import { RiDeleteBin5Line } from 'react-icons/ri'
 
 
 const PistaPregunta = ({pistas, errores, setPistas}) => { 
@@ -13,8 +13,8 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         const new_pistas = pistas.map(pista => pista.numero === numero_pista ? ({
             ...pista,
             texto,
-        }): pista);
-        setPistas(new_pistas);
+        }): pista)
+        setPistas(new_pistas)
     } 
     
     const handleChangeArchivoPista = (numero_pista, tipo_archivo, base64) => {
@@ -46,18 +46,18 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                         }
                 }
             }else{
-                return pista;
+                return pista
             }  
 
-        });
+        })
         
-        setPistas(new_pistas);
+        setPistas(new_pistas)
 
     }
 
     const handleQuitarPista = (numero_pista) => {
         //quita la pista
-        let new_pistas = pistas.filter(pista => pista.numero !== numero_pista);
+        let new_pistas = pistas.filter(pista => pista.numero !== numero_pista)
         //ordena los numeros de pista en caso que se quite ejemplo el 2 cuando tengo [1, 2, 3]
         new_pistas = new_pistas.map((pista, index) => (
             {
@@ -65,7 +65,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                 numero: index + 1
             }
         ))
-        setPistas(new_pistas);
+        setPistas(new_pistas)
     }
 
     const handleQuitarArchivo = (numero_pista) => {
@@ -74,15 +74,15 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
             imagen: '',
             audio: '',
             video: '',
-        }): pista);
-        setPistas(new_pistas);
+        }): pista)
+        setPistas(new_pistas)
     }
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPista = async  (numero_pista, archivo) => {
-        const base64 = await getBase64(archivo[0]);
-        const tipo_archivo = archivo[0].type.split('/')[0];
-        handleChangeArchivoPista(numero_pista, tipo_archivo, base64);
+        const base64 = await getBase64(archivo[0])
+        const tipo_archivo = archivo[0].type.split('/')[0]
+        handleChangeArchivoPista(numero_pista, tipo_archivo, base64)
     }
 
     return (
@@ -90,7 +90,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         <Container className= {`border-bottom border-light mt-2`}>
         {pistas.map((pista) => {
             
-            const {numero, texto, imagen, audio, video} = pista;
+            const {numero, texto, imagen, audio, video} = pista
     
             return (
             <Row
@@ -118,7 +118,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                         placeholder={`Pista ${numero}`}
                         value={texto}
                         onChange={e => {
-                            handleChangeTextoPista(numero, e.target.value.toUpperCase());
+                            handleChangeTextoPista(numero, e.target.value.toUpperCase())
                         }}
                         isInvalid={errores.length > 0 ? errores.filter(error => error.numero === numero).length > 0 : false}
                     />
@@ -216,4 +216,4 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
     )
 }
 
-export default PistaPregunta;
+export default PistaPregunta

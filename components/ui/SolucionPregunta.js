@@ -1,9 +1,9 @@
-import React from 'react';
-import { Container, Row, Col, Form, Image } from 'react-bootstrap';
-import { TiDelete } from 'react-icons/ti';
-import { getBase64 } from '../../helpers';
-import Uploader from './Uploader';
-import { RiDeleteBin5Line } from 'react-icons/ri';
+import React from 'react'
+import { Container, Row, Col, Form, Image } from 'react-bootstrap'
+import { TiDelete } from 'react-icons/ti'
+import { getBase64 } from '../../helpers'
+import Uploader from './Uploader'
+import { RiDeleteBin5Line } from 'react-icons/ri'
 
 
 const SolucionPregunta = ({soluciones, errores, setSoluciones}) => { 
@@ -13,12 +13,12 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? ({
             ...solucion,
             texto,
-        }): solucion);
-        setSoluciones(new_soluciones);
+        }): solucion)
+        setSoluciones(new_soluciones)
     } 
     
     const handleChangeArchivoSolucion = (numero_solucion, tipo_archivo, base64) => {
-        /*const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? (): solucion);*/
+        /*const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? (): solucion)*/
         const new_soluciones = soluciones.map(solucion => {
 
             if(solucion.numero === numero_solucion){
@@ -51,12 +51,12 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
 
         })
        
-        setSoluciones(new_soluciones);
+        setSoluciones(new_soluciones)
     }
 
     const handleQuitarSolucion = (numero_solucion) => {
         //quita la solucion
-        let new_soluciones = soluciones.filter(solucion => solucion.numero !== numero_solucion);
+        let new_soluciones = soluciones.filter(solucion => solucion.numero !== numero_solucion)
         //ordena los numeros de solucion en caso que se quite ejemplo el 2 cuando tengo [1, 2, 3]
         new_soluciones = new_soluciones.map((solucion, index) => (
             {
@@ -64,7 +64,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                 numero: index + 1
             }
         ))
-        setSoluciones(new_soluciones);
+        setSoluciones(new_soluciones)
     }
 
     const handleQuitarArchivo = (numero_solucion) => {
@@ -73,16 +73,16 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
             imagen: '',
             audio: '',
             video: '',
-        }): solucion);
-        setSoluciones(new_soluciones);
+        }): solucion)
+        setSoluciones(new_soluciones)
     }
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaSolucion = async  (numero_solucion, archivo) => {
-        const base64 = await getBase64(archivo[0]);
-        const tipo_archivo = archivo[0].type.split('/')[0];
+        const base64 = await getBase64(archivo[0])
+        const tipo_archivo = archivo[0].type.split('/')[0]
 
-        handleChangeArchivoSolucion(numero_solucion, tipo_archivo, base64);
+        handleChangeArchivoSolucion(numero_solucion, tipo_archivo, base64)
     }
 
     return (
@@ -90,7 +90,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         <Container className= {`border-bottom border-light mt-2`}>
          {soluciones.map((solucion) => {
             
-            const {codigo, numero, texto, imagen, video, audio} = solucion;
+            const {codigo, numero, texto, imagen, video, audio} = solucion
             
             return (
             <Row
@@ -120,7 +120,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                         placeholder={`Solución ${numero}`}
                         value={texto}
                         onChange={e => {
-                            handleChangeTextoSolucion(numero, e.target.value.toUpperCase());
+                            handleChangeTextoSolucion(numero, e.target.value.toUpperCase())
                         }}
                         isInvalid={errores.length > 0 ? errores.filter(error => error.numero === numero).length > 0 : false}
                         // onBlur={validarFormulario}
@@ -220,4 +220,4 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
     )
 }
 
-export default SolucionPregunta;
+export default SolucionPregunta

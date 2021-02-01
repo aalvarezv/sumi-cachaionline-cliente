@@ -1,6 +1,6 @@
-import React,{useState, useEffect} from 'react';
-import {Form} from 'react-bootstrap';
-import { handleError } from '../../helpers';
+import React,{useState, useEffect} from 'react'
+import {Form} from 'react-bootstrap'
+import { handleError } from '../../helpers'
 
 
 const InputSelectTipoDuracionJuego = props => {
@@ -28,7 +28,7 @@ const InputSelectTipoDuracionJuego = props => {
             <option key={tipo_duracion_pregunta.codigo} value={tipo_duracion_pregunta.codigo}>{tipo_duracion_pregunta.nombre}</option>)}
         </Form.Control>
 
-     );
+     )
 }
  
-export default InputSelectTipoDuracionJuego;
+export default InputSelectTipoDuracionJuego

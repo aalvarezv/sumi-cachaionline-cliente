@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-toastify';
-import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button, Row, Col, Nav } from 'react-bootstrap';
-import {handleError } from '../../helpers';
-import clienteAxios from '../../config/axios';
-import ButtonBack from '../ui/ButtonBack';
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-toastify'
+import ToastMultiline from '../ui/ToastMultiline'
+import { Container, Form, Button, Row, Col, Nav } from 'react-bootstrap'
+import {handleError } from '../../helpers'
+import clienteAxios from '../../config/axios'
 
 const RolForm = ({rol_modificar, handleClickVolver}) => {
 
-    const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
+    const router = useRouter()
+    const [rolValido, setRolValido] = useState(false)
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
@@ -24,14 +23,15 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
         ver_submenu_materias:false,
         ver_submenu_unidades:false,
         ver_submenu_modulos:false,
+        ver_submenu_contenidos:false,
         ver_submenu_temas:false,
         ver_submenu_conceptos:false,
         ver_menu_rings: false,
         ver_menu_preguntas: false,
         inactivo: false
-    });
+    })
 
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     useEffect(() => {
 
@@ -48,16 +48,19 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                 ver_submenu_materias: rol_modificar.ver_submenu_materias,
                 ver_submenu_unidades: rol_modificar.ver_submenu_unidades,
                 ver_submenu_modulos: rol_modificar.ver_submenu_modulos,
+                ver_submenu_contenidos: rol_modificar.ver_submenu_contenidos,
                 ver_submenu_temas: rol_modificar.ver_submenu_temas,
                 ver_submenu_conceptos: rol_modificar.ver_submenu_conceptos,
                 ver_menu_rings: rol_modificar.ver_menu_rings,
                 ver_menu_preguntas: rol_modificar.ver_menu_preguntas,
                 inactivo: rol_modificar.inactivo
-            });
+            })
+            setRolValido(true)
         }else{
-            reseteaFormulario();
+            reseteaFormulario()
+            setRolValido(false)
         }
-        setErrores({});
+        setErrores({})
 
     }, [rol_modificar])
 
@@ -72,9 +75,9 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
             }
         }
 
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
 
     }
 
@@ -91,57 +94,57 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
             ver_submenu_materias:false,
             ver_submenu_unidades:false,
             ver_submenu_modulos:false,
+            ver_submenu_contenidos:false,
             ver_submenu_temas:false,
             ver_submenu_conceptos:false,
             ver_menu_rings: false,
             ver_menu_preguntas: false,
             inactivo: false,
-        });
+        })
     }
 
     const handleClickCrear = async e => {
         
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
-            //Unidad a enviar
+            //rol a enviar
             let rol = {
                 ...formulario,
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/roles/crear', rol);
-            
-            rol = resp.data;
-            reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'ROL CREADO'}]}/>, {containerId: 'sys_msg'});
+            const resp = await clienteAxios.post('/api/roles/crear', rol)
+            setRolValido(true)
+            toast.success(<ToastMultiline mensajes={[{msg: 'ROL CREADO'}]}/>, {containerId: 'sys_msg'})
         
         }catch(e){
-            handleError(e);
+            setRolValido(false)
+            handleError(e)
         }                                                
     }
 
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
-            let rol = formulario;
-            await clienteAxios.put('/api/roles/actualizar', rol);
-            toast.success(<ToastMultiline mensajes={[{msg: 'ROL ACTUALIZADO'}]}/>, {containerId: 'sys_msg'});
+            await clienteAxios.put('/api/roles/actualizar', formulario)
+            toast.success(<ToastMultiline mensajes={[{msg: 'ROL ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
@@ -164,33 +167,34 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                     isInvalid={errores.hasOwnProperty('descripcion')}
                     onBlur={validarFormulario}
                 />
-                <Form.Control.Feedback type="invalid">
-                {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                </Form.Control.Feedback>
             </Form.Group>
             <Nav variant="tabs" activeKey="opciones-menu">
                 <Nav.Item>
-                    <Nav.Link eventKey="opciones-menu">Habilitar opciones de menú</Nav.Link>
+                    <Nav.Link 
+                        eventKey="opciones-menu"
+                        className="font-weight-bold"
+                    >Habilitar opciones de menú</Nav.Link>
                     <Container>                 
                         <Row className="mt-2">
-                            <Col xs="auto">
+                            <Col xs={12} className="mb-1">
                                 <Form.Check 
                                     id="ver_menu_administrar"
                                     name="ver_menu_administrar"
                                     type="checkbox"
                                     label="Menú Administrar"
+                                    className="font-weight-bold text-info"
                                     checked={formulario.ver_menu_administrar}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
                         </Row>
                         <Row className="mb-3">
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_instituciones"
                                     name="ver_submenu_instituciones"
@@ -201,11 +205,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_niveles_academicos"
                                     name="ver_submenu_niveles_academicos"
@@ -216,11 +220,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_roles"
                                     name="ver_submenu_roles"
@@ -231,11 +235,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_usuarios"
                                     name="ver_submenu_usuarios"
@@ -246,30 +250,31 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
                         </Row>
                         <Row>
-                            <Col xs="auto">
+                            <Col xs={12} className="mb-1">
                                 <Form.Check 
                                     id="ver_menu_asignaturas"
                                     name="ver_menu_asignaturas"
                                     type="checkbox"
                                     label="Menú Asignaturas"
+                                    className="font-weight-bold text-info"
                                     checked={formulario.ver_menu_asignaturas}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
                         </Row>
                         <Row className="mb-3">
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_materias"
                                     name="ver_submenu_materias"
@@ -280,11 +285,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_unidades"
                                     name="ver_submenu_unidades"
@@ -295,11 +300,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_modulos"
                                     name="ver_submenu_modulos"
@@ -310,11 +315,27 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
+                                <Form.Check 
+                                    id="ver_submenu_contenidos"
+                                    name="ver_submenu_contenidos"
+                                    type="checkbox"
+                                    label="Contenidos"
+                                    checked={formulario.ver_submenu_contenidos}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                                
+                            </Col>
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_temas"
                                     name="ver_submenu_temas"
@@ -325,11 +346,11 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs={12} sm="auto">
                                 <Form.Check 
                                     id="ver_submenu_conceptos"
                                     name="ver_submenu_conceptos"
@@ -340,41 +361,43 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
                         </Row>
                         <Row className="mb-3">
-                            <Col xs="auto">
+                            <Col xs={12} className="mb-1">
                                 <Form.Check 
                                     id="ver_menu_preguntas"
                                     name="ver_menu_preguntas"
                                     type="checkbox"
                                     label="Menú Preguntas"
+                                    className="font-weight-bold text-info"
                                     checked={formulario.ver_menu_preguntas}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
                         </Row>
                         <Row className="mb-3">
-                            <Col xs="auto">
+                            <Col xs={12} className="mb-1">
                                 <Form.Check 
                                     id="ver_menu_rings"
                                     name="ver_menu_rings"
                                     type="checkbox"
                                     label="Menú Rings"
+                                    className="font-weight-bold text-info"
                                     checked={formulario.ver_menu_rings}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,
                                             [e.target.name]: e.target.checked
-                                        });
+                                        })
                                     }}
                                 />
                             </Col>
@@ -387,13 +410,13 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                 name="inactivo"
                 type="checkbox"
                 label="Inactivo"
-                className="mt-3"
+                className="my-3"
                 checked={formulario.inactivo}
                 onChange={e => {
                     setFormulario({
                         ...formulario,
                         [e.target.name]: e.target.checked
-                    });
+                    })
                 }}
             />
             <Row className="justify-content-center">
@@ -418,7 +441,7 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="success"
-                        disabled={!rol_modificar}
+                        disabled={!rolValido}
                         size="lg"
                         className="btn-block"
                         onClick={() => {
@@ -431,16 +454,17 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                         }}
                     >+ Agregar Usuarios</Button>
                 </Col>
-                <Col>
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="info"
                         size="lg"
+                        className="btn-block"
                         onClick={handleClickVolver}
                     >Volver</Button>
                 </Col>
             </Row>
         </Form>
-     </Container> );
+     </Container> )
 }
  
-export default RolForm;
+export default RolForm

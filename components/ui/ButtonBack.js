@@ -1,10 +1,10 @@
 import React from 'react'
-import { useRouter } from 'next/router';
-import { Button } from 'react-bootstrap';
+import { useRouter } from 'next/router'
+import { Button } from 'react-bootstrap'
 
 const ButtonBack = () => {
 
-    const router = useRouter();
+    const router = useRouter()
 
     return (
         <Button 
@@ -13,7 +13,7 @@ const ButtonBack = () => {
             size="lg"
             className="btn-block"
             onClick={() => {
-                router.back();
+                router.back()
             }}
         >Volver</Button>
     )

@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-toastify';
-import ToastMultiline from '../ui/ToastMultiline';
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
-import {handleError } from '../../helpers';
-import  clienteAxios from '../../config/axios';
-import InputSearch from '../ui/InputSearch';
-import InputSelectMateria from '../ui/InputSelectMateria';
-import ButtonBack from '../ui/ButtonBack';
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-toastify'
+import ToastMultiline from '../ui/ToastMultiline'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
+import {handleError } from '../../helpers'
+import  clienteAxios from '../../config/axios'
+import InputSelectMateria from '../ui/InputSelectMateria'
 
 
 const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
 
-    const router = useRouter();
-    const [filtro_busqueda, setFiltroBusqueda] = useState('');
+    const router = useRouter()
+    const [unidadValida, setUnidadValida] = useState(false)
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
-        codigo_materia: '',
+        codigo_materia: '0',
         inactivo: false
-    });
+    })
     
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     useEffect(() => {
         
@@ -32,13 +30,15 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                 descripcion: unidad_modificar.descripcion,
                 codigo_materia: unidad_modificar.codigo_materia,
                 inactivo: unidad_modificar.inactivo
-            });
+            })
+            setUnidadValida(true)
         }else{
-            reseteaFormulario();
+            reseteaFormulario()
+            setUnidadValida(false)
         }
-        setErrores({});
+        setErrores({})
 
-    }, [unidad_modificar]);
+    }, [unidad_modificar])
 
     //carga la materia en el formulario si existe en la url.
     useEffect(() => {
@@ -46,9 +46,9 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
             setFormulario({
                 ...formulario,
                 codigo_materia: router.query.materia
-            });
+            })
         }
-    }, []);
+    }, [])
 
     const validarFormulario = () => {
         
@@ -68,9 +68,9 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
             }
         }
 
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
 
     }
 
@@ -78,21 +78,21 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
         setFormulario({
             codigo: '',
             descripcion: '',
-            codigo_materia: '',
+            codigo_materia: '0',
             inactivo: false
-        });
+        })
     }
 
     const handleClickCrear = async e => {
         
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
             //Unidad a enviar
             let unidad = {
@@ -100,32 +100,30 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/unidades/crear', unidad);
-            
-            unidad = resp.data;
-            reseteaFormulario();
-            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD CREADA'}]}/>, {containerId: 'sys_msg'});
+            const resp = await clienteAxios.post('/api/unidades/crear', unidad)
+            setUnidadValida(true)
+            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD CREADA'}]}/>, {containerId: 'sys_msg'})
         
         }catch(e){
-            handleError(e);
+            handleError(e)
         }                                                
     }
 
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
-            let unidad = formulario;
-            await clienteAxios.put('/api/unidades/actualizar', unidad);
-            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD ACTUALIZADA'}]}/>, {containerId: 'sys_msg'});
+            let unidad = formulario
+            await clienteAxios.put('/api/unidades/actualizar', unidad)
+            toast.success(<ToastMultiline mensajes={[{msg: 'UNIDAD ACTUALIZADA'}]}/>, {containerId: 'sys_msg'})
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
     }
 
@@ -148,9 +146,6 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                     isInvalid={errores.hasOwnProperty('descripcion')}
                     onBlur={validarFormulario}
                 />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('descripcion') && errores.descripcion}
-                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
                 <Form.Label>Materia</Form.Label>
@@ -167,9 +162,6 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                     onBlur={validarFormulario}
                     disabled={router.query.materia}
                 />
-                <Form.Control.Feedback type="invalid">
-                    {errores.hasOwnProperty('codigo_materia') && errores.codigo_materia}
-                </Form.Control.Feedback>
             </Form.Group>
             <Form.Check 
                 id="inactivo"
@@ -205,7 +197,7 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="success"
-                        disabled={!unidad_modificar}
+                        disabled={!unidadValida}
                         size="lg"
                         className="btn-block"
                         onClick={() => {
@@ -219,18 +211,17 @@ const UnidadForm = ({unidad_modificar, handleClickVolver}) => {
                         }}
                     >+ Agregar Módulos</Button>
                 </Col>
-                <Col>
-                <Col>
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
                         variant="info"
                         size="lg"
+                        className="btn-block"
                         onClick={handleClickVolver}
                     >Volver</Button>
                 </Col>
-                </Col>
             </Row>
        </Form>
-    </Container> );
+    </Container> )
 }
  
-export default UnidadForm;
+export default UnidadForm

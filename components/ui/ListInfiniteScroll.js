@@ -1,36 +1,36 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import { Container, Form, ListGroup, Col } from 'react-bootstrap';
-import useScrollInfinito from '../../hooks/useInfiniteScroll';
-import { handleError } from '../../helpers';
-import Spinner from './Spinner';
+import React, {useState, useRef, useCallback, useEffect} from 'react'
+import { Container, Form, ListGroup, Col } from 'react-bootstrap'
+import useScrollInfinito from '../../hooks/useInfiniteScroll'
+import { handleError } from '../../helpers'
+import Spinner from './Spinner'
 
 const ListInfiniteScroll = ({url, model, pk, label, filters, 
                              items_selected, handleSelect}) => {
    
-    const [page_num, setPageNum] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [page_num, setPageNum] = useState(1)
+    const [limit, setLimit] = useState(10)
     //almacena los results obtenido en el useScrollInfinito para poder manipularlos cuando el usuario
     //seleccione o deseleccione un ítem.
-    const [results_local, setResultLocal] = useState([]);
+    const [results_local, setResultLocal] = useState([])
     
     const {
         loading, 
         results, 
         hasMore
-    } = useScrollInfinito(url, filters, page_num, limit, model);
+    } = useScrollInfinito(url, filters, page_num, limit, model)
     
     //si cambian los filtros entonces parte la consulta desde la página 1
     useEffect(() => {
-        setPageNum(1);
-    },[filters]);
+        setPageNum(1)
+    },[filters])
 
     useEffect(() => {
         if(results) {
-            setResultLocal(results);
+            setResultLocal(results)
         }
     }, [results])
 
-    const observer = useRef();
+    const observer = useRef()
     //esta referencia llama a la función y le pasa el elemento creado.
     
     const lastResultElementRef = useCallback( node => {
@@ -39,26 +39,26 @@ const ListInfiniteScroll = ({url, model, pk, label, filters,
             return
         }
         if(observer.current) {
-            observer.current.disconnect();
+            observer.current.disconnect()
         }
         observer.current = new IntersectionObserver(entries => {
             //entries[0] es el elemento que estamos observando, en este caso el último registro.
             if(entries[0].isIntersecting && hasMore){
-                setPageNum(prevPageNumber => prevPageNumber + 1);
+                setPageNum(prevPageNumber => prevPageNumber + 1)
             }
         })
         
         if(node){
-            observer.current.observe(node);
+            observer.current.observe(node)
         }
         
-    },[loading, hasMore]);
+    },[loading, hasMore])
 
     //cuando hace click a un item
     const handleClickItem = async item => {
 
         try{
-            await handleSelect(item, !item.item_select);
+            await handleSelect(item, !item.item_select)
             const new_results_local = results_local.map(res => {
                 if(res[pk] === item[pk]){
                     return { 
@@ -66,11 +66,11 @@ const ListInfiniteScroll = ({url, model, pk, label, filters,
                         item_select : Number(!res.item_select)
                     }
                 }
-                return res;
-            });
-            setResultLocal(new_results_local);
+                return res
+            })
+            setResultLocal(new_results_local)
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
         
     }
@@ -109,9 +109,9 @@ const ListInfiniteScroll = ({url, model, pk, label, filters,
             </Form.Row>
             </Form> 
         </Container>
-   );
+   )
 
 
 }
 
-export default ListInfiniteScroll;
+export default ListInfiniteScroll

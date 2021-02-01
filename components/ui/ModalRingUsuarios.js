@@ -1,20 +1,20 @@
-import React, { useContext, useState, useEffect } from 'react';
-import {Modal, Container, Row, Col} from 'react-bootstrap';
-import AuthContext from '../../context/auth/AuthContext';
-import TableRingUsuariosCurso from './TableRingUsuariosCurso';
-import InputSelectCursosUsuarioNivelAcademicoInstitucion from './InputSelectCursosUsuarioNivelAcademicoInstitucion';
-import InputSelectInstitucionesUsuario from './InputSelectInstitucionesUsuario';
-import Logo from './Logo';
+import React, { useContext, useState, useEffect } from 'react'
+import {Modal, Container, Row, Col} from 'react-bootstrap'
+import AuthContext from '../../context/auth/AuthContext'
+import TableRingUsuariosCurso from './TableRingUsuariosCurso'
+import InputSelectCursosUsuarioNivelAcademicoInstitucion from './InputSelectCursosUsuarioNivelAcademicoInstitucion'
+import InputSelectInstitucionesUsuario from './InputSelectInstitucionesUsuario'
+import Logo from './Logo'
 
 const ModalRingUsuarios = ({show, handleClose, ring}) =>{
 
-    const { usuario } = useContext(AuthContext);
-    const [codigo_curso, setCodigoCurso] = useState('0');
-    const [codigo_institucion, setCodigoInstitucion] = useState('0');
+    const { usuario } = useContext(AuthContext)
+    const [codigo_curso, setCodigoCurso] = useState('0')
+    const [codigo_institucion, setCodigoInstitucion] = useState('0')
 
     useEffect(() => {
-      setCodigoCurso('0');
-      setCodigoInstitucion('0');
+      setCodigoCurso('0')
+      setCodigoInstitucion('0')
     }, [show])
 
     return (
@@ -36,7 +36,7 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
                         as="select"
                         value={codigo_institucion}
                         onChange={e => {
-                            setCodigoInstitucion(e.target.value);
+                            setCodigoInstitucion(e.target.value)
                         }}
                     />
                 </Col>
@@ -68,7 +68,7 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
         <Modal.Footer>
         </Modal.Footer>
       </Modal>
-  );
+  )
 }
 
-export default ModalRingUsuarios;
+export default ModalRingUsuarios

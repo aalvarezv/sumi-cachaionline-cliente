@@ -1,28 +1,28 @@
-import React, { useState, forwardRef } from 'react';
-import { Form, Container, Row, Col, Button } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import InputSelectMateria from './InputSelectMateria';
-import InputSelectUnidadesMateria from './InputSelectUnidadesMateria';
-import InputSelectModulosUnidad from './InputSelectModulosUnidad';
-import InputSelectModulosContenido from './InputSelectModulosContenido';
-import InputSelectModulosContenidoTema from './InputSelectModulosContenidoTema';
-import InputSelectModulosContenidoTemaConcepto from './InputSelectModulosContenidoTemaConcepto';
+import React, { useState, forwardRef } from 'react'
+import { Form, Container, Row, Col, Button } from 'react-bootstrap'
+import DatePicker from 'react-datepicker'
+import InputSelectMateria from './InputSelectMateria'
+import InputSelectUnidadesMateria from './InputSelectUnidadesMateria'
+import InputSelectModulosUnidad from './InputSelectModulosUnidad'
+import InputSelectModulosContenido from './InputSelectModulosContenido'
+import InputSelectModulosContenidoTema from './InputSelectModulosContenidoTema'
+import InputSelectModulosContenidoTemaConcepto from './InputSelectModulosContenidoTemaConcepto'
 
-const FiltrosBusquedaPregunta = ({handleClickBuscar}) => {
+const FiltrosBusquedaPregunta = ({filtros_default, handleClickBuscar}) => {
 
     const [filtros, setFiltros] = useState({
-        codigo_materia: '0',
-        codigo_unidad: '0',
-        codigo_modulo: '0',
-        codigo_modulo_contenido: '0',
-        codigo_modulo_contenido_tema: '0',
-        codigo_modulo_contenido_tema_concepto: '0',
-        nombre_usuario_creador: '',
-    });
+        codigo_materia: filtros_default.codigo_materia,
+        codigo_unidad: filtros_default.codigo_unidad,
+        codigo_modulo: filtros_default.codigo_modulo,
+        codigo_modulo_contenido: filtros_default.codigo_modulo_contenido,
+        codigo_modulo_contenido_tema: filtros_default.codigo_modulo_contenido_tema,
+        codigo_modulo_contenido_tema_concepto: filtros_default.codigo_modulo_contenido_tema_concepto,
+        nombre_usuario_creador: filtros_default.nombre_usuario_creador,
+    })
     
     const { codigo_materia, codigo_unidad, codigo_modulo, codigo_modulo_contenido,
             codigo_modulo_contenido_tema, codigo_modulo_contenido_tema_concepto,
-            nombre_usuario_creador } = filtros;
+            nombre_usuario_creador } = filtros
 
 
     return ( 
@@ -187,7 +187,7 @@ const FiltrosBusquedaPregunta = ({handleClickBuscar}) => {
                 </Button>
             </Col>
         </Row>
-     </Container>    );
+     </Container>    )
 }
  
-export default FiltrosBusquedaPregunta;
+export default FiltrosBusquedaPregunta

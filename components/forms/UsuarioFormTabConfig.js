@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react'
-import { v4 as uuidv4 } from 'uuid';
-import { Container, Row, Col, Form, Table, Button, Alert } from 'react-bootstrap';
-import InputSelectRol from '../ui/InputSelectRol';
-import InputSelectInstitucion from '../ui/InputSelectInstitucion';
-import clienteAxios from '../../config/axios';
-import { handleError } from '../../helpers';
+import { v4 as uuidv4 } from 'uuid'
+import { Container, Row, Col, Form, Table, Button, Alert } from 'react-bootstrap'
+import InputSelectRol from '../ui/InputSelectRol'
+import InputSelectInstitucion from '../ui/InputSelectInstitucion'
+import clienteAxios from '../../config/axios'
+import { handleError } from '../../helpers'
 
 const UsuarioFormTabConfig = ({rut_usuario}) => {
 
-    const [usuario_instituciones_roles, setUsuarioInstitucionesRoles] = useState([]);
+    const [usuario_instituciones_roles, setUsuarioInstitucionesRoles] = useState([])
     const [formulario, setFormulario] = useState({
         rut_usuario: rut_usuario,
         codigo_institucion: '',
         codigo_rol: '',
-    });
+    })
 
-    const [errores, setErrores] = useState({});
+    const [errores, setErrores] = useState({})
 
     //al iniciar el componente carga las instituciones y roles a los que pertenece el usuario.
     useEffect(() => {
         
         const listarUsuarioInstitucionesRoles = async () => {
 
-            const resp = await clienteAxios.get(`/api/usuario-instituciones-roles/listar/${rut_usuario}`);
-            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles);
+            const resp = await clienteAxios.get(`/api/usuario-instituciones-roles/listar/${rut_usuario}`)
+            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
 
         }
 
         if(rut_usuario){
-            listarUsuarioInstitucionesRoles();
+            listarUsuarioInstitucionesRoles()
         }
 
     }, [rut_usuario])
@@ -37,12 +37,12 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
 
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario();
+            const errors = validarFormulario()
             //verifica que no hayan errores
             if(Object.keys(errors).length > 0){
-                return;
+                return
             }
             //modulo a enviar
             let usuario_institucion_rol = {
@@ -50,11 +50,11 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                 codigo : uuidv4(),
             }
             
-            const resp = await clienteAxios.post('/api/usuario-instituciones-roles/crear', usuario_institucion_rol);
-            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles);
+            const resp = await clienteAxios.post('/api/usuario-instituciones-roles/crear', usuario_institucion_rol)
+            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
 
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
 
     }
@@ -63,18 +63,18 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
 
         try{
             //previne el envío
-            e.preventDefault();
+            e.preventDefault()
 
             const resp = await clienteAxios.delete(`/api/usuario-instituciones-roles/eliminar/${codigo}`,{
                 params:{
                     rut_usuario
                 }
-            });
+            })
            
-            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles);
+            setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
           
         }catch(e){
-            handleError(e);
+            handleError(e)
         }
 
     }
@@ -97,13 +97,13 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                 codigo_rol: 'Requerido'
             }
         }
-        setErrores(errors);
+        setErrores(errors)
 
-        return errors;
+        return errors
     }
 
     return (
-        <Container>
+        <Container className="mt-3">
             <Form className="p-3">
             <Row className="mb-3">
                 <Col>
@@ -127,9 +127,6 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                             isInvalid={errores.hasOwnProperty('codigo_institucion')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('codigo_institucion') && errores.codigo_institucion}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
                 <Col xs={5}>
@@ -146,9 +143,6 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                             isInvalid={errores.hasOwnProperty('codigo_rol')}
                             onBlur={validarFormulario}
                         />
-                        <Form.Control.Feedback type="invalid">
-                            {errores.hasOwnProperty('codigo_rol') && errores.codigo_rol}
-                        </Form.Control.Feedback>
                     </Form.Group>
                 </Col>
                 <Col>
@@ -170,7 +164,7 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                         <tr>
                             <th>Institución</th>
                             <th>Perfil</th>
-                            <th className="w-25">></th>
+                            <th className="w-25"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,7 +181,7 @@ const UsuarioFormTabConfig = ({rut_usuario}) => {
                                     >Quitar</Button>
                                 </td>
                             </tr>
-                            );
+                            )
                         })}
                     </tbody>
                 </Table>
