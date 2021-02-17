@@ -53,6 +53,12 @@ const Navegacion = () => {
                                     <NavDropdown.Item>Usuarios</NavDropdown.Item>
                                 </Link>
                             }
+                            {rol_select.ver_menu_rings &&
+                                <Link href="/administrar/cursos" passHref>
+                                    <NavDropdown.Item>Cursos</NavDropdown.Item>
+                                </Link>
+                            }
+                            
                         </NavDropdown>
                     }
                     {rol_select.ver_menu_asignaturas &&

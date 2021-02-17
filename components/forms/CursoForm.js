@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Container, Form, Card, Button, Row, Col } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
-import InputSearch from '../ui/InputSearch'
 import ToastMultiline from '../ui/ToastMultiline'
 import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico'
 import InputSelectInstitucion from '../ui/InputSelectInstitucion'
-import ListSelectCursoModulos from '../ui/ListSelectCursoModulos'
-import ListSelectCursoUsuarios from '../ui/ListSelectCursoUsuarios'
-import ButtonBack from '../ui/ButtonBack'
 
-const CursoForm = () => {
+const CursoForm = ({curso_modificar, handleClickVolver}) => {
 
     const router = useRouter()
-    const [filtro_busqueda, setFiltroBusqueda] = useState('')
-    const [result_busqueda, setResultBusqueda] = useState([])
-    const [result_select, setResultSelect]     = useState(null)
+    const [cursoValido, setCursoValido] = useState(false)
     const [formulario, setFormulario] = useState({
         codigo: '',
         letra: '',
@@ -29,43 +23,24 @@ const CursoForm = () => {
     
     const [errores, setErrores] = useState({})
 
-    const buscarCurso = async () => {
-        try{
-            const resp = await clienteAxios.get(`/api/cursos/busqueda/${filtro_busqueda}`, 
-                { params: { 
-                    codigo_institucion: router.query.institucion 
-                } 
-            })
-            setResultBusqueda(resp.data.cursos)
-        }catch(e){
-            handleError(e)
-        }
-        
-    }
-    
     useEffect(() => {
 
-        if(filtro_busqueda.trim() !== '' && !result_select){
-            buscarCurso()
-        }else{
-            setResultBusqueda([])
-        }
-        
-        if(result_select){
+        if(curso_modificar){
             setFormulario({
-                codigo: result_select.codigo,
-                letra: result_select.letra,
-                codigo_institucion: result_select.codigo_institucion,
-                codigo_nivel_academico: result_select.codigo_nivel_academico,
-                inactivo: result_select.inactivo
+                codigo: curso_modificar.codigo,
+                letra: curso_modificar.letra,
+                codigo_institucion: curso_modificar.codigo_institucion,
+                codigo_nivel_academico: curso_modificar.codigo_nivel_academico,
+                inactivo: curso_modificar.inactivo
             })
+            setCursoValido(true)
         }else{
             reseteaFormulario()
+            setCursoValido(false)
         }
         setErrores({})
 
-    }, [filtro_busqueda, result_select])
-    //filtro_busqueda, result_select
+    }, [curso_modificar])
 
     //carga la institución en el formulario si existe en la url.
     useEffect(() => {
@@ -162,31 +137,11 @@ const CursoForm = () => {
             handleError(e)
         }
     }
-    
-    const ListSelectCursoUsuariosNoMemo = formulario => {
-        
-        return ( <ListSelectCursoUsuarios
-            codigo_institucion={formulario.codigo_institucion}
-            codigo_curso={formulario.codigo}
-        />)
-    }
 
-    const ListSelectCursoUsuariosMemo = useMemo(() => {
-        return ListSelectCursoUsuariosNoMemo(formulario)
-    }, [formulario.codigo])
-    
+  
    
     return ( 
     <Container>
-
-        <InputSearch
-            setFilter={setFiltroBusqueda}
-            results={result_busqueda}
-            setResultSelect={setResultSelect}
-            id="codigo"
-            label="nivel_letra"
-        />
-
         <Form>
             <Form.Group>
                 <Form.Label>Institución</Form.Label>
@@ -258,7 +213,7 @@ const CursoForm = () => {
             </Row>
             <Row className="justify-content-start">
                 <Col className="mb-3 mb-sm-0 " xs={12} sm={"auto"}>
-                    {result_select
+                    {curso_modificar
                     ?   
                         <Button 
                             variant="outline-info"
@@ -275,59 +230,16 @@ const CursoForm = () => {
                         >Crear</Button>
                     }
                 </Col>
-                <Col xs={12} sm={"auto"}>
-                    <ButtonBack />
-                </Col>
-            </Row>
-        </Form>
-        <Container className="mt-3">
-        <Row>
-            <Col className="bg-info m-0 mr-md-1 p-3 rounded">
-                <Row className="p-3">
+                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
                     <Button 
-                        variant="outline-light"
-                        onClick={()=>{
-                            router.push('/administrar/usuarios')
-                        }}
-                        size="lg"
-                        block
-                    >+ Crear Usuarios</Button>
-                </Row>
-                <Row className="px-3">
-                    <h6 className="text-light text-center">
-                        Seleccione Alumnos y Profesores que pertenecen al curso.
-                    </h6>
-                </Row>
-                <Row>
-                    {ListSelectCursoUsuariosMemo}
-                </Row> 
-            </Col>
-            <Col className="bg-info m-0 ml-md-1 mt-3 mt-md-0 p-3 rounded" sm={12} md={6}>
-                <Row className="p-3">
-                    <Button 
-                        variant="outline-light"
+                        variant="info"
                         size="lg"
                         className="btn-block"
-                        onClick={()=>{
-                            router.push('/administrar/modulos')
-                        }}
-                    >+ Crear Modulos</Button>
-                </Row>
-                <Row className="px-3">
-                    <h6 className="text-light text-center">
-                        Seleccione uno o más módulos que serán impartidos en el curso.
-                    </h6>
-                </Row>
-                <Row>
-                    {<ListSelectCursoModulos
-                        codigo_curso={formulario.codigo}
-                    />}
-                </Row> 
-            </Col>
-            
-        </Row>
-        </Container>
-    
+                        onClick={handleClickVolver}
+                    >Volver</Button>
+                </Col>
+            </Row>
+        </Form>    
     </Container>
   
     )
