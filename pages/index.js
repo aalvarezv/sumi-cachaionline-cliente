@@ -8,7 +8,7 @@ import { Container, Row, Col, Card, Image } from 'react-bootstrap'
 const Home = () => {
 
     const { materias, listarMaterias, seleccionarMateria } = useContext(MateriaContext)
-
+ 
     useEffect(()=> {
       listarMaterias()
     }, [])
@@ -16,6 +16,7 @@ const Home = () => {
     return ( 
     <Layout>
       <Container className="mt-3">
+
         {materias && materias.map(materia => (
           <Card className="border-bottom-0" key={materia.codigo}>
             <Container className="px-4 py-4">
@@ -46,8 +47,7 @@ const Home = () => {
           </Card>
           ))}     
       </Container>
-    </Layout>
-      
+    </Layout>   
     )
 }
  

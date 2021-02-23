@@ -5,7 +5,8 @@ import { handleError } from '../../helpers'
 
 const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
 
-    const { rut_usuario, codigo_nivel_academico, codigo_institucion} = props
+    let { rut_usuario, niveles_academicos, codigo_institucion} = props
+
     const [cursos_usuario_nivel_academico_institucion, setCursosUsuarioNivelAcademicoInstitucion] = useState([])
 
     useEffect(() => {
@@ -15,7 +16,7 @@ const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
                 const resp = await clienteAxios.get('/api/cursos/listar/usuario-nivel-academico-institucion',{
                     params: {
                         rut_usuario,
-                        codigo_nivel_academico,
+                        niveles_academicos,
                         codigo_institucion,
                     }
                 })
@@ -26,7 +27,7 @@ const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
         }
         listarCursosUsuarioNivelAcademicoInstitucion()
 
-    }, [codigo_institucion, codigo_nivel_academico, rut_usuario])
+    }, [codigo_institucion, niveles_academicos, rut_usuario])
 
     return (
         <Form.Control

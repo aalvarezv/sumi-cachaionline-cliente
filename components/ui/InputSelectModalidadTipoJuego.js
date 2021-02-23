@@ -12,7 +12,6 @@ const InputSelectModalidadTipoJuego = props => {
             const listarModalidades = async () => {
                 try{
                     const resp = await clienteAxios.get(`/api/modalidades/listar/${codigo_tipo_juego}`);
-                    console.log(resp.data.modalidadesTipoJuego)
                     setModalidadesTipoJuego(resp.data.modalidadesTipoJuego);
                 }catch(e){
                     handleError(e);

@@ -12,28 +12,25 @@ import Paginador from '../../components/ui/Paginador'
 import RingForm from '../../components/forms/RingForm'
 import CustomDateInput from '../../components/ui/CustomDateInput'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
-import InputSelectNivelAcademico from '../../components/ui/InputSelectNivelAcademico'
 import { handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
 
 
+
 const Rings = () => {
 
-   const { institucion_select } = useContext(AuthContext)
-
+   const { institucion_select, usuario } = useContext(AuthContext)
+   const fecha = new Date()
    const [filtros, setFiltros] = useState({
-      fecha_desde: new Date(),
-      fecha_hasta: new Date(),
+      fecha_desde: new Date(fecha.getFullYear(), fecha.getMonth(), 1),
+      fecha_hasta: new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0),
       codigo_materia: '0',
-      codigo_nivel_academico: '0',
       nombre_ring: '',
-      nombre_usuario_creador: '',
       privado: true,
    })
 
    const { fecha_desde, fecha_hasta, codigo_materia, 
-          codigo_nivel_academico, nombre_ring, 
-          nombre_usuario_creador, privado } = filtros
+           nombre_ring, privado } = filtros
   
    const ref_custom_date_desde = React.createRef()
    const ref_custom_date_hasta = React.createRef()
@@ -49,7 +46,7 @@ const Rings = () => {
 
    /**** Variables para paginación *****/
    const [pagina_actual, setPaginaActual] = useState(1)
-   const [resultados_por_pagina, setResultadosPorPagina] = useState(1)
+   const [resultados_por_pagina, setResultadosPorPagina] = useState(10)
 
    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
@@ -57,21 +54,19 @@ const Rings = () => {
    /*************************************/
 
    const handleClickBuscar = async () => {
-     
+      
       try{
          const resp = await clienteAxios.get('/api/rings/listar', {
             params : { 
                fecha_desde: filtros.fecha_desde.toDateString(),
                fecha_hasta: filtros.fecha_hasta.toDateString(),
                codigo_materia: filtros.codigo_materia,
-               codigo_nivel_academico: filtros.codigo_nivel_academico,
                codigo_institucion: institucion_select.codigo,
                nombre_ring: filtros.nombre_ring,
-               nombre_usuario_creador: filtros.nombre_usuario_creador,
+               rut_usuario_creador: usuario.rut,
                privado: filtros.privado,
              }
          })
-         console.log(resp.data.ring)
          setRings(resp.data.ring)
 
          if(resp.data.ring.length === 0){
@@ -231,23 +226,6 @@ const Rings = () => {
                         />
                      </Col>
                      <Col xs={12} md={6}>
-                        <InputSelectNivelAcademico
-                           id="codigo_nivel_academico"
-                           name="codigo_nivel_academico"
-                           as="select"
-                           size="sm"
-                           value={codigo_nivel_academico}
-                           onChange={e => {
-                           setFiltros({
-                                 ...filtros,
-                                 [e.target.name]: e.target.value,
-                           })
-                           }}
-                        />
-                     </Col>
-                  </Row> 
-                  <Row className="mb-2 mb-lg-0">
-                     <Col xs={12} md={6} className="mb-2 mb-md-0">
                         <Form.Control
                            id="nombre_ring"
                            name="nombre_ring"
@@ -263,23 +241,7 @@ const Rings = () => {
                            }} 
                         />
                      </Col>
-                     <Col xs={12} md={6}>
-                        <Form.Control
-                           id="nombre_usuario_creador"
-                           name="nombre_usuario_creador"
-                           type="text"
-                           size="md" 
-                           placeholder="CREADA POR USUARIO..." 
-                           value={nombre_usuario_creador}
-                           onChange={e => {
-                           setFiltros({
-                              ...filtros,
-                              [e.target.name]: e.target.value.toUpperCase()
-                           })
-                           }} 
-                        />
-                     </Col>
-                  </Row>     
+                  </Row>   
                </Col>
                <Col className="d-flex align-items-end mb-2 mb-md-0" xs={12} md={3} lg="auto">
                   <Button

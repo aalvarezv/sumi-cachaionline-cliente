@@ -9,10 +9,11 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
     
 
     const [usuarios_ring_curso, setUsuariosRingCurso] = useState([])
+    const [textAlert, setTextAlert] = useState('')
 
     /**** Variables para paginación *****/
     const [pagina_actual, setPaginaActual] = useState(1)
-    const [resultados_por_pagina, setResultadosPorPagina] = useState(1)
+    const [resultados_por_pagina, setResultadosPorPagina] = useState(10)
 
     const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
     const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
@@ -28,7 +29,11 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                 }
             })
             setUsuariosRingCurso(resp.data.usuarios_ring_curso)
-            console.log(resp.data.usuarios_ring_curso)
+            if(resp.data.usuarios_ring_curso.length > 0){
+                setTextAlert('')
+            }else{
+                setTextAlert('No se encontraron resultados')
+            }
         }catch(e){
             handleError(e)
         }
@@ -185,21 +190,17 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
     }
 
     return (
-        <>
-        <Row className="flex-grow-1 px-3">
-            <Col xs="12" className={`bg-light ${resultados_pagina.length === 0 ? 'd-flex align-items-center justify-content-center' : 'pt-3'}`}> 
+        <Row className={`px-3 mt-4 ${resultados_pagina.length === 0 ? 'my-5' : 'my-3'}`}>
+            <Col> 
             {resultados_pagina.length === 0
             ?
                 <AlertText  
-                    text="No se encontraron resultados"
+                    text={textAlert}
                 />
             : 
                 <>
-                <Row className="d-flex justify-content-between">
-                    <Col xs="auto" className="d-flex align-items-center">
-                        <h6>Resultados de Búsqueda</h6>
-                    </Col>
-                    <Col xs="auto">
+                <Row>
+                    <Col className="d-flex justify-content-end p-0">
                         <Paginador
                             resultados_por_pagina = {resultados_por_pagina}
                             total_resultados = {usuarios_ring_curso.length}
@@ -211,19 +212,19 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                 <Table striped bordered hover variant="light" responsive>
                     <thead>
                         <tr>
+                        <th className="d-flex justify-content-center">
+                            <Button
+                                variant="info"
+                                size="sm"
+                                onClick={() => handleAgregarQuitarUsuariosRingMasivo(resultados_pagina)}
+                            >
+                                Todos
+                            </Button>
+                        </th>
                         <th>#</th>
                         <th>Rut</th>
                         <th>Nombre</th>
                         <th>Email</th>
-                        <th className="d-flex justify-content-center">
-                                <Button
-                                    variant="info"
-                                    size="sm"
-                                    onClick={() => handleAgregarQuitarUsuariosRingMasivo(resultados_pagina)}
-                                >
-                                    Todos
-                                </Button>
-                        </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -233,10 +234,6 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                             const {rut, nombre, email, ring_usuarios} = usuario
                             return(
                                 <tr key={rut}>
-                                    <td>{index+1}</td>
-                                    <td>{rut}</td>
-                                    <td>{nombre}</td>
-                                    <td>{email}</td>
                                     <td className="d-flex justify-content-center">
                                         {ring_usuarios && ring_usuarios.length === 0
                                         ?
@@ -263,6 +260,10 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                                         </Button>
                                         }
                                     </td> 
+                                    <td>{index+1}</td>
+                                    <td>{rut}</td>
+                                    <td>{nombre}</td>
+                                    <td>{email}</td>
                                 </tr>
                             )
                         })}
@@ -273,7 +274,6 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
             }
             </Col>
         </Row>
-        </>
     )
 }
 

@@ -66,7 +66,7 @@ const AuthReducer = (state, action) => {
 
             return {
                 ...state,
-                institucion_select: state.instituciones.filter(institucion => institucion.codigo === action.payload),
+                institucion_select: state.instituciones.filter(institucion => institucion.codigo === action.payload)[0],
                 roles: new_roles,
                 rol_select: new_roles[0],
             }

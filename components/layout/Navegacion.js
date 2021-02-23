@@ -1,18 +1,56 @@
 import React,{ useContext, useEffect, useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import SocketContext from '../../context/socket/SocketContext'
+import SocketInvitacionesRingContext from '../../context/socket_invitaciones_ring/SocketInvitacionesRingContext'
 import Link from 'next/link'
 import AuthContext from '../../context/auth/AuthContext'
 import MenuInstitucionPerfil from './MenuInstitucionPerfil'
+import clienteAxios from '../../config/axios'
 import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap'
+
 
 const Navegacion = () => {
 
     const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext)
+    const { socket } = useContext(SocketContext)
     
+
+    const {cantidadInvitaciones, setCantidadInvitacionesRing} = useContext(SocketInvitacionesRingContext)
+
+
+    const listarInvitacionesRing = async () => {
+        const resp = await clienteAxios.get('/api/ring-invitaciones/cantidad-invitaciones-usuario',{
+            params: {
+                rut_usuario: usuario.rut
+            }
+        })
+        setCantidadInvitacionesRing(resp.data.cantidad_invitaciones_ring)
+    }
+
+    useEffect(() => {
+        
+        if(usuario){
+            
+            socket.off(`recibir-invitacion-ring-${usuario.rut}`).on(`recibir-invitacion-ring-${usuario.rut}`, () => {
+                listarInvitacionesRing()
+                toast.dark('Ha recibido una invitación a un evento', {containerId: 'sys_msg'})
+            })
+
+            socket.off(`cancelar-invitacion-ring-${usuario.rut}`).on(`cancelar-invitacion-ring-${usuario.rut}`, () => {
+                listarInvitacionesRing()
+                toast.dark('Se ha cancelado la invitación a un evento', {containerId: 'sys_msg'})
+            })
+            
+            listarInvitacionesRing()
+
+        }
+      
+    }, [usuario])
+
     return (
 
         <Navbar collapseOnSelect expand="lg" bg="white" text="light">
-            
         <Navbar.Brand>
             <img
                 src="/static/logo.png"
@@ -101,9 +139,18 @@ const Navegacion = () => {
                         </Link>
                     }
                     {rol_select.ver_menu_rings &&
-                        <Link href="/administrar/rings" passHref>
-                            <Nav.Link>Rings</Nav.Link>
-                        </Link>
+
+                        <NavDropdown title="Rings" id="administrar-nav-dropdown">
+                            <Link href="/administrar/ring-invitaciones" passHref>
+                                <NavDropdown.Item>
+                                    {`Invitaciones [${cantidadInvitaciones}]`}
+                                </NavDropdown.Item>
+                            </Link>
+                            <Link href="/administrar/rings" passHref>
+                                <NavDropdown.Item>Administrar</NavDropdown.Item>
+                            </Link>
+                        </NavDropdown>
+
                     }
                     <Link href="/test" passHref>
                         <Nav.Link>Test</Nav.Link>
@@ -155,4 +202,4 @@ const Navegacion = () => {
      )
 }
  
-export default Navegacion
+export default React.memo(Navegacion)

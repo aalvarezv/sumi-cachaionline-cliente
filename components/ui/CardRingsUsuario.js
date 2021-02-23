@@ -11,9 +11,8 @@ const CardRingsUsuario = ({handleObtenerPreguntasRing}) => {
 
     const listarRingsUsuario = async () => {
         try {
-            console.log(usuario.rut, institucion_select.codigo)
+
             const resp = await clienteAxios.get(`/api/ring-usuarios/listar/rings-usuario-institucion/${usuario.rut}/${institucion_select.codigo}`)
-            console.log(resp.data.rings_usuario)
             setRingsUsuario(resp.data.rings_usuario)
            
         } catch (e) {

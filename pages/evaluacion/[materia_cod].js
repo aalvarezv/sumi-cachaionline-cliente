@@ -74,7 +74,7 @@ const EvaluacionFiltros = () => {
     function CustomToggle({ children, eventKey }) {
         const decoratedOnClick = useAccordionToggle(eventKey, () => {
             //verifica si existe el 
-            console.log('click toggle', eventKey)
+            //console.log('click toggle', eventKey)
         })
       
         return (

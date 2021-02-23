@@ -49,13 +49,10 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
             }
         `}</style>  
         <Pagination size="md" className="m-0">
-            <Row>
-            <Col xs={12} className="d-flex flex-column  align-items-end">
+            
                 <Pagination.Item>
                     {`Total Resultados ${total_resultados}`}
                 </Pagination.Item>
-            </Col>   
-            <Col xs={12} className="d-flex justify-content-end">
                 <Pagination.First 
                     className="item-activo"
                     onClick={() => {
@@ -84,13 +81,7 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
                 />
                 <Pagination.Item>
                     {`Total Páginas ${total_paginas}`}
-                </Pagination.Item>
-                
-            </Col>
-                 
-          
-              
-            </Row>      
+                </Pagination.Item>   
         </Pagination>
         </>
      )

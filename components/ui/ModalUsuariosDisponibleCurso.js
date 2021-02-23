@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Modal, Container, Row, Col, Form, Button} from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import {handleError} from '../../helpers'
@@ -7,29 +7,28 @@ import Paginador from '../../components/ui/Paginador'
 import TableUsuariosDisponiblesCurso from './TableUsuariosDisponiblesCurso'
 import InputSelectRol from './InputSelectRol'
 import Logo from './Logo'
-import { map } from 'lodash'
 
-const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCloseModalUsuarios}) =>{
+const ModalUsuariosDisponiblesCurso = ({show, curso, handleCloseModalUsuarios}) =>{
 
   
     const [usuarios, setUsuarios] = useState([])
     const [nombreUsuario, setNombreUsuario] = useState('')
     const [codigoRol, setCodigoRol] = useState('')
     const [textAlert, setTextAlert] = useState('')
-    const {nivel_academico, letra, codigo: codigoCurso } = curso
+    const {nivel_academico, letra, codigo: codigoCurso, institucion : { codigo: codigoInstitucion} } = curso
     /**** Variables para paginación *****/
-   const [pagina_actual, setPaginaActual] = useState(1)
-   const [resultados_por_pagina, setResultadosPorPagina] = useState(1)
+    const [pagina_actual, setPaginaActual] = useState(1)
+    const [resultados_por_pagina, setResultadosPorPagina] = useState(10)
 
-   const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
-   const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
-   const resultados_pagina = usuarios.slice(indice_primer_resultado, indice_ultimo_resultado)
-   /*************************************/
+    const indice_ultimo_resultado = pagina_actual * resultados_por_pagina
+    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
+    const resultados_pagina = usuarios.slice(indice_primer_resultado, indice_ultimo_resultado)
+    /*************************************/
 
 
-   const handleSetPaginaActual = numero_pagina => {
-    setPaginaActual(numero_pagina)
- }
+    const handleSetPaginaActual = numero_pagina => {
+        setPaginaActual(numero_pagina)
+    }
     
    
     useEffect(() => {
@@ -43,7 +42,7 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
     }, [show])
 
     const handleClickBuscar = async () => {
-     
+        
         try{
            const resp = await clienteAxios.get(`/api/usuarios/listar-inscritos-disponibles-curso`, {
               params: {
@@ -53,6 +52,7 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
                  codigoRol
               }
            })
+
            setUsuarios(resp.data.usuarios)
            if(resp.data.usuarios.length > 0){
               setTextAlert("")
@@ -66,23 +66,7 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
         }
      }
 
-     const handleSelectUsuarioCurso = (rut, select) => {
-        
-        const newUsuarios = usuarios.map((usuario, index) => {
-            if(usuario.rut === rut){
-                return{
-                    ...usuario,
-                    item_select: select
-                }
-            }else{
-                return usuario
-            }
-        })
-        setUsuarios(newUsuarios)
-     }
-
-
-
+    
     return (
     
       <Modal show={show} onHide={handleCloseModalUsuarios} size="lg">
@@ -96,8 +80,8 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
         </Modal.Header>
         <Modal.Body>
             <Container>
-            <Row className="d-flex justify-content-center">
-                <Col className="mb-2 mb-sm-0" xs={12} sm={6}>
+            <Row>
+                <Col>
                     <Row className="mb-2">
                         <Col>
                             <InputSelectRol
@@ -112,7 +96,7 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
                             />
                         </Col>
                     </Row>
-                    <Row className="mb-2">
+                    <Row className="mb-2 mb-sm-0">
                         <Col>
                             <Form.Control
                                 id="filtro_nombre_usuario"
@@ -126,16 +110,16 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
                             />
                         </Col>
                     </Row>
-                    <Col className="d-flex align-items-end mb-2 mb-sm-0" xs={12} sm="auto">
-                        <Button 
-                            variant="info"
-                            className="btn-block "
-                            onClick={e =>{
-                                handleClickBuscar()
-                            }}>
-                            Buscar
-                        </Button>
-                    </Col>
+                </Col>
+                <Col className="d-flex align-items-end mb-2 mb-sm-0" xs={12} sm="auto">
+                    <Button 
+                        variant="info"
+                        className="btn-block "
+                        onClick={e =>{
+                            handleClickBuscar()
+                        }}>
+                        Buscar
+                    </Button>
                 </Col>
             </Row>
               <Row className="mt-3">
@@ -155,11 +139,11 @@ const ModalUsuariosDisponiblesCurso = ({show, codigoInstitucion, curso, handleCl
                         pagina_actual = {pagina_actual}
                         resultados_por_pagina = {resultados_por_pagina}
                         codigoCurso = {codigoCurso}
-                        handleSelectUsuarioCurso = {handleSelectUsuarioCurso}
+                        setUsuarios = {setUsuarios}
                     />
                 </Col>
                 :
-                <Col className="mt-5">
+                <Col className="my-3">
                     <AlertText
                     text={textAlert}
                     />

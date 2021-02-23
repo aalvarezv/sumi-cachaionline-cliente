@@ -71,7 +71,6 @@ const Conceptos = () => {
       if(concepto.length > 0){
          setMostrarBusqueda(false)
          setConceptoModificar(concepto[0])
-         console.log(concepto_modificar)
       }
 
    }

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "export": "next build && next export"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -16,13 +17,13 @@
     "next": "9.5.0",
     "react": "16.13.1",
     "react-bootstrap": "^1.4.0",
+    "react-bootstrap-multiselect": "^2.4.1",
     "react-datepicker": "^3.3.0",
     "react-dom": "16.13.1",
     "react-dropzone": "^11.0.3",
     "react-icons": "^3.11.0",
     "react-toastify": "^6.0.8",
-    "socket.io": "^3.1.0",
-    "socket.io-client": "^3.1.0",
+    "socket.io-client": "^3.1.1",
     "uuid": "^8.3.0",
     "yup": "^0.29.2"
   },

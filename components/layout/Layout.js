@@ -13,7 +13,7 @@ const backgroundColor_2 = addOpacityToColor(color.secondary, 0.3)
 const Layout = props => {
 
     const { autenticado, usuarioAuth, cerrarSesion } = useContext(AuthContext)
- 
+
     useEffect(() => {
 
         if(!autenticado && localStorage.getItem('token')){

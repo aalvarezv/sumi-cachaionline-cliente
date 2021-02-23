@@ -34,7 +34,6 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
             {curso &&
                 <ModalUsuariosDisponiblesCurso
                     show = {show_modal_usuarios}
-                    codigoInstitucion = {codigo_institucion}
                     curso = {curso}
                     handleCloseModalUsuarios = {handleCloseModalUsuarios}
                     
@@ -45,22 +44,23 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                 <thead>
                     <tr>
                     <th>#</th>
+                    <th>Institución</th>
                     <th>Código</th>
                     <th>Descripción</th>
                     <th></th>
                     <th></th>
                     </tr>
-    
                 </thead>
                 <tbody>
                     {cursos.length > 0 &&
                         cursos.map((curso, index) =>{
-
-                            const {codigo, nivel_academico, letra} = curso
+                            
+                            const {codigo, nivel_academico, letra, institucion} = curso
                             let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
                             return(
                                 <tr key={index}>
                                 <td>{numFila}</td> 
+                                <td>{institucion.descripcion}</td>
                                 <td>{codigo}</td> 
                                 <td>{`${nivel_academico.descripcion} ${letra}`}</td> 
                                 <td className="text-center">

@@ -6,13 +6,14 @@ import ModalRingPreguntas from '../ui/ModalRingPreguntas'
 
 const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarRing, handleModificarRing}) => {
 
+
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
     const ref_confirm_eliminar = useRef(null)
 
     const [show_modal_usuarios, setShowModalUsuarios] = useState(false)
     const [show_modal_preguntas, setShowModalPreguntas] = useState(false)
-    const [ring, setRing] = useState({})
+    const [ring, setRing] = useState(null)
     const [codigo_eliminar, setCodigoEliminar] = useState('')
     
     const handleCloseModalUsuarios = () => setShowModalUsuarios(false)
@@ -34,18 +35,25 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
         setCodigoEliminar(codigo)
     }
 
+    console.log(ring)
+
     return (
         <>
-            <ModalRingUsuarios
-                show = {show_modal_usuarios}
-                handleClose = {handleCloseModalUsuarios}
-                ring = {ring}
-            />
-            <ModalRingPreguntas 
-                show = {show_modal_preguntas}
-                handleClose = {handleCloseModalPreguntas}
-                ring = {ring}
-            />
+            {ring &&
+            <>
+                <ModalRingUsuarios
+                    show = {show_modal_usuarios}
+                    handleClose = {handleCloseModalUsuarios}
+                    ring = {ring}
+                />
+                <ModalRingPreguntas 
+                    show = {show_modal_preguntas}
+                    handleClose = {handleCloseModalPreguntas}
+                    ring = {ring}
+                />    
+            </>
+            }
+             
             <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
@@ -54,7 +62,7 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
                     <th>Creador</th>
                     <th>Creado</th>
                     <th>Privado</th>
-                    <th>Nivel</th>
+                    {/* <th>Nivel</th> */}
                     <th></th>
                     <th></th>
                     </tr>
@@ -64,7 +72,7 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
                     {rings.length > 0 && 
                         rings.map((ring, index) =>{
                            
-                            const {codigo, nombre, privado, createdAt, usuario, nivel_academico} = ring
+                            const {codigo, nombre, privado, createdAt, usuario} = ring
                             let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
 
                             return(
@@ -76,21 +84,19 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
                                 <td>
                                     <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge>
                                 </td>
-                                <td><small>{nivel_academico.descripcion}</small></td>
                                 <td>
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
                                         onClick={e => {
                                             handleClickAgregarUsuarioRing(ring)
-                                            }  
-                                        }
+                                        }}
                                     >
                                      Alumnos
                                     </Button>
                                 </td>
                                 <td>
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
                                         onClick={e => {
                                             
                                             handleClickAgregarPreguntaRing(ring)

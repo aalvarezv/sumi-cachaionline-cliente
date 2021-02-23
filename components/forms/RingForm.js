@@ -24,7 +24,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
         descripcion: '',
         rut_usuario_creador: usuario.rut,
         codigo_institucion: institucion_select.codigo,
-        codigo_nivel_academico: '0',
+        niveles_academicos: [],
         codigo_materia: '0',
         codigo_tipo_juego: '0',
         codigo_modalidad: '0',
@@ -61,17 +61,24 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
 
     }, [institucion_select])
 
+   
     useEffect(() => {
        
         if(ring_modificar){
-
+            //console.log(ring_modificar)
             setFormulario({
                 codigo: ring_modificar.codigo,
                 nombre: ring_modificar.nombre,
                 descripcion: ring_modificar.descripcion,
                 rut_usuario_creador: ring_modificar.rut_usuario_creador,
                 codigo_institucion: institucion_select.codigo,
-                codigo_nivel_academico: ring_modificar.codigo_nivel_academico,
+                niveles_academicos: ring_modificar.ring_nivel_academicos.map(ringNivelAcademico => {
+                    return{
+                        codigo: ringNivelAcademico.nivel_academico.codigo,
+                        descripcion: ringNivelAcademico.nivel_academico.descripcion,
+                        selected: true,
+                    }
+                }),
                 codigo_materia: ring_modificar.codigo_materia,
                 codigo_tipo_juego: ring_modificar.codigo_tipo_juego,
                 codigo_modalidad: ring_modificar.codigo_modalidad,
@@ -89,7 +96,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 inactivo: ring_modificar.inactivo,
             })
 
-            console.log(ring_modificar.tipo_duracion_pregunta)
             if(ring_modificar.tipo_duracion_pregunta == '2'){
                 setShowDuracionPregunta(true)
             }else{
@@ -134,10 +140,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             }
         }
        
-        if(formulario.codigo_nivel_academico === '0'){
+        if(formulario.niveles_academicos.length === 0){
             errors = {
                 ...errors,
-                codigo_nivel_academico: 'Requerido',
+               niveles_academicos: 'Requerido',
             }
         }
 
@@ -192,7 +198,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     }
 
     const reseteaFormulario = () => {
-
+        
         setShowDuracionPregunta(false)
         setShowRevanchaCantidad(false)
         setFormulario({
@@ -201,7 +207,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             descripcion: '',
             rut_usuario_creador: usuario.rut,
             codigo_institucion: institucion_select.codigo,
-            codigo_nivel_academico: '0',
+            niveles_academicos: [],
             codigo_materia: '0',
             codigo_tipo_juego: '0',
             codigo_modalidad: '0',
@@ -231,8 +237,11 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 return
             }
             //ring a enviar
-            let ring = formulario
-            ring.codigo = uuidv4()
+            let ring = {
+                ...formulario,
+                codigo: uuidv4(),
+                niveles_academicos: formulario.niveles_academicos.filter(nivelAcademico => nivelAcademico.selected === true)
+            }
 
             const resp = await clienteAxios.post('/api/rings/crear', ring)
             reseteaFormulario()
@@ -255,7 +264,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 return
             }
 
-            let ring = formulario
+            let ring = {
+                ...formulario,
+                niveles_academicos: formulario.niveles_academicos.filter(nivelAcademico => nivelAcademico.selected === true)
+            }
           
             const resp = await clienteAxios.put('/api/rings/actualizar', ring)
             ring = resp.data
@@ -268,12 +280,21 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
 
     }
 
+    const handleSelectNivelAcademico = nivelesAcademicos => {
+        
+        setFormulario({
+            ...formulario,
+            niveles_academicos: nivelesAcademicos
+        })
+
+    }
+
     return (
         <Container>
         <Form>
             <Row>
                 <Col xs={12} lg={3} className="mb-2">
-                    <Form.Label>Nombre</Form.Label>
+                    <Form.Label className="text-muted">Nombre</Form.Label>
                     <Form.Control
                         id="nombre"
                         name="nombre"
@@ -363,25 +384,43 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             </Row>
             <Row>
                 <Col xs={12} md={6} className="mb-2">
-                    <Form.Label>Nivel Académico</Form.Label>
+                    <Form.Label className="text-muted">Nivel Académico</Form.Label>
                     <InputSelectNivelesAcademicosUsuarioInstitucion
-                        id="codigo_nivel_academico"
-                        name="codigo_nivel_academico"
+                        id="niveles_academicos"
+                        name="niveles_academicos"
                         as="select"
                         //Listará los niveles academicos del rut_usuario logeado
                         rut_usuario={usuario.rut}
                         codigo_institucion={institucion_select.codigo}
-                        value={formulario.codigo_nivel_academico}
-                        onChange={e => setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value
-                        })}
-                        isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
+                        value={formulario.niveles_academicos}
+                        niveles_academicos={formulario.niveles_academicos}
+                        handleSelectNivelAcademico={handleSelectNivelAcademico}
+                        isInvalid={errores.hasOwnProperty('niveles_academicos')}
                         onBlur={validarFormulario}
-                    />
+                        multiple
+                    /> 
                 </Col>
+                <Col>
+                    <Form.Label className="text-muted">Instrucciones</Form.Label>
+                    <Form.Control
+                        id="descripcion"
+                        name="descripcion"
+                        as = "textarea"
+                        rows = "4"
+                        placeholder="INSTRUCCIONES" 
+                        value={formulario.descripcion}
+                        onChange={e => {setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.value.toUpperCase()
+                            })
+                        }}
+                    />
+                    
+                </Col>
+            </Row>
+            <Row>
                 <Col className="mb-2">
-                    <Form.Label>Materia</Form.Label>
+                    <Form.Label className="text-muted">Materia</Form.Label>
                     <InputSelectMateria
                         id="codigo_materia"
                         name="codigo_materia"
@@ -397,26 +436,8 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 </Col>
             </Row>
             <Row>
-                <Col className="mb-2">
-                    <Form.Label>Instrucciones</Form.Label>
-                    <Form.Control
-                        id="descripcion"
-                        name="descripcion"
-                        as = "textarea"
-                        rows = "3"
-                        placeholder="INSTRUCCIONES" 
-                        value={formulario.descripcion}
-                        onChange={e => {setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
-                            })
-                        }}
-                    />
-                </Col>
-            </Row>
-            <Row>
                 <Col xs={12} md={6} className="mb-2">
-                    <Form.Label>Tipo de Juego</Form.Label>
+                    <Form.Label className="text-muted">Tipo de Juego</Form.Label>
                     <InputSelectTipoJuego
                         id="codigo_tipo_juego"
                         name="codigo_tipo_juego"
@@ -431,7 +452,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                     />   
                 </Col>
                 <Col className="mb-2">
-                    <Form.Label>Modalidad</Form.Label>
+                    <Form.Label className="text-muted">Modalidad</Form.Label>
                     <InputSelectModalidadTipoJuego
                         id="codigo_modalidad"
                         name="codigo_modalidad"
@@ -451,7 +472,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 <Col xs={12} md={6} className="mb-2">
                     <Row>
                         <Col xs={9}>
-                            <Form.Label>Tiempo para responder</Form.Label>
+                            <Form.Label className="text-muted">Tiempo para responder</Form.Label>
                             <InputSelectTipoDuracionPregunta
                                 id="tipo_duracion_pregunta"
                                 name="tipo_duracion_pregunta"
@@ -474,7 +495,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                             />
                         </Col>
                         <Col xs={3}>
-                            <Form.Label>Segundos</Form.Label>
+                            <Form.Label className="text-muted">Segundos</Form.Label>
                             <Form.Control
                                 id="duracion_pregunta"
                                 name="duracion_pregunta"
