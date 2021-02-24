@@ -12,7 +12,8 @@ import SocketInvitacionesRingState from '../context/socket_invitaciones_ring/Soc
 import SocketContext from '../context/socket/SocketContext'
 
 
-const socket = io.connect(process.env.NEXT_PUBLIC_API_URL, {
+const socket = io.connect(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  path: process.env.NEXT_PUBLIC_SOCKET_PATH,
   transports: ['websocket'], 
   upgrade: false,
   reconnection: true,
