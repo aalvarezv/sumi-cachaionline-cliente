@@ -21,10 +21,9 @@ const AuthState = (props) => {
     const initialState = {
         usuario: null,
         autenticado: false,
-        instituciones: [],
-        institucion_select: {},
-        roles: [],
-        rol_select: {},
+        institucion_select: null,
+        rol_select: null,
+        roles_institucion: [],
         mensaje: null
     }
 
@@ -37,7 +36,7 @@ const AuthState = (props) => {
             let resp = await clienteAxios.post('/api/auth/', datos)
             //obtiene el token de la respuesta
             const token = resp.data.token
-
+            
             if(token){
                 //almacena el token en el localstorage.
                 localStorage.setItem('token', token)
@@ -76,52 +75,20 @@ const AuthState = (props) => {
                 
                 const resp = await clienteAxios.get('/api/auth/datos/')
                 
-                const usuario = resp.data.usuario
-
-                let new_instituciones = []
-                if(usuario){ 
-                    //Creamos un arreglo para guardar las distintas instituciones que pertenece el usuario,
-                    //cabe destacar que un usuario que tenga 2 roles, la institución se repetirá 2 veces, por ello 
-                    //se crea esta logica.           
-                    //Se recorren los registros de usuario_institucion_rols.
-                    for(let usuario_institucion_rol of usuario.usuario_institucion_rols){
-                        //Si no hay ningún registro en el new_instituciones, lo agrega.
-                        if(new_instituciones.length === 0){
-                            new_instituciones.push(usuario_institucion_rol.institucion)
-                        }else{
-                            //Verifica si en new_instituciones existe el codigo de la institucion iterada, que se encuentra en:usuario_institucion_rol.institucion.codigo 
-                            if(new_instituciones.filter(institucion => institucion.codigo === usuario_institucion_rol.institucion.codigo).length === 0){
-                                //Si no existe entonces la agrega al arreglo.
-                                new_instituciones.push(usuario_institucion_rol.institucion)
-                            }
-                        }
-                    }
-                              
+                const usuario = resp.data
+                console.log(usuario)
+                //Si el usuario no tiene roles asignados.
+                if(!usuario.institucion_roles.length === 0){
+                    //cerrarSesion()
                 }
                 
-                let new_roles = []  
-                //filtra las instituciones de acuerdo a la institucion_select.
-                let new_roles_institucion = usuario.usuario_institucion_rols.filter(usuario_institucion_rol => usuario_institucion_rol.codigo_institucion === new_instituciones[0].codigo)
-                //recorre y agrega los roles al arreglo.
-                for(let roles_institucion of new_roles_institucion){
-                    new_roles.push(roles_institucion.rol)
-                }
-
-                //Si el usuario no tiene roles asignados.
-                if(!new_roles[0]){
-                    cerrarSesion()
-                }
-    
                 dispatch({
                     type: USUARIO_AUTH_EXITO,
                     payload: {
                         usuario,
-                        instituciones: new_instituciones,
-                        institucion_select: new_instituciones[0],
-                        roles: new_roles,
-                        rol_select: new_roles[0],
                     }
                 })
+              
             }
 
         } catch (e) {
@@ -149,6 +116,7 @@ const AuthState = (props) => {
     }
 
     const selectRol = codigo_rol => {
+     
         dispatch({
             type: SELECT_ROL,
             payload: codigo_rol,
@@ -160,10 +128,9 @@ const AuthState = (props) => {
             value={{
                 usuario: state.usuario,
                 autenticado: state.autenticado,
-                instituciones: state.instituciones,
                 institucion_select: state.institucion_select,
-                roles: state.roles,
                 rol_select: state.rol_select,
+                roles_institucion: state.roles_institucion,
                 mensaje: state.mensaje,
                 iniciarSesion,
                 cerrarSesion,

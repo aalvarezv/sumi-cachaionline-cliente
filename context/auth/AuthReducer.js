@@ -20,10 +20,12 @@ const AuthReducer = (state, action) => {
             return{
                 ...state,
                 usuario: action.payload.usuario,
-                instituciones: action.payload.instituciones,
-                institucion_select: action.payload.institucion_select,
-                roles: action.payload.roles,
-                rol_select: action.payload.rol_select,
+                institucion_select: {
+                    codigo: action.payload.usuario.institucion_roles[0].codigo_institucion,
+                    descripcion: action.payload.usuario.institucion_roles[0].descripcion_institucion,
+                },
+                roles_institucion: action.payload.usuario.institucion_roles[0].roles,
+                rol_select: action.payload.usuario.institucion_roles[0].roles[0],
                 autenticado: true,
                 mensaje: null
             }
@@ -34,11 +36,9 @@ const AuthReducer = (state, action) => {
             return{
                 ...state,
                 usuario: null,
+                institucion_select: null,
+                rol_select: null,
                 autenticado: false,
-                instituciones: [],
-                institucion_select: {},
-                roles: [],
-                rol_select: {},
                 mensaje: action.payload,
             } 
         case CERRAR_SESION:
@@ -47,34 +47,28 @@ const AuthReducer = (state, action) => {
             return{
                 ...state,
                 usuario: null,
+                institucion_select: null,
+                rol_select: null,
                 autenticado: false,
-                instituciones: [],
-                institucion_select: {},
-                roles: [],
-                rol_select: {},
                 mensaje: null,
             }
         case SELECT_INSTITUCION:
-
-            //filtra las instituciones de acuerdo a la institucion_select.
-            let new_roles_institucion = state.usuario.usuario_institucion_rols.filter(usuario_institucion_rol => usuario_institucion_rol.codigo_institucion === action.payload)
-           
-            let new_roles = []  
-            for(let roles_institucion of new_roles_institucion){
-                new_roles.push(roles_institucion.rol)
-            }
-
+            
             return {
                 ...state,
-                institucion_select: state.instituciones.filter(institucion => institucion.codigo === action.payload)[0],
-                roles: new_roles,
-                rol_select: new_roles[0],
+                institucion_select: {
+                    codigo: state.usuario.institucion_roles.filter(i => i.codigo_institucion === action.payload)[0].codigo_institucion,
+                    descripcion: state.usuario.institucion_roles.filter(i => i.codigo_institucion === action.payload)[0].descripcion_institucion,
+                },
+                roles_institucion: state.usuario.institucion_roles.filter(i => i.codigo_institucion === action.payload)[0].roles,
+                rol_select: state.usuario.institucion_roles.filter(i => i.codigo_institucion === action.payload)[0].roles[0]
             }
 
         case SELECT_ROL:
+            
             return {
                 ...state,
-                rol_select: state.roles.filter(rol => rol.codigo === action.payload)[0],
+                rol_select: state.usuario.institucion_roles.filter(i => i.codigo_institucion === state.institucion_select.codigo)[0].roles.filter(r => r.codigo_rol === action.payload)[0]
             }
       
         default:

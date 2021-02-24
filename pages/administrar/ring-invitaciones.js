@@ -18,7 +18,7 @@ const RingInvitaciones = () => {
     const { usuario } = useContext(AuthContext)
     const { socket } = useContext(SocketContext)
     const { cantidadInvitaciones } = useContext(SocketInvitacionesRingContext)
-    const [ring, setRing] = useState({})
+    const [ring, setRing] = useState(null)
     const [show_modal_usuarios, setShowModalUsuarios] = useState(false)
     const [invitacionesRingUsuario, setInvitacionesRingUsuario] = useState([])
 
@@ -34,7 +34,6 @@ const RingInvitaciones = () => {
                     }
                 })
                 setInvitacionesRingUsuario(resp.data.invitaciones_ring_usuario)
-                console.log(resp.data.invitaciones_ring_usuario)
             
             } catch (e) {
                 handleError(e)
@@ -53,7 +52,6 @@ const RingInvitaciones = () => {
 
         try{
 
-           
             socket.emit('aceptar-rechazar-invitacion-ring', {
                 codigo: invitacion.codigo,
                 estado,
@@ -94,11 +92,13 @@ const RingInvitaciones = () => {
     return (  
     <Layout>
         <Privado>
-            <ModalRingUsuarios
-                show = {show_modal_usuarios}
-                handleClose = {handleCloseModalUsuarios}
-                ring = {ring}
-            />
+            {ring &&
+                <ModalRingUsuarios
+                    show = {show_modal_usuarios}
+                    handleClose = {handleCloseModalUsuarios}
+                    ring = {ring}
+                />
+            }
             <Container fluid>
             <h5 className="text-center my-4">Invitaciones Ring</h5>
             <Card>

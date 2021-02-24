@@ -13,7 +13,6 @@ const Login = () => {
     const router = useRouter()
 
     const { autenticado, iniciarSesion } = useContext(AuthContext)
-     
     
     useEffect(() => {
         //si está autenticado envía al HOME

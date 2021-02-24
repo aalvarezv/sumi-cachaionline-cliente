@@ -24,8 +24,11 @@ const Test = () =>{
   const handleObtenerPreguntasRing = async codigo_ring  => {
     try {
         setCodigoRing(codigo_ring)
-        const resp = await clienteAxios.get(`/api/ring-preguntas/listar/ring-preguntas/${codigo_ring}`)
+        const resp = await clienteAxios.get(`/api/ring-preguntas/listar/preguntas/${codigo_ring}`)
         setPreguntasRing(resp.data.ring_preguntas)
+
+        console.log(resp.data.ring_preguntas)
+
         if(resp.data.ring_preguntas.length > 0){
           setCodigoPregunta(resp.data.ring_preguntas[numero_pregunta_actual].codigo_pregunta)
         }

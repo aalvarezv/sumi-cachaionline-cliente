@@ -598,7 +598,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         </Button>
                     </Col>
                 </Row>
-                <Row className="px-2">
+                <Row className="px-2 ml-3">
                     
                     <AlternativaPregunta 
                         alternativas = {alternativas}

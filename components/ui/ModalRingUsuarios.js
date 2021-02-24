@@ -49,10 +49,11 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
             codigoRing: ring.codigo
           }
         })
-        console.log(resp.data.usuariosRing)
+       
         setUsuariosRing(resp.data.usuariosRing)
 
       } catch (e) {
+        
         handleError(e)
       }
 

@@ -35,8 +35,6 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
         setCodigoEliminar(codigo)
     }
 
-    console.log(ring)
-
     return (
         <>
             {ring &&
@@ -72,14 +70,14 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
                     {rings.length > 0 && 
                         rings.map((ring, index) =>{
                            
-                            const {codigo, nombre, privado, createdAt, usuario} = ring
+                            const {codigo, nombre, privado, createdAt, usuario_creador} = ring
                             let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
 
                             return(
                                 <tr key={codigo}>
                                 <td>{numFila}</td>
                                 <td>{nombre}</td>
-                                <td>{usuario.nombre}</td>
+                                <td>{usuario_creador.nombre}</td>
                                 <td><small>{createdAt}</small></td>
                                 <td>
                                     <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge>

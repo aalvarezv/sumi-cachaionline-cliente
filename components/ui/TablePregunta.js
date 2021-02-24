@@ -91,9 +91,9 @@ const TablePregunta = ({preguntas, pagina_actual, resultados_por_pagina, handleE
                             }
                             
                         </td>
-                        <td className="d-flex justify-content-center">{usuario.nombre}</td>
+                        <td className="text-center">{usuario.nombre}</td>
                         <td><small>{createdAt}</small></td>
-                        <td className="d-flex justify-content-around"
+                        <td className="text-center"
                         >
                             <Button
                                 variant={"outline-info"}

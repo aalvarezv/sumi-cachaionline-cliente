@@ -45,6 +45,7 @@ const Preguntas = () => {
                   nombre_usuario_creador: filtros.nombre_usuario_creador,
                }
          })
+    
          setPreguntas(resp.data.preguntas)
 
          if(resp.data.preguntas.length === 0){
@@ -82,6 +83,7 @@ const Preguntas = () => {
       try{
          const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`)
          setPreguntaModificar(resp.data.pregunta)
+         
          setModificarPregunta(true)
       }catch(e){
          handleError(e)

@@ -4,9 +4,8 @@ import { Row, Col, Form } from 'react-bootstrap'
 
 const MenuInstitucionPerfil = () => {
 
-    const { instituciones, roles, 
-            institucion_select, rol_select, 
-            selectInstitucion, selectRol } = useContext(AuthContext)
+    const { institucion_select, rol_select, usuario,
+            selectInstitucion, selectRol, roles_institucion } = useContext(AuthContext)
 
     return ( 
         <>
@@ -16,36 +15,38 @@ const MenuInstitucionPerfil = () => {
                         name="institucion"
                         as="select"
                         size="sm"
-                        value={institucion_select ? institucion_select.codigo : 0}
+                        value={institucion_select.codigo}
                         onChange={e => {
                             selectInstitucion(e.target.value)
                         }}
                     >
-                    {instituciones.map(institucion => {
-                        const {codigo, descripcion} = institucion
-                        return <option key={codigo} value={codigo}>{descripcion}</option>
+                    {usuario.institucion_roles.map(institucion => {
+                        const {codigo_institucion, descripcion_institucion} = institucion
+                        return <option key={codigo_institucion} value={codigo_institucion}>{descripcion_institucion}</option>
                     })}
                     </Form.Control>
                 </Col>
             </Row>
-            <Row className="m-2">
-                <Col>
-                    <Form.Control
-                        name="rol"
-                        as="select"
-                        size="sm"
-                        value={rol_select ? rol_select.codigo : 0}
-                        onChange={e => {
-                            selectRol(e.target.value)
-                        }}
-                    >
-                        {roles.map(rol => {
-                            const {codigo, descripcion} = rol
-                            return <option key={codigo} value={codigo}>{descripcion}</option>
-                        })}
-                    </Form.Control>
-                </Col>
-            </Row>
+            {rol_select && 
+                <Row className="m-2">
+                    <Col>
+                        <Form.Control
+                            name="rol"
+                            as="select"
+                            size="sm"
+                            value={rol_select.codigo_rol}
+                            onChange={e => {
+                                selectRol(e.target.value)
+                            }}
+                        >
+                            {roles_institucion.map(rol => {
+                                const {codigo_rol, descripcion} = rol
+                                return <option key={codigo_rol} value={codigo_rol}>{descripcion}</option>
+                            })}
+                        </Form.Control> 
+                    </Col>
+                </Row>
+            }
         </>
 
      )

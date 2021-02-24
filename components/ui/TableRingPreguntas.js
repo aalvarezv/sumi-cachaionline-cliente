@@ -40,6 +40,8 @@ const TableRingPreguntas = ({ring}) => {
                         limit: 1, 
                     }
             })
+
+            console.log(resp.data.preguntas)
             //Si no hay preguntas, mostrar un mensajillo.
             setPreguntasRing(resp.data.preguntas)
         }catch(e){

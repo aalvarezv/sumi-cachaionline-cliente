@@ -1,4 +1,4 @@
-import React,{ useContext, useEffect, useState } from 'react'
+import React,{ useContext, useEffect } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import SocketContext from '../../context/socket/SocketContext'
@@ -66,10 +66,11 @@ const Navegacion = () => {
                 <Link href="/" passHref>
             <Nav.Link className="text-info">CachaiOnline</Nav.Link>
                 </Link>
-                {autenticado && rol_select
+                {(autenticado && rol_select)
                 && 
                 <>  
-                    { rol_select.ver_menu_administrar &&  
+                    { rol_select.ver_menu_administrar 
+                    ?  
                         <NavDropdown title="Administrar" id="administrar-nav-dropdown">
                             {rol_select.ver_submenu_instituciones &&
                                 <Link href="/administrar/instituciones" passHref>
@@ -98,8 +99,11 @@ const Navegacion = () => {
                             }
                             
                         </NavDropdown>
+                    :
+                        null
                     }
-                    {rol_select.ver_menu_asignaturas &&
+                    {rol_select.ver_menu_asignaturas 
+                    ?
                         <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
                             {rol_select.ver_submenu_materias && 
                                 <Link href="/administrar/materias" passHref>
@@ -131,15 +135,20 @@ const Navegacion = () => {
                                     <NavDropdown.Item>Conceptos</NavDropdown.Item>
                                 </Link>
                             }
-                    </NavDropdown>
+                        </NavDropdown>
+                    :
+                        null
                     }
-                    {rol_select.ver_menu_preguntas &&
+                    {rol_select.ver_menu_preguntas
+                    ?
                         <Link href="/administrar/preguntas" passHref>
                             <Nav.Link>Preguntas</Nav.Link>
                         </Link>
+                    :
+                        null
                     }
-                    {rol_select.ver_menu_rings &&
-
+                    {rol_select.ver_menu_rings
+                    ?
                         <NavDropdown title="Rings" id="administrar-nav-dropdown">
                             <Link href="/administrar/ring-invitaciones" passHref>
                                 <NavDropdown.Item>
@@ -150,11 +159,13 @@ const Navegacion = () => {
                                 <NavDropdown.Item>Administrar</NavDropdown.Item>
                             </Link>
                         </NavDropdown>
-
+                    :
+                        null
                     }
-                    <Link href="/test" passHref>
+
+                    {/* <Link href="/test" passHref>
                         <Nav.Link>Test</Nav.Link>
-                    </Link>
+                    </Link> */}
                     </>
                 }
             </Nav> 
@@ -185,7 +196,6 @@ const Navegacion = () => {
                                                 </Button>    
                                             </Col>
                                         </Row>
-                                        
                                     </NavDropdown>
                                 </Row>
                             </Col>

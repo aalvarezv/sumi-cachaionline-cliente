@@ -46,16 +46,16 @@ const AlternativaPregunta = ({alternativas, setAlternativas}) => {
             })}
             <style jsx>{`
                 div{
-                    position: relative
-                    margin: 10px
-                    width: 40px 
-                    height: 40px
+                    position: relative;
+                    margin: 10px;
+                    width: 40px; 
+                    height: 40px;
                 }
                 span{
-                    position: absolute 
-                    top: -17px
-                    right: -9px
-                    cursor: pointer
+                    position: absolute; 
+                    top: -17px;
+                    right: -9px;
+                    cursor: pointer;
                 }
             `}</style>
         </>
