@@ -121,7 +121,7 @@ export async function getServerSideProps() {
                 codigo_institucion,
             }
         })
-        console.log(resp.data.niveles_academicos_usuario_institucion)
+
         let newNivelesAcademicosUsuarioInstitucion = resp.data.niveles_academicos_usuario_institucion.map(nivelesAcademicosUsuarioInstitucion => {
         
             const codigo = nivelesAcademicosUsuarioInstitucion["curso.nivel_academico.codigo"]

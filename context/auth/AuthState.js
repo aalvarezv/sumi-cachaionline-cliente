@@ -76,10 +76,9 @@ const AuthState = (props) => {
                 const resp = await clienteAxios.get('/api/auth/datos/')
                 
                 const usuario = resp.data
-                console.log(usuario)
                 //Si el usuario no tiene roles asignados.
-                if(!usuario.institucion_roles.length === 0){
-                    //cerrarSesion()
+                if(usuario.institucion_roles.length === 0){
+                    cerrarSesion()
                 }
                 
                 dispatch({

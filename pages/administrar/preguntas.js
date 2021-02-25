@@ -83,6 +83,7 @@ const Preguntas = () => {
       try{
          const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`)
          setPreguntaModificar(resp.data.pregunta)
+
          
          setModificarPregunta(true)
       }catch(e){
