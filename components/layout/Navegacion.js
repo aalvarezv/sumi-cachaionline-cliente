@@ -8,12 +8,19 @@ import AuthContext from '../../context/auth/AuthContext'
 import MenuInstitucionPerfil from './MenuInstitucionPerfil'
 import clienteAxios from '../../config/axios'
 import { Navbar, Nav, Button, NavDropdown,  Row, Col } from 'react-bootstrap'
+import ModalCargaMasivaUsuario from '../ui/ModalCargaMasivaUsuario'
+
 
 
 const Navegacion = () => {
 
     const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext)
     const { socket } = useContext(SocketContext)
+    const [showCargaMasivaUsuarios, setShowCargaMasivaUsuarios] = useState(false)
+    
+    const handleShowCargaMasivaUsuarios = () => {
+        console.log('aqui')
+    }
     
 
     const {cantidadInvitaciones, setCantidadInvitacionesRing} = useContext(SocketInvitacionesRingContext)
@@ -49,7 +56,10 @@ const Navegacion = () => {
     }, [usuario])
 
     return (
-
+        <>
+        <ModalCargaMasivaUsuario
+            show={showCargaMasivaUsuarios}
+        />
         <Navbar collapseOnSelect expand="lg" bg="white" text="light">
         <Navbar.Brand>
             <img
@@ -139,7 +149,12 @@ const Navegacion = () => {
                     :
                         null
                     }
-                    {rol_select.ver_menu_preguntas
+                    <NavDropdown title="Carga masiva" id="cargaMasiva-nav-dropdown">
+                        <Link href="#" passHref>
+                            <Nav.Link onClick={() => {setShowCargaMasivaUsuarios(true)}}>Usuarios</Nav.Link>
+                        </Link>
+                    </NavDropdown>
+                    {rol_select.ver_menu_preguntas 
                     ?
                         <Link href="/administrar/preguntas" passHref>
                             <Nav.Link>Preguntas</Nav.Link>
@@ -162,10 +177,7 @@ const Navegacion = () => {
                     :
                         null
                     }
-
-                    {/* <Link href="/test" passHref>
-                        <Nav.Link>Test</Nav.Link>
-                    </Link> */}
+                    
                     </>
                 }
             </Nav> 
@@ -209,6 +221,7 @@ const Navegacion = () => {
             </Nav>
         </Navbar.Collapse>
         </Navbar>
+        </>
      )
 }
  

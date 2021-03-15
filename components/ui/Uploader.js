@@ -15,7 +15,7 @@ function Uploader({titulo, index, getArchivos}) {
   const [uploading, setUploading] = useState(false)
 
   const {getRootProps, getInputProps} = useDropzone({
-    accept: "image/*,audio/*,video/*",
+    accept: "image/*,audio/*,video/*,application/*",
     multiple: false,
     onDrop: acceptedFiles => {
       
