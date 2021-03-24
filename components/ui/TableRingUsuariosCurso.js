@@ -205,6 +205,7 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
                             resultados_por_pagina = {resultados_por_pagina}
                             total_resultados = {usuarios_ring_curso.length}
                             handleSetPaginaActual = {handleSetPaginaActual}
+                            pagina_activa={pagina_actual}
                         />
                     </Col>
                 </Row>

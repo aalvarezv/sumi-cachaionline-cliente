@@ -15,7 +15,8 @@ const Layout = props => {
     const { autenticado, usuarioAuth, cerrarSesion } = useContext(AuthContext)
 
     useEffect(() => {
-
+        //Al refrescar la página por defecto el state autenticado será false ya que se vuelve a iniciar el state. Por lo tanto solo cuando refresca la página revisa el token y vuelve a obtener la info del usuario autenticado.
+        //Si el usuario se mueve entre páginas sin refrescar, entonces el autenticado tendrá el valor almacenado en el state.
         if(!autenticado && localStorage.getItem('token')){
             usuarioAuth()
         }else if(!localStorage.getItem('token')){

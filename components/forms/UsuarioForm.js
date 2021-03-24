@@ -370,22 +370,14 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
        </Form>
        </Tab>
        {usuarioValido &&
-            <Tab eventKey="tab_configuracion" title="Configuración">
+            <Tab eventKey="tab_configuracion" title="Configurar Perfiles y Cursos">
                 <Row>
                     <Col>
                         <UsuarioFormTabConfig
                             rut_usuario = {formulario.rut.replace('-','')}
+                            nombre_usuario = {formulario.nombre}
+                            handleClickVolver={handleClickVolver}
                         />
-                    </Col>
-                </Row>
-                <Row className="d-flex justify-content-end mt-5">
-                    <Col sm={12} md={"auto"}>
-                        <Button 
-                            variant="info"
-                            size="lg"
-                            className="btn-block"
-                            onClick={handleClickVolver}
-                        >Volver</Button>
                     </Col>
                 </Row>
             </Tab> 

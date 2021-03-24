@@ -8,18 +8,20 @@ const InputSelectUnidadesMateria = props => {
     const [unidades, setUnidades] = useState([])
     const {codigo_materia} = props
    
-
     useEffect(() => {
         
         const listarUnidades = async () => {
             try{
                 const resp = await clienteAxios.get(`/api/unidades/materia/${codigo_materia}`)
+
                 setUnidades(resp.data.unidades)
             }catch(e){
                 handleError(e)
             }
         }
-        if(codigo_materia.trim() !== ''){
+        if(codigo_materia.trim() === '0'){
+            setUnidades([])
+        }else{
             listarUnidades()
         }
 

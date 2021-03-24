@@ -38,16 +38,6 @@ export const handleError = (e) => {
     //rescata los errores de express-validator
     }else if(e.response.data.hasOwnProperty('errors')){
 
-        let msgs = ''
-        e.response.data.errors.forEach(error =>{
-            msgs.concat(error.msg, '\n')
-        })
-
-        error = {
-            ...error,
-            msg: msgs
-        }
-
         toast.error(<ToastMultiline mensajes={e.response.data.errors} />, {containerId: 'sys_msg'})
     
     }

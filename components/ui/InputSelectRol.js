@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
 
-const InputSelectRol = props => {
+const InputSelectRol = (props) => {
 
     const [roles, setRoles] = useState([])
 
@@ -11,7 +11,11 @@ const InputSelectRol = props => {
       
         const listarRoles = async () => {
             try{
-                const resp = await clienteAxios.get('/api/roles/listar')
+                const resp = await clienteAxios.get('/api/roles/listar',{
+                    params: {
+                        codigos: props.codigos,
+                    }
+                })
                 setRoles(resp.data.rol)
             }catch(e){
                 handleError(e)

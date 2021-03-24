@@ -1,4 +1,5 @@
-import React,{ useContext, useEffect, useState } from 'react'
+import React,{ useContext } from 'react'
+import { useRouter } from 'next/router'
 import AuthContext from '../../context/auth/AuthContext'
 import { Row, Col, Form } from 'react-bootstrap'
 
@@ -6,6 +7,13 @@ const MenuInstitucionPerfil = () => {
 
     const { institucion_select, rol_select, usuario,
             selectInstitucion, selectRol, roles_institucion } = useContext(AuthContext)
+    
+    const router = useRouter()
+
+    const handleChangeInstitucion = e => {
+        selectInstitucion(e.target.value)
+        router.push('/')
+    }
 
     return ( 
         <>
@@ -16,9 +24,7 @@ const MenuInstitucionPerfil = () => {
                         as="select"
                         size="sm"
                         value={institucion_select.codigo}
-                        onChange={e => {
-                            selectInstitucion(e.target.value)
-                        }}
+                        onChange={handleChangeInstitucion}
                     >
                     {usuario.institucion_roles.map(institucion => {
                         const {codigo_institucion, descripcion_institucion} = institucion

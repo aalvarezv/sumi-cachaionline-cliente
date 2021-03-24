@@ -1,4 +1,4 @@
-import React,{ useContext, useEffect } from 'react'
+import React,{ useState, useContext, useEffect } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import SocketContext from '../../context/socket/SocketContext'
@@ -22,7 +22,6 @@ const Navegacion = () => {
         console.log('aqui')
     }
     
-
     const {cantidadInvitaciones, setCantidadInvitacionesRing} = useContext(SocketInvitacionesRingContext)
 
 
@@ -82,30 +81,45 @@ const Navegacion = () => {
                     { rol_select.ver_menu_administrar 
                     ?  
                         <NavDropdown title="Administrar" id="administrar-nav-dropdown">
-                            {rol_select.ver_submenu_instituciones &&
+                            {rol_select.ver_submenu_instituciones 
+                            ?
                                 <Link href="/administrar/instituciones" passHref>
                                     <NavDropdown.Item>Instituciones</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_niveles_academicos &&
+                            {rol_select.ver_submenu_niveles_academicos
+                            ?
                                 <Link href="/administrar/niveles-academicos" passHref>
                                     <NavDropdown.Item>Niveles Académicos</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_roles &&
+                            {rol_select.ver_submenu_roles
+                            ?
                                 <Link href="/administrar/roles" passHref>
                                     <NavDropdown.Item>Roles</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_usuarios && 
+                            {rol_select.ver_submenu_usuarios
+                            ? 
                                 <Link href="/administrar/usuarios" passHref>
                                     <NavDropdown.Item>Usuarios</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_menu_rings &&
+                            {rol_select.ver_menu_rings
+                            ?
                                 <Link href="/administrar/cursos" passHref>
                                     <NavDropdown.Item>Cursos</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
                             
                         </NavDropdown>
@@ -115,35 +129,53 @@ const Navegacion = () => {
                     {rol_select.ver_menu_asignaturas 
                     ?
                         <NavDropdown title="Asignaturas" id="asignaturas-nav-dropdown">
-                            {rol_select.ver_submenu_materias && 
+                            {rol_select.ver_submenu_materias 
+                            ? 
                                 <Link href="/administrar/materias" passHref>
                                     <NavDropdown.Item>Materias</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_unidades && 
+                            {rol_select.ver_submenu_unidades
+                            ? 
                                 <Link href="/administrar/unidades" passHref>
                                     <NavDropdown.Item>Unidades</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_modulos &&
+                            {rol_select.ver_submenu_modulos
+                            ?
                                 <Link href="/administrar/modulos" passHref>
                                     <NavDropdown.Item>Módulos</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_modulos &&
+                            {rol_select.ver_submenu_contenidos
+                            ?
                                 <Link href="/administrar/contenidos" passHref>
                                     <NavDropdown.Item>Contenidos</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_modulos &&
+                            {rol_select.ver_submenu_temas
+                            ?
                                 <Link href="/administrar/temas" passHref>
                                     <NavDropdown.Item>Temas</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
-                            {rol_select.ver_submenu_modulos &&
+                            {rol_select.ver_submenu_conceptos
+                            ?
                                 <Link href="/administrar/conceptos" passHref>
                                     <NavDropdown.Item>Conceptos</NavDropdown.Item>
                                 </Link>
+                            :
+                                null
                             }
                         </NavDropdown>
                     :

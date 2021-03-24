@@ -25,11 +25,9 @@ const ModalUsuariosDisponiblesCurso = ({show, curso, handleCloseModalUsuarios}) 
     const resultados_pagina = usuarios.slice(indice_primer_resultado, indice_ultimo_resultado)
     /*************************************/
 
-
     const handleSetPaginaActual = numero_pagina => {
         setPaginaActual(numero_pagina)
     }
-    
    
     useEffect(() => {
 
@@ -64,7 +62,7 @@ const ModalUsuariosDisponiblesCurso = ({show, curso, handleCloseModalUsuarios}) 
         }catch(e){
            handleError(e)
         }
-     }
+    }
 
     
     return (
@@ -89,6 +87,7 @@ const ModalUsuariosDisponiblesCurso = ({show, curso, handleCloseModalUsuarios}) 
                                 name="codigo_rol"
                                 as="select"
                                 label="TODOS LOS PERFILES"
+                                codigos={[2,3]}
                                 value={codigoRol}
                                 onChange={e=>{
                                     setCodigoRol(e.target.value)
@@ -125,7 +124,7 @@ const ModalUsuariosDisponiblesCurso = ({show, curso, handleCloseModalUsuarios}) 
               <Row className="mt-3">
                 {usuarios.length > 0
                 ?
-                <Col className="mt-5 d-flex flex-column">
+                <Col className="mt-3 d-flex flex-column">
                     <div className="align-self-end">
                         <Paginador
                            resultados_por_pagina = {resultados_por_pagina}

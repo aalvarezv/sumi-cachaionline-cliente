@@ -28,7 +28,6 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
         setCodigoEliminar(codigo)
     }
 
-
     return (
         <>
             {curso &&
@@ -36,10 +35,8 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                     show = {show_modal_usuarios}
                     curso = {curso}
                     handleCloseModalUsuarios = {handleCloseModalUsuarios}
-                    
                 />
             }
-
             <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
@@ -65,13 +62,12 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                                 <td>{`${nivel_academico.descripcion} ${letra}`}</td> 
                                 <td className="text-center">
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
                                         onClick={() => {   
                                             handleClickAgregarUsuarioCurso(curso)
-                                            }
-                                        }
+                                        }}
                                     >
-                                     Usuarios
+                                     Agregar Usuarios
                                     </Button>
                                 </td>
                                 <td className="text-center"

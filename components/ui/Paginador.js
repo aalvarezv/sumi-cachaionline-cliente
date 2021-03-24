@@ -51,7 +51,7 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
         <Pagination size="md" className="m-0">
             
                 <Pagination.Item>
-                    {`Total Resultados ${total_resultados}`}
+                    {`${total_resultados} Filas`}
                 </Pagination.Item>
                 <Pagination.First 
                     className="item-activo"
@@ -80,7 +80,7 @@ const Paginador = ({resultados_por_pagina, total_resultados, handleSetPaginaActu
                     }}
                 />
                 <Pagination.Item>
-                    {`Total Páginas ${total_paginas}`}
+                    {`${total_paginas} pág(s)`}
                 </Pagination.Item>   
         </Pagination>
         </>

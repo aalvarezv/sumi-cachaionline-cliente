@@ -2,14 +2,14 @@ import React, { useState, createRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { Row, Col, Form, Modal, Button, Badge} from 'react-bootstrap'
 import { TiDelete } from 'react-icons/ti'
-import InputSelectMateria from '../ui/InputSelectMateria'
-import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria'
-import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad'
-import InputSelectModulosContenido from '../ui/InputSelectModulosContenido'
-import InputSelectModulosContenidoTema from '../ui/InputSelectModulosContenidoTema'
-import InputSelectModulosContenidoTemaConcepto from '../ui/InputSelectModulosContenidoTemaConcepto'
+import InputSelectMateria from './InputSelectMateria'
+import InputSelectUnidadesMateria from './InputSelectUnidadesMateria'
+import InputSelectModulosUnidad from './InputSelectModulosUnidad'
+import InputSelectModulosContenido from './InputSelectModulosContenido'
+import InputSelectModulosContenidoTema from './InputSelectModulosContenidoTema'
+import InputSelectModulosContenidoTemaConcepto from './InputSelectModulosContenidoTemaConcepto'
 
-const PreguntaModalConfig = ({ show, setShow, modulos_init, contenidos_init, temas_init, conceptos_init, handleSetPropiedadesPregunta, handleMostrarBusquedaPreguntas }) => {
+const ModalPreguntaConfig = ({ show, setShow, modulos_init, contenidos_init, temas_init, conceptos_init, handleSetPropiedadesPregunta, handleMostrarBusquedaPreguntas }) => {
 
     
     const [codigo_materia, setCodigoMateria] = useState('0')
@@ -640,4 +640,4 @@ const PreguntaModalConfig = ({ show, setShow, modulos_init, contenidos_init, tem
     )
 }
 
-export default PreguntaModalConfig
+export default ModalPreguntaConfig

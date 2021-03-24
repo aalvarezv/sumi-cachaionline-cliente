@@ -66,6 +66,7 @@ const AuthState = (props) => {
     }
 
     const usuarioAuth = async () => {
+        
         try {
             //verifica si hay un token almacenado
             let token = localStorage.getItem('token')
@@ -80,14 +81,14 @@ const AuthState = (props) => {
                 if(usuario.institucion_roles.length === 0){
                     cerrarSesion()
                 }
-                
+                                
                 dispatch({
                     type: USUARIO_AUTH_EXITO,
                     payload: {
                         usuario,
                     }
                 })
-              
+
             }
 
         } catch (e) {

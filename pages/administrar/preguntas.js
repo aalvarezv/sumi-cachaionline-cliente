@@ -1,23 +1,42 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Button, Badge } from 'react-bootstrap'
+import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import Layout from '../../components/layout/Layout'
 import Privado from '../../components/layout/Privado'
-import FiltrosBusquedaPregunta from '../../components/ui/FiltrosBusquedaPregunta'
+
 import PreguntaForm from '../../components/forms/PreguntaForm'
 import TablePregunta from '../../components/ui/TablePregunta'
 import AlertText from '../../components/ui/AlertText'
 import Paginador from '../../components/ui/Paginador'
 import { handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
+import InputSelectMateria from '../../components/ui/InputSelectMateria'
+import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria'
+import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad'
+import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido'
+import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema'
+import InputSelectModulosContenidoTemaConcepto from '../../components/ui/InputSelectModulosContenidoTemaConcepto'
+
 
 const Preguntas = () => {
 
    const [preguntas, setPreguntas] = useState([])
-   const [crear_pregunta, setCrearPregunta] = useState(false)
-   const [modificar_pregunta, setModificarPregunta] = useState(false)
    const [pregunta_modificar, setPreguntaModificar] = useState(null)
-   const [mensajeAlerta, fnSetMensajeAlerta] = useState('')
+   const [filtros, setFiltros] = useState({
+      codigo_materia: '0',
+      codigo_unidad: '0',
+      codigo_modulo: '0',
+      codigo_modulo_contenido: '0',
+      codigo_modulo_contenido_tema: '0',
+      codigo_modulo_contenido_tema_concepto: '0',
+      nombre_usuario_creador: ''
+   })
+   const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
+   const [textAlert, setTextAlert] = useState('')
+
+   const { codigo_materia, codigo_unidad, codigo_modulo, codigo_modulo_contenido,
+          codigo_modulo_contenido_tema, codigo_modulo_contenido_tema_concepto,
+          nombre_usuario_creador } = filtros
    /**** Variables para paginación *****/
    const [pagina_actual, setPaginaActual] = useState(1)
    const [resultados_por_pagina, setResultadosPorPagina] = useState(5)
@@ -26,10 +45,6 @@ const Preguntas = () => {
    const indice_primer_resultado = indice_ultimo_resultado - resultados_por_pagina
    const resultados_pagina = preguntas.slice(indice_primer_resultado, indice_ultimo_resultado)
    /*************************************/
-
-   useEffect(() => {
-      fnSetMensajeAlerta('')
-   }, [])
    
    const listarPreguntas = async filtros => {
       try{
@@ -45,21 +60,31 @@ const Preguntas = () => {
                   nombre_usuario_creador: filtros.nombre_usuario_creador,
                }
          })
-    
-         setPreguntas(resp.data.preguntas)
-
-         if(resp.data.preguntas.length === 0){
-            fnSetMensajeAlerta('No hay resultados')
+         if(resp.data.preguntas.length > 0){
+            setTextAlert("")
+         }else{
+            setTextAlert("No se encontraron resultados")
          }
+         setPreguntas(resp.data.preguntas)
+         
+         setPaginaActual(1)
 
       }catch(e){
          handleError(e)
       }
    }
 
-   const handleClickBuscar = filtros => {
-      setPaginaActual(1)
-      listarPreguntas(filtros)
+   const handleClickBuscar = () => {
+      
+      listarPreguntas({
+         codigo_materia,
+         codigo_unidad,
+         codigo_modulo,
+         codigo_modulo_contenido,
+         codigo_modulo_contenido_tema,
+         codigo_modulo_contenido_tema_concepto,
+         nombre_usuario_creador,
+      })
    }
 
    const handleEliminaPregunta = async codigo => {
@@ -83,9 +108,8 @@ const Preguntas = () => {
       try{
          const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`)
          setPreguntaModificar(resp.data.pregunta)
-
-         
-         setModificarPregunta(true)
+         setMostrarBusqueda(false)
+         console.log(resp.data.pregunta)
       }catch(e){
          handleError(e)
       }
@@ -93,15 +117,13 @@ const Preguntas = () => {
 
    const handleCrearPregunta = () => {
       setPreguntaModificar(null)
-      setCrearPregunta(true)
+      setMostrarBusqueda(false)
+      setTextAlert('')
    }
 
    const handleMostrarBusquedaPreguntas = () => {
       setPreguntaModificar(null)
-      //setPreguntas([])
-      setModificarPregunta(false)
-      setCrearPregunta(false)
-      setPaginaActual(1)
+      setMostrarBusqueda(true)
    }
 
    const handleSetPaginaActual = numero_pagina => {
@@ -111,76 +133,221 @@ const Preguntas = () => {
      return ( 
         <Layout>
            <Privado>
-               <>
-                  <h5 className="my-4 text-center">Administrar Preguntas</h5>
-                  {!modificar_pregunta && !crear_pregunta
-                  ?
                   <Container>
-                     <Row className="mx-0 mb-2">
-                        <Col className="d-flex justify-content-end">     
-                        <Button
+                  <h5 className="text-center my-4">Administrar Preguntas</h5>
+                  <Card>
+                  <Card.Body> 
+                  {mostrar_busqueda 
+                  ?
+                     <>
+                     <Row className="d-flex justify-content-center">
+                        <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
+                           <Row className="mb-2">
+                              <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
+                                 <InputSelectMateria
+                                    id="codigo_materia"
+                                    name="codigo_materia"
+                                    as="select"
+                                    size="sm"
+                                    label="TODAS LAS MATERIAS"
+                                    value={codigo_materia}
+                                    onChange={e => setFiltros({
+                                          ...filtros,
+                                          codigo_unidad: '0',
+                                          codigo_modulo: '0',
+                                          codigo_modulo_contenido: '0',
+                                          codigo_modulo_contenido_tema: '0',
+                                          codigo_modulo_contenido_tema_concepto: '0',
+                                          [e.target.name]: e.target.value,
+                                    })}
+                                 />
+                              </Col>
+                              <Col>
+                                 <InputSelectUnidadesMateria
+                                    id="codigo_unidad"
+                                    name="codigo_unidad"
+                                    /*codigo materia se le pasa a las props del componente
+                                    para filtrar las unidades de la materia seleccionada.*/
+                                    codigo_materia= {codigo_materia}
+                                    as="select"
+                                    size="sm"
+                                    label="TODAS LAS UNIDADES"
+                                    value={codigo_unidad}
+                                    onChange={e => setFiltros({
+                                          ...filtros,
+                                          codigo_modulo: '0',
+                                          codigo_modulo_contenido: '0',
+                                          codigo_modulo_contenido_tema: '0',
+                                          codigo_modulo_contenido_tema_concepto: '0',
+                                          [e.target.name]: e.target.value,
+                                    })}
+                                 />
+                              </Col>
+                           </Row>
+                           <Row className="mb-2">
+                              <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
+                                 <InputSelectModulosUnidad
+                                    id="codigo_modulo"
+                                    name="codigo_modulo"
+                                    /*codigo unidad se le pasa a las props del componente
+                                    para filtrar los modulos de la unidad seleccionada.*/
+                                    codigo_unidad= {codigo_unidad}
+                                    as="select"
+                                    size="sm"
+                                    label="TODOS LOS MÓDULOS"
+                                    value={codigo_modulo}
+                                    onChange={e => setFiltros({
+                                          ...filtros,
+                                          codigo_modulo_contenido: '0',
+                                          codigo_modulo_contenido_tema: '0',
+                                          codigo_modulo_contenido_tema_concepto: '0',
+                                          [e.target.name]: e.target.value
+                                    })}
+                                 /> 
+                              </Col>
+                              <Col>
+                                 <InputSelectModulosContenido
+                                    id="codigo_modulo_contenido"
+                                    name="codigo_modulo_contenido"
+                                 
+                                    /*codigo modulo se le pasa a las props del componente
+                                    para filtrar las propiedades del modulo seleccionado.*/
+                                    codigo_modulo={codigo_modulo}
+                                    as="select"
+                                    size="sm"
+                                    label="TODOS LOS CONTENIDOS"
+                                    value={codigo_modulo_contenido}
+                                    onChange={e => setFiltros({
+                                          ...filtros,
+                                          codigo_modulo_contenido_tema: '0',
+                                          codigo_modulo_contenido_tema_concepto: '0',
+                                          [e.target.name]: e.target.value
+                                    })}
+                                 />
+                              </Col>
+                           </Row>
+                           <Row className="mb-2">
+                              <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
+                                 <InputSelectModulosContenidoTema
+                                    id="codigo_modulo_contenido_tema"
+                                    name="codigo_modulo_contenido_tema"
+                                    
+                                    /*codigo contenido se le pasa a las props del componente
+                                    para filtrar las propiedades del modulo seleccionado.*/
+                                    codigo_modulo_contenido={codigo_modulo_contenido}
+                                    as="select"
+                                    size="sm"
+                                    label="TODOS LOS TEMAS"
+                                    value={codigo_modulo_contenido_tema}
+                                    onChange={e => setFiltros({
+                                          ...filtros,
+                                          codigo_modulo_contenido_tema_concepto: '0',
+                                          [e.target.name]: e.target.value
+                                    })}
+                                 />
+                              </Col>
+                              <Col>
+                                 <InputSelectModulosContenidoTemaConcepto
+                                    id="codigo_modulo_contenido_tema_concepto"
+                                    name="codigo_modulo_contenido_tema_concepto"
+
+                                    /*codigo contenido se le pasa a las props del componente
+                                    para filtrar las propiedades del modulo seleccionado.*/
+                                    codigo_modulo_contenido_tema={codigo_modulo_contenido_tema}
+                                    as="select"
+                                    size="sm"
+                                    label="TODOS LOS CONCEPTOS"
+                                    value={codigo_modulo_contenido_tema_concepto}
+                                    onChange={e => setFiltros({
+                                    ...filtros,
+                                    [e.target.name]: e.target.value
+                                    })}
+                                 />
+                              </Col>
+                           </Row>
+                           <Row>
+                              <Col>
+                                 <Form.Control
+                                    id="nombre_usuario_creador"
+                                    name="nombre_usuario_creador"
+                                    type="text" 
+                                    size="sm"
+                                    placeholder="CREADA POR USUARIO..." 
+                                    value={nombre_usuario_creador}
+                                    onChange={e => {
+                                    setFiltros({
+                                          ...filtros,
+                                          [e.target.name]: e.target.value.toUpperCase()
+                                    })
+                                    }} 
+                                 />
+                              </Col>
+                           </Row>
+                        </Col>  
+                        <Col className="d-flex align-items-end mb-2 mb-lg-0" xs={12} lg="auto">
+                           <Button
+                              variant="info"
+                              className="align-self-end"
+                              onClick={handleClickBuscar}
+                              block
+                           >
+                              Buscar
+                           </Button>
+                        </Col>
+                        <Col className="d-flex align-items-end mb-2 mb-lg-0" xs={12} lg="auto">
+                        <Button 
                            variant="info"
+                           className="btn-block"
                            onClick={handleCrearPregunta}
                         >
-                           + Nueva Pregunta
+                           + Crear Pregunta
                         </Button>
-                        </Col>
+                     </Col>
                      </Row>
-                     <Row className="mb-2">
-                        <Col>           
-                           <FiltrosBusquedaPregunta 
-                              filtros_default= {{
-                                 codigo_materia: '0',
-                                 codigo_unidad: '0',
-                                 codigo_modulo: '0',
-                                 codigo_modulo_contenido: '0',
-                                 codigo_modulo_contenido_tema: '0',
-                                 codigo_modulo_contenido_tema_concepto: '0',
-                                 nombre_usuario_creador: '',
-                              }}
-                              handleClickBuscar={handleClickBuscar}
-                           /> 
-                        </Col>
+                     </>
+                  :
+                     <Row>
+                        <PreguntaForm
+                           pregunta_modificar = {pregunta_modificar}
+                           handleMostrarBusquedaPreguntas = {handleMostrarBusquedaPreguntas}
+                        />
                      </Row>
+                  } 
+                  </Card.Body> 
+                  </Card>
+                  </Container>   
+
+                  <Container>   
                      <Row className="mx-0">
-                        {/* <Col className={`d-flex flex-column align-items-center justify-content-center ${preguntas.length === 0 ? ' mt-5' : ''}`}> */}
-                        {preguntas.length === 0
+                        {preguntas.length > 0 && mostrar_busqueda
                         ?
-                           <Col className="mt-5">
-                              <AlertText  
-                                 text={mensajeAlerta}
+                           <Col className="mt-4 d-flex flex-column">
+                              <div className="align-self-end">
+                                 <Paginador
+                                       resultados_por_pagina = {resultados_por_pagina}
+                                       total_resultados = {preguntas.length}
+                                       handleSetPaginaActual = {handleSetPaginaActual}
+                                       pagina_activa = {pagina_actual}
+                                 />
+                              </div>
+                              <TablePregunta 
+                                 preguntas={resultados_pagina}
+                                 pagina_actual = {pagina_actual}
+                                 resultados_por_pagina = {resultados_por_pagina}
+                                 handleEliminaPregunta = {handleEliminaPregunta}
+                                 handleModificaPregunta = {handleModificaPregunta}
                               /> 
                            </Col>
                         :
-                        <Col className="mt-4 d-flex flex-column">
-                           <div className="align-self-end">
-                              <Paginador
-                                    resultados_por_pagina = {resultados_por_pagina}
-                                    total_resultados = {preguntas.length}
-                                    handleSetPaginaActual = {handleSetPaginaActual}
-                                    pagina_activa = {pagina_actual}
-                              />
-                           </div>
-                           <TablePregunta 
-                              preguntas={resultados_pagina}
-                              pagina_actual = {pagina_actual}
-                              resultados_por_pagina = {resultados_por_pagina}
-                              handleEliminaPregunta = {handleEliminaPregunta}
-                              handleModificaPregunta = {handleModificaPregunta}
-                           /> 
-                           
-                        </Col>
+                           <Col className="mt-5">
+                              <AlertText  
+                                 text={textAlert}
+                              /> 
+                           </Col>
                         }   
                         
                      </Row>
                   </Container>   
-                  :
-                  <PreguntaForm
-                     pregunta_modificar = {pregunta_modificar}
-                     handleMostrarBusquedaPreguntas = {handleMostrarBusquedaPreguntas}
-                  />
-                  }   
-               </>
            </Privado>
         </Layout>
      )

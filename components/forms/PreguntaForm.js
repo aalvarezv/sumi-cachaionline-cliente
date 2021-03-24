@@ -6,7 +6,7 @@ import { TiDelete } from 'react-icons/ti'
 import  clienteAxios from '../../config/axios'
 import { getBase64, letras, handleError, getBase64FromURL } from '../../helpers'
 import AuthContext from '../../context/auth/AuthContext'
-import PreguntaModalConfig from './PreguntaModalConfig'
+import ModalPreguntaConfig from '../ui/ModalPreguntaConfig'
 import AlternativaPregunta from '../ui/AlternativaPregunta'
 import PistaPregunta from '../ui/PistaPregunta'
 import SolucionPregunta from '../ui/SolucionPregunta'
@@ -67,7 +67,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     
     //efecto que obtiene los datos de la pregunta a modificar.
     useEffect(() => {
-
+      
         if(pregunta_modificar){
             const getDatosPregunta = async () => {
                 
@@ -410,7 +410,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     
     return ( 
         <>
-        <PreguntaModalConfig 
+        <ModalPreguntaConfig 
             show={show_config}
             setShow={setShowConfig}
             modulos_init = {modulos}

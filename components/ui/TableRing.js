@@ -4,28 +4,31 @@ import {Table, Button, Badge, Overlay, Popover, Row, Col} from 'react-bootstrap'
 import ModalRingUsuarios from '../ui/ModalRingUsuarios'
 import ModalRingPreguntas from '../ui/ModalRingPreguntas'
 
-const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarRing, handleModificarRing}) => {
-
+const TableRing = ({
+        rings, 
+        pagina_actual, 
+        resultados_por_pagina, 
+        handleEliminarRing, 
+        handleModificarRing
+    }) => {
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
     const ref_confirm_eliminar = useRef(null)
 
-    const [show_modal_usuarios, setShowModalUsuarios] = useState(false)
-    const [show_modal_preguntas, setShowModalPreguntas] = useState(false)
+    const [showModalUsuariosRing, setShowModalUsuariosRing] = useState(false)
+    const [showModalPreguntasRing, setShowModalPreguntasRing] = useState(false)
     const [ring, setRing] = useState(null)
     const [codigo_eliminar, setCodigoEliminar] = useState('')
     
-    const handleCloseModalUsuarios = () => setShowModalUsuarios(false)
-    const handleCloseModalPreguntas = () => setShowModalPreguntas(false)
   
     const handleClickAgregarUsuarioRing = ring => {
-        setShowModalUsuarios(true)
+        setShowModalUsuariosRing(true)
         setRing(ring)
     }
 
     const handleClickAgregarPreguntaRing = ring => {
-        setShowModalPreguntas(true)
+        setShowModalPreguntasRing(true)
         setRing(ring)
     }
 
@@ -38,20 +41,19 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
     return (
         <>
             {ring &&
-            <>
-                <ModalRingUsuarios
-                    show = {show_modal_usuarios}
-                    handleClose = {handleCloseModalUsuarios}
-                    ring = {ring}
-                />
-                <ModalRingPreguntas 
-                    show = {show_modal_preguntas}
-                    handleClose = {handleCloseModalPreguntas}
-                    ring = {ring}
-                />    
-            </>
+                <>
+                    <ModalRingUsuarios
+                        show={showModalUsuariosRing}
+                        setShowModalUsuariosRing={setShowModalUsuariosRing}
+                        ring={ring}
+                    />
+                    <ModalRingPreguntas 
+                        showModalPreguntasRing={showModalPreguntasRing}
+                        setShowModalPreguntasRing={setShowModalPreguntasRing}
+                        ring={ring}
+                    />    
+                </>
             }
-             
             <Table striped bordered hover variant="light" responsive> 
                 <thead>
                     <tr>
@@ -60,7 +62,6 @@ const TableRing = ({rings, pagina_actual, resultados_por_pagina, handleEliminarR
                     <th>Creador</th>
                     <th>Creado</th>
                     <th>Privado</th>
-                    {/* <th>Nivel</th> */}
                     <th></th>
                     <th></th>
                     </tr>

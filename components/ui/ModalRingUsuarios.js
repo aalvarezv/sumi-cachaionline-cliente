@@ -11,7 +11,7 @@ import TableRingUsuarios from './TableRingUsuarios'
 
 
 
-const ModalRingUsuarios = ({show, handleClose, ring}) =>{
+const ModalRingUsuarios = ({show, setShowModalUsuariosRing, ring}) =>{
 
     const { usuario, institucion_select } = useContext(AuthContext)
     const [codigo_curso, setCodigoCurso] = useState('0')
@@ -70,24 +70,35 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
       setActiveTab(tab)
     }
 
-    
-
     return (
     
-      <Modal show={show} onHide={handleClose} size="lg">
-        <Modal.Header closeButton>
-        <Modal.Title>
-            <Row className="ml-3">
+      <Modal 
+        show={show} 
+        size="lg"
+        onHide={() => {}} 
+      >
+        <Modal.Header>
+       
+          <div className="d-flex">
                 <Logo />
                 <h4 className="ml-2">
-                {!showInvitarRing 
-                ?
-                'Agregar alumnos al evento' 
-                :
-                'Invitar a otros profesores'
-                } </h4>
-            </Row>
-        </Modal.Title>
+                  {!showInvitarRing 
+                  ?
+                    'Agregar alumnos al evento' 
+                  :
+                    'Invitar a otros profesores'
+                  } 
+                </h4>
+            </div>
+
+            <Button 
+                variant="info"
+                onClick={() => {
+                  setShowModalUsuariosRing(false)
+                }}
+            >
+                Volver
+            </Button>
         </Modal.Header>
         <Modal.Body>
             <Container>
@@ -104,9 +115,9 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
                 <>
                   <Row>
                     <Col xs={12} lg={8} className="mb-2 mb-lg-0">
-                      <Row>
+                      <Row className="mt-3">
                         <Col>
-                            <Form.Label>Mis Cursos</Form.Label>
+                            <Form.Label>Cursos en los que estoy inscrito</Form.Label>
                             <InputSelectCursosUsuarioNivelAcademicoInstitucion
                                 as="select"
                                 rut_usuario={usuario.rut}
@@ -146,7 +157,7 @@ const ModalRingUsuarios = ({show, handleClose, ring}) =>{
                 }
               </Tab>
               {usuariosRing.length > 0 &&
-                <Tab eventKey="usuarios" title="Usuarios">
+                <Tab eventKey="usuarios" title="Usuarios inscritos en ring">
                   <TableRingUsuarios 
                     usuariosRing={usuariosRing}
                   />

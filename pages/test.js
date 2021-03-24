@@ -24,7 +24,11 @@ const Test = () =>{
   const handleObtenerPreguntasRing = async codigo_ring  => {
     try {
         setCodigoRing(codigo_ring)
-        const resp = await clienteAxios.get(`/api/ring-preguntas/listar/preguntas/${codigo_ring}`)
+        const resp = await clienteAxios.get('/api/ring-preguntas/listar/preguntas/',{
+          params: {
+            codigo_ring,
+          }
+        })
         setPreguntasRing(resp.data.ring_preguntas)
 
         console.log(resp.data.ring_preguntas)

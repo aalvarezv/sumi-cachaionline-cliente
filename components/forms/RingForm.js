@@ -52,15 +52,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     const ref_custom_date_hasta = createRef()
     
     const [errores, setErrores] = useState({})
-
-    //Si se cambia de institucion, vuelve a la pantalla anterior.
-    useEffect(() => {
-        if(ring_modificar && ring_modificar.codigo_institucion !== institucion_select.codigo){
-            handleClickVolver()
-        }
-
-    }, [institucion_select])
-
    
     useEffect(() => {
        
