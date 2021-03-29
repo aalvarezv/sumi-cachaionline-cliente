@@ -32,6 +32,12 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         audio: '',
         video: '',
         duracion: 30,
+        recordar: 0,
+        comprender: 0,
+        aplicar: 0,
+        analizar: 0,
+        evaluar: 0,
+        crear: 0,
     })
 
     const [alternativas, setAlternativas] = useState([])
@@ -237,16 +243,75 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             return false
         }
 
-        if(Number(pregunta.duracion) <= 0 && pregunta.duracion === ''){
+        if(pregunta.duracion <= 0 && pregunta.duracion === ''){
             errors = {
                 ...errors,
                 duracion: 'Requerido'
             }
-            setErrores(errors)
             toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'})
             return false
         }
-        setErrores(errors)
+
+       
+        if(pregunta.recordar < 0 || pregunta.recordar > 1){
+
+            console.log("entra")
+
+            errors = {
+                ...errors,
+                recordar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Recordar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+
+        if(pregunta.comprender < 0 || pregunta.comprender > 1){
+            console.log('entra aqui comprender')
+            errors = {
+                ...errors,
+                comprender: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Comprender debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(pregunta.aplicar < 0 || pregunta.aplicar > 1){
+            errors = {
+                ...errors,
+                aplicar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Aplicar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(pregunta.analizar < 0 || pregunta.analizar > 1){
+            errors = {
+                ...errors,
+                aplicar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Analizar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(pregunta.evaluar < 0 || pregunta.evaluar > 1){
+            errors = {
+                ...errors,
+                evaluar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Evaluar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(pregunta.crear < 0 || pregunta.crear > 1){
+            errors = {
+                ...errors,
+                crear: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+            }
+            toast.warning('Crear debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            return false
+        }
+        
         
         //Verifica que exista al menos 2 alternativas posibles.
         if(alternativas.length < 2){
@@ -328,6 +393,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     codigo_pregunta,
                 })),
             }
+            console.log(pregunta_full)
 
             await clienteAxios.post('/api/preguntas/crear', pregunta_full)
             
@@ -338,6 +404,12 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 audio: '',
                 video: '',
                 duracion: 0,
+                recordar: 0,
+                comprender: 0,
+                aplicar: 0,
+                analizar: 0,
+                evaluar: 0,
+                crear: 0,
             })
             iniciarAlternativas()
             setPistas([])
@@ -564,7 +636,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                                         onChange={e => {
                                                             setPregunta({
                                                                 ...pregunta,
-                                                            [e.target.name]: e.target.value.replace(/\D/,''),
+                                                            [e.target.name]: parseInt(e.target.value.replace(/\D/,'')),
                                                             })
                                                         }}
                                                         isInvalid={errores.hasOwnProperty('duracion')}
@@ -585,7 +657,99 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                             </Col>  
                         </Row>  
                     </Form.Group> 
-                }  
+                }
+                <Row className="p-3">
+                    <Col>
+                        <Form.Label><small>Recordar</small></Form.Label>
+                        <Form.Control
+                            id="recordar"
+                            name="recordar"
+                            type="number" 
+                            value={pregunta.recordar}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('recordar')}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label><small>Comprender</small></Form.Label>
+                        <Form.Control
+                            id="comprender"
+                            name="comprender"
+                            type="number" 
+                            value={pregunta.comprender}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('comprender')}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label><small>Aplicar</small></Form.Label>
+                        <Form.Control
+                            id="aplicar"
+                            name="aplicar"
+                            type="number" 
+                            value={pregunta.aplicar}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('aplicar')}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label><small>analizar</small></Form.Label>
+                        <Form.Control
+                            id="analizar"
+                            name="analizar"
+                            type="number" 
+                            value={pregunta.analizar}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('analizar')}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label><small>Evaluar</small></Form.Label>
+                        <Form.Control
+                            id="evaluar"
+                            name="evaluar"
+                            type="number" 
+                            value={pregunta.evaluar}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('evaluar')}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label><small>Crear</small></Form.Label>
+                        <Form.Control
+                            id="crear"
+                            name="crear"
+                            type="number" 
+                            value={pregunta.crear}
+                            onChange={e => {setPregunta({
+                                    ...pregunta,
+                                [e.target.name]: parseFloat(e.target.value),
+                                })
+                            }}
+                            isInvalid={errores.hasOwnProperty('crear')}
+                        />
+                    </Col>
+                </Row>
                 <Row className="p-3">
                     <Col>
                         <Button

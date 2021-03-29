@@ -11,6 +11,7 @@ import NivelAcademicoState from '../context/niveles_academicos/NivelAcademicoSta
 import SocketInvitacionesRingState from '../context/socket_invitaciones_ring/SocketInvitacionesRingState'
 import SocketContext from '../context/socket/SocketContext'
 
+
 const socket = io.connect(process.env.NEXT_PUBLIC_SOCKET_URL, {
   path: process.env.NEXT_PUBLIC_SOCKET_PATH,
   transports: ['websocket'], 
@@ -47,3 +48,4 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default React.memo(MyApp)
+
