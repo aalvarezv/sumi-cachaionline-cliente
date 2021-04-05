@@ -73,7 +73,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     
     //efecto que obtiene los datos de la pregunta a modificar.
     useEffect(() => {
-      
+ 
         if(pregunta_modificar){
             const getDatosPregunta = async () => {
                 
@@ -120,6 +120,12 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     audio: pregunta_modificar.audio,
                     video: pregunta_modificar.video,
                     duracion: pregunta_modificar.duracion,
+                    recordar: pregunta_modificar.recordar,
+                    comprender: pregunta_modificar.comprender,
+                    aplicar: pregunta_modificar.aplicar,
+                    analizar: pregunta_modificar.analizar,
+                    evaluar: pregunta_modificar.evaluar,
+                    crear: pregunta_modificar.crear,
                 })
                 setAlternativas(pregunta_modificar.pregunta_alternativa)
                 setSoluciones(pregunta_modificar.pregunta_solucion)
@@ -249,66 +255,68 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 duracion: 'Requerido'
             }
             toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
-       
         if(pregunta.recordar < 0 || pregunta.recordar > 1){
-
-            console.log("entra")
-
             errors = {
                 ...errors,
-                recordar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                recordar: 'Requerido'
             }
             toast.warning('Recordar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
 
         if(pregunta.comprender < 0 || pregunta.comprender > 1){
-            console.log('entra aqui comprender')
             errors = {
                 ...errors,
-                comprender: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                comprender: 'Requerido'
             }
             toast.warning('Comprender debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
         if(pregunta.aplicar < 0 || pregunta.aplicar > 1){
             errors = {
                 ...errors,
-                aplicar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                aplicar: 'Requerido'
             }
             toast.warning('Aplicar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
         if(pregunta.analizar < 0 || pregunta.analizar > 1){
             errors = {
                 ...errors,
-                aplicar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                analizar: 'Requerido'
             }
             toast.warning('Analizar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
         if(pregunta.evaluar < 0 || pregunta.evaluar > 1){
             errors = {
                 ...errors,
-                evaluar: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                evaluar: 'Requerido'
             }
             toast.warning('Evaluar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
 
         if(pregunta.crear < 0 || pregunta.crear > 1){
             errors = {
                 ...errors,
-                crear: 'Debe ser mayor o igual que 0 y menor o igual que 1'
+                crear: 'Requerido'
             }
             toast.warning('Crear debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
             return false
         }
         
@@ -393,27 +401,10 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     codigo_pregunta,
                 })),
             }
-            console.log(pregunta_full)
 
             await clienteAxios.post('/api/preguntas/crear', pregunta_full)
             
-            setPregunta({
-                rut_usuario_creador: rut,
-                texto:'',
-                imagen: '',
-                audio: '',
-                video: '',
-                duracion: 0,
-                recordar: 0,
-                comprender: 0,
-                aplicar: 0,
-                analizar: 0,
-                evaluar: 0,
-                crear: 0,
-            })
-            iniciarAlternativas()
-            setPistas([])
-            setSoluciones([])
+            resetearFormulario()
 
             toast.success('PREGUNTA CREADA', {containerId: 'sys_msg'})
         
@@ -474,10 +465,42 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             await clienteAxios.put('/api/preguntas/actualizar', pregunta_full)
             toast.success('PREGUNTA ACTUALIZADA', {containerId: 'sys_msg'})
 
+            setErrores({})
+
         }catch(e){
             handleError(e)
         }
 
+    }
+
+    const resetearFormulario = () => {
+
+        setPregunta({
+            rut_usuario_creador: rut,
+            texto:'',
+            imagen: '',
+            audio: '',
+            video: '',
+            duracion: 30,
+            recordar: 0,
+            comprender: 0,
+            aplicar: 0,
+            analizar: 0,
+            evaluar: 0,
+            crear: 0,
+        })
+        iniciarAlternativas()
+        setPistas([])
+        setSoluciones([])
+        setErrores({})
+
+        setModulos([])
+        setContenidos([])
+        setTemas([])
+        setConceptos([])
+        
+        setShowConfig(true)
+       
     }
     
     return ( 
@@ -705,7 +728,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         />
                     </Col>
                     <Col>
-                        <Form.Label><small>analizar</small></Form.Label>
+                        <Form.Label><small>Analizar</small></Form.Label>
                         <Form.Control
                             id="analizar"
                             name="analizar"

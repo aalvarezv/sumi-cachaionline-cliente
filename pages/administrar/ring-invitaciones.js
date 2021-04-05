@@ -19,7 +19,7 @@ const RingInvitaciones = () => {
     const { socket } = useContext(SocketContext)
     const { cantidadInvitaciones } = useContext(SocketInvitacionesRingContext)
     const [ring, setRing] = useState(null)
-    const [show_modal_usuarios, setShowModalUsuarios] = useState(false)
+    const [showModalUsuariosRing, setShowModalUsuariosRing] = useState(false)
     const [invitacionesRingUsuario, setInvitacionesRingUsuario] = useState([])
 
     useEffect(() => {
@@ -82,10 +82,9 @@ const RingInvitaciones = () => {
 
     }
 
-    const handleCloseModalUsuarios = () => setShowModalUsuarios(false)
 
     const handleAgregarUsuariosRing = ring => {
-        setShowModalUsuarios(true)
+        setShowModalUsuariosRing(true)
         setRing(ring)
     }
     
@@ -94,8 +93,8 @@ const RingInvitaciones = () => {
         <Privado>
             {ring &&
                 <ModalRingUsuarios
-                    show = {show_modal_usuarios}
-                    handleClose = {handleCloseModalUsuarios}
+                    show = {showModalUsuariosRing}
+                    setShowModalUsuariosRing = {setShowModalUsuariosRing}
                     ring = {ring}
                 />
             }

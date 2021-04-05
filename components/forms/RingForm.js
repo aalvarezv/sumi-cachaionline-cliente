@@ -181,7 +181,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             }
         }
 
-
         setErrores(errors)
 
         return errors
@@ -213,6 +212,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             privado: true,
             inactivo: false,
         })
+
     }
 
     const handleCrearRing = async e => {

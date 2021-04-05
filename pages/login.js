@@ -12,16 +12,13 @@ import Logo from '../components/ui/Logo'
 const Login = () => {
 
     const router = useRouter()
-
     const { autenticado, iniciarSesion } = useContext(AuthContext)
-    
+
     useEffect(() => {
-        //si está autenticado envía al HOME
         if(autenticado){
             router.push('/')
         }
     }, [autenticado])
-    
 
     return ( 
         <Layout>
@@ -29,7 +26,7 @@ const Login = () => {
            
                 <Row className="justify-content-sm-center">
                     <Col sm={8} md={6} lg={5} xl={4}>
-                        <Card style={{ width: 'auto' }}>
+                        <Card>
                         <Card.Body>
                             <Formik
                                 initialValues={{ rut: "", clave: "" }}
@@ -92,6 +89,7 @@ const Login = () => {
                                     <Button 
                                         variant="info" 
                                         type="submit"
+                                        className="mb-5"
                                         block
                                     >
                                         {isSubmitting ? 'Ingresando...' : 'Ingresar'}

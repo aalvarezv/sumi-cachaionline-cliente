@@ -78,8 +78,6 @@ const Usuarios = () => {
 
    const handleClickVolver = () =>{
       setMostrarBusqueda(true)
-      setUsuarios([])
-      setFiltroBusqueda('')
    }
 
    const handleSetPaginaActual = numero_pagina => {

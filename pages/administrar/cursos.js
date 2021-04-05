@@ -77,9 +77,6 @@ const Cursos = () => {
 
    const handleClickVolver = () =>{
       setMostrarBusqueda(true)
-      setCursos([])
-      setCodigoInstitucion('0')
-      setCodigoNivelAcademico('0')
    }
 
    const handleSetPaginaActual = numero_pagina => {

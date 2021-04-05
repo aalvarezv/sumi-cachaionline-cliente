@@ -11,7 +11,7 @@ import InputSelectModulosContenidoTemaConcepto from './InputSelectModulosConteni
 
 const ModalPreguntaConfig = ({ show, setShow, modulos_init, contenidos_init, temas_init, conceptos_init, handleSetPropiedadesPregunta, handleMostrarBusquedaPreguntas }) => {
 
-    
+
     const [codigo_materia, setCodigoMateria] = useState('0')
     const [codigo_unidad, setCodigoUnidad] = useState('0')
     const [modulo, setModulo] = useState({
@@ -46,7 +46,7 @@ const ModalPreguntaConfig = ({ show, setShow, modulos_init, contenidos_init, tem
         setContenidos(contenidos_init)
         setTemas(temas_init)
         setConceptos(conceptos_init)
-    }, [modulos_init, contenidos_init])
+    }, [modulos_init, contenidos_init, temas_init, conceptos_init])
 
     const handleAddModulo = () => {
         //Modulo actual seleccionado.
@@ -245,6 +245,17 @@ const ModalPreguntaConfig = ({ show, setShow, modulos_init, contenidos_init, tem
         }
 
         handleSetPropiedadesPregunta(modulos, contenidos, temas, conceptos)
+        setCodigoMateria('0')
+        //reinicia la unidad
+        setCodigoUnidad('0')
+        //reinicia el modulo
+        setModulo({ codigo:'0', descripcion: '' })
+        //reinicia el contenido.
+        setContenido({ codigo: '0', descripcion: '' })
+        //reinicia el tema.
+        setTema({ codigo: '0', descripcion: '' })
+        //reinicia el concepto.
+        setConcepto({ codigo: '0', descripcion: '' })
         
         setShow(false)
     }

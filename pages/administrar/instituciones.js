@@ -73,8 +73,6 @@ const Instituciones = () => {
 
    const handleClickVolver = () =>{
       setMostrarBusqueda(true)
-      setInstituciones([])
-      setFiltroBusqueda('')
    }
         
    const handleSetPaginaActual = numero_pagina => {

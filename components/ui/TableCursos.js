@@ -67,7 +67,7 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                                             handleClickAgregarUsuarioCurso(curso)
                                         }}
                                     >
-                                     Agregar Usuarios
+                                     + Usuarios
                                     </Button>
                                 </td>
                                 <td className="text-center"

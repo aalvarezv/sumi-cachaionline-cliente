@@ -1,5 +1,6 @@
 
 import React, { useEffect, useContext } from 'react'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { ToastContainer, Slide, Zoom, Flip, Bounce } from 'react-toastify'
 import { font, color } from '../../styles/theme'
@@ -7,23 +8,29 @@ import { addOpacityToColor } from '../../styles/utils'
 import Navegacion from './Navegacion'
 import AuthContext from '../../context/auth/AuthContext'
 
+
 const backgroundColor_1 = addOpacityToColor(color.primary, 0.3)
 const backgroundColor_2 = addOpacityToColor(color.secondary, 0.3)
 
-const Layout = props => {
+const Layout = (props) => {
 
-    const { autenticado, usuarioAuth, cerrarSesion } = useContext(AuthContext)
+   
+    const router = useRouter()
+    
+    const { autenticado, usuarioAuth } = useContext(AuthContext)
 
     useEffect(() => {
-        //Al refrescar la página por defecto el state autenticado será false ya que se vuelve a iniciar el state. Por lo tanto solo cuando refresca la página revisa el token y vuelve a obtener la info del usuario autenticado.
-        //Si el usuario se mueve entre páginas sin refrescar, entonces el autenticado tendrá el valor almacenado en el state.
-        if(!autenticado && localStorage.getItem('token')){
+
+        //Si no está autenticado y no hay token.
+        if(!autenticado && !localStorage.getItem('token')){
+            router.push('/login')
+        //Si no está autenticado, pero hay token. (REFRESCA LA PÁGINA)
+        }else if(!autenticado && localStorage.getItem('token')){
+            router.push('/')
             usuarioAuth()
-        }else if(!localStorage.getItem('token')){
-            cerrarSesion()
         }
 
-    }, [])
+    }, [autenticado])
 
     return ( 
         <>

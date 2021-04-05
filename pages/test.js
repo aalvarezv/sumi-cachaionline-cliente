@@ -31,8 +31,6 @@ const Test = () =>{
         })
         setPreguntasRing(resp.data.ring_preguntas)
 
-        console.log(resp.data.ring_preguntas)
-
         if(resp.data.ring_preguntas.length > 0){
           setCodigoPregunta(resp.data.ring_preguntas[numero_pregunta_actual].codigo_pregunta)
         }
@@ -101,7 +99,6 @@ const Test = () =>{
           setCodigoPregunta(preguntas_ring[numero_pregunta_actual + 1].codigo_pregunta)
           setNumeroPreguntaActual(numero_pregunta_actual + 1)
         }else{
-          console.log('FINALIZAR')
           setMostrarResultados(true)
         }
         

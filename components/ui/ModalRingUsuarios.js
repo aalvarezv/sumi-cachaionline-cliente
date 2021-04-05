@@ -144,6 +144,7 @@ const ModalRingUsuarios = ({show, setShowModalUsuariosRing, ring}) =>{
                   {codigo_curso !== '0' &&        
                       <TableRingUsuariosCurso 
                         ring={ring}
+                        codigo_institucion={institucion_select.codigo}
                         codigo_curso={codigo_curso}
                       />
                   }

@@ -19,7 +19,7 @@ const Navegacion = () => {
     const [showCargaMasivaUsuarios, setShowCargaMasivaUsuarios] = useState(false)
     
     const handleShowCargaMasivaUsuarios = () => {
-        console.log('aqui')
+    
     }
     
     const {cantidadInvitaciones, setCantidadInvitacionesRing} = useContext(SocketInvitacionesRingContext)

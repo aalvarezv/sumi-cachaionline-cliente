@@ -306,7 +306,7 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
             
             <Row className="d-flex justify-content-center">
                 <Col className="mb-2 mb-sm-0" xs={12} sm={"auto"}>
-                    {institucion_modificar
+                    {institucionValida
                     ?  
                         <Button 
                             variant="outline-info"
@@ -332,7 +332,6 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                         onClick={() => {
                             router.push({
                                 pathname: '/administrar/cursos',
-                                query: { institucion: formulario.codigo },
                             })
                         }}
                     >+Administrar Cursos</Button>

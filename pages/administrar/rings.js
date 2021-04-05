@@ -107,8 +107,6 @@ const Rings = () => {
  
    const handleClickVolver = () => {
       setMostrarBusqueda(true)
-      setRings([])
-      setRingModificar(null)
    }
 
    const handleSetPaginaActual = numero_pagina => {

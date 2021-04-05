@@ -109,7 +109,6 @@ const Preguntas = () => {
          const resp = await clienteAxios.get(`/api/preguntas/datos/${codigo}`)
          setPreguntaModificar(resp.data.pregunta)
          setMostrarBusqueda(false)
-         console.log(resp.data.pregunta)
       }catch(e){
          handleError(e)
       }

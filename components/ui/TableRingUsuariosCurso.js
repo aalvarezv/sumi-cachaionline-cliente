@@ -5,7 +5,7 @@ import { handleError } from '../../helpers'
 import AlertText from './AlertText'
 import Paginador from './Paginador'
 
-const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
+const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
     
 
     const [usuarios_ring_curso, setUsuariosRingCurso] = useState([])
@@ -50,6 +50,8 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
             const resp = await clienteAxios.post('/api/ring-usuarios/crear',{
                 codigo_ring: ring.codigo,
                 rut_usuario: rut,
+                codigo_institucion: codigo_institucion,
+                codigo_curso: codigo_curso,
             })
 
             const new_usuarios_ring_curso = usuarios_ring_curso.map(usuario_ring_curso => {  
@@ -104,7 +106,9 @@ const TableRingUsuariosCurso = ({ring, codigo_curso}) => {
             if(resultado_pagina.usuario.ring_usuarios.length === 0){
                 ring_usuarios_add.push({
                     rut_usuario: resultado_pagina.rut_usuario,
-                    codigo_ring: ring.codigo
+                    codigo_ring: ring.codigo,
+                    codigo_institucion: codigo_institucion,
+                    codigo_curso: codigo_curso,
                 })
             }
         })

@@ -1,40 +1,29 @@
+import Router from 'next/router'
 import { toast } from 'react-toastify'
 import axios from 'axios'
-import Router from 'next/router'
 import ToastMultiline from '../components/ui/ToastMultiline'
+
 
 export const handleError = (e) => {
 
     console.log({e})
-    let error = {
-        tipo: 'error'
-    }
     //error de servidor.
     if(!e.response){
-        error = {
-            ...error,
-            msg: 'Algo va mal, vuelva a intentar'
-        }
-        toast.error(error.msg, {containerId: 'sys_msg'})
+       
+        toast.error('Algo va mal, vuelva a intentar', {containerId: 'sys_msg'})
 
     //rescata los errores generados por validaciones sin express-validator 
     }else if(e.response.data.hasOwnProperty('msg')){
 
         //si es un error por token, elimina el token del localstorage.
         if(e.response.data.msg === 'TokenExpiredError' || e.response.data.msg === 'TokenMissingError'){
-            localStorage.removeItem('token')
-            //falta redirigir!
-            Router.push('/login')
-            console.log('ES NECESARIO REDIRIGIR AL LOGIN')
+            Router.push({
+                pathname: '/logout',
+            })
         }else{
-             error = {
-                ...error,
-                msg: e.response.data.msg
-            }
-            toast.error(error.msg, {containerId: 'sys_msg'})
+            toast.error(e.response.data.msg, {containerId: 'sys_msg'})
         }
 
-       
     //rescata los errores de express-validator
     }else if(e.response.data.hasOwnProperty('errors')){
 
@@ -42,8 +31,6 @@ export const handleError = (e) => {
     
     }
     
-    return error
-
 }
 
 export const debounce = (fn, delay) =>{

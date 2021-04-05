@@ -341,7 +341,7 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {usuario_modificar
+                    {usuarioValido
                     ?
                         <Button 
                             variant="outline-info"
