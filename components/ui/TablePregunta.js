@@ -68,7 +68,7 @@ const TablePregunta = ({preguntas, pagina_actual, resultados_por_pagina, handleE
                             {imagen.trim() !== '' &&
                                 <Image 
                                     src={imagen} 
-                                    style={{width: 150, cursor: 'pointer'}} 
+                                    style={{width: 150, cursor: 'pointer', background: 'black'}} 
                                     onClick={() => handleShowImageView(imagen)}
                                     thumbnail
                                 />

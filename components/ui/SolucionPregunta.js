@@ -147,6 +147,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                                 {imagen.trim() !== '' &&
                                     <Image 
                                         src={imagen.trim() === '' ? '/static/no-image.png' : imagen.trim()} 
+                                        style={{background: 'black'}}
                                         thumbnail
                                     />
                                 }

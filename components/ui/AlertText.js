@@ -10,7 +10,7 @@ const AlertText = ({text}) => {
             <Container>
             <Row className="d-flex justify-content-center ">
                 <Col xs="auto"><RiAlertFill size={"1.6rem"} color={"#FFC300"}/></Col>
-                <Col xs="auto" className="mt-0"><h5 className="text-dark">{text}</h5></Col>
+                <Col xs="auto" className="mt-0"><h5 className="text-dark text-center">{text}</h5></Col>
             </Row>
             </Container>
         }

@@ -152,7 +152,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                         {pregunta.imagen.trim() !== '' &&
                             <Image 
                                 src={pregunta.imagen} 
-                                style={{width: '100%'}} 
+                                style={{width: '100%', background: 'black'}} 
                             />
                         }
                         {pregunta.audio.trim() !== '' &&
@@ -232,7 +232,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             {pregunta.pregunta_solucion[indexSolucion].imagen.trim() !== '' &&
                                 <Image 
                                     src={pregunta.pregunta_solucion[indexSolucion].imagen} 
-                                    style={{width: '100%'}}
+                                    style={{width: '100%', background: 'black'}}
                                 />
                             }
 
@@ -299,7 +299,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             {pregunta.pregunta_pista[indexPista].imagen.trim() !== '' &&
                                 <Image 
                                     src={pregunta.pregunta_pista[indexPista].imagen} 
-                                    style={{width: '100%'}}
+                                    style={{width: '100%', background: 'black'}}
                                 />
                             }
 

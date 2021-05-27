@@ -143,6 +143,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                                 {imagen.trim() !== '' &&
                                     <Image 
                                         src={imagen.trim()} 
+                                        style={{background: 'black'}}
                                         thumbnail
                                     />
                                 }

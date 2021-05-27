@@ -1,7 +1,8 @@
-import React, { useState, useContext, createRef, useEffect, useRef} from 'react'
+import React, { useState, useContext, createRef, useEffect} from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import moment from 'moment';
 import { toast } from 'react-toastify'
-import { Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap'
+import { Card, Accordion, Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
 import CustomDateInput from '../ui/CustomDateInput'
@@ -34,8 +35,15 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
         duracion_pregunta: 0,
         revancha: false,
         revancha_cantidad: 0,
+        nota_alta: 100,
+        nota_alta_mensaje: 'Excelente, estás muy cerca del éxito',
+        nota_media: 70,
+        nota_media_mensaje: 'Sigue así y nadie te parará',
+        nota_baja: 40,
+        nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
         retroceder: false,
         pistas: false,
+        mostrar_cantidad_usuarios: true,
         privado: true,
         inactivo: false,
     })
@@ -56,7 +64,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     useEffect(() => {
        
         if(ring_modificar){
-            //console.log(ring_modificar)
+            
             setFormulario({
                 codigo: ring_modificar.codigo,
                 nombre: ring_modificar.nombre,
@@ -81,8 +89,15 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 duracion_pregunta: ring_modificar.duracion_pregunta,
                 revancha: ring_modificar.revancha,
                 revancha_cantidad: ring_modificar.revancha_cantidad,
+                nota_alta: ring_modificar.nota_alta,
+                nota_alta_mensaje: ring_modificar.nota_alta_mensaje,
+                nota_media: ring_modificar.nota_media,
+                nota_media_mensaje: ring_modificar.nota_media_mensaje,
+                nota_baja: ring_modificar.nota_baja,
+                nota_baja_mensaje: ring_modificar.nota_baja_mensaje,
                 retroceder: ring_modificar.retroceder,
                 pistas: ring_modificar.pistas,
+                mostrar_cantidad_usuarios: ring_modificar.mostrar_cantidad_usuarios,
                 privado: ring_modificar.privado,
                 inactivo: ring_modificar.inactivo,
             })
@@ -207,8 +222,15 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             duracion_pregunta: 0,
             revancha: false,
             revancha_cantidad: 0,
+            nota_alta: 100,
+            nota_alta_mensaje: 'Excelente, estás muy cerca del éxito',
+            nota_media: 70,
+            nota_media_mensaje: 'Sigue así y nadie te parará',
+            nota_baja: 40,
+            nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
             retroceder: false,
             pistas: false,
+            mostrar_cantidad_usuarios: true,
             privado: true,
             inactivo: false,
         })
@@ -254,7 +276,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             if(Object.keys(errors).length > 0){
                 return
             }
-
+            
             let ring = {
                 ...formulario,
                 niveles_academicos: formulario.niveles_academicos.filter(nivelAcademico => nivelAcademico.selected === true)
@@ -309,10 +331,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         showTimeInput
                         timeFormat = 'HH:mm'
                         dateFormat="dd/MM/yyyy HH:mm aa"
-                        onChange={date => {
+                        onChange={(date) => {
                             setFormulario({
                                 ...formulario,
-                                fecha_hora_inicio : date
+                                fecha_hora_inicio : date,
                             })
                             validarFormulario(null, date, formulario.fecha_hora_fin)
                         }}
@@ -336,7 +358,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         onChange={date => {
                             setFormulario({
                                 ...formulario,
-                                fecha_hora_fin : date
+                                fecha_hora_fin : date,
                             })
                             validarFormulario(null, formulario.fecha_hora_inicio, date)
                         }}
@@ -458,7 +480,115 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         onBlur={validarFormulario}
                     />     
                 </Col>
-            </Row>            
+            </Row>  
+            <Row>
+                <Col className="mb-2">
+                    <Accordion defaultActiveKey="1">
+                        <Card>
+                            <Card.Header>
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                    Haga clic para configurar mensajes motivacionales según porcentaje obtenido por el competidor.
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <Row>
+                                        <Col xs={"auto"}>
+                                            <Form.Control
+                                                id="nota_alta"
+                                                name="nota_alta"
+                                                type="number" 
+                                                placeholder="% Alto" 
+                                                value={formulario.nota_alta}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col>
+                                            <Form.Control
+                                                id="nota_alta_mensaje"
+                                                name="nota_alta_mensaje"
+                                                type="text" 
+                                                placeholder="mensaje para el usuario al obtener un porcentaje alto" 
+                                                value={formulario.nota_alta_mensaje}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={"auto"}>
+                                            <Form.Control
+                                                id="nota_media"
+                                                name="nota_media"
+                                                type="number" 
+                                                placeholder="% Medio" 
+                                                value={formulario.nota_media}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col>
+                                            <Form.Control
+                                                id="nota_media_mensaje"
+                                                name="nota_media_mensaje"
+                                                type="text" 
+                                                placeholder="mensaje para el usuario al obtener un porcentaje medio" 
+                                                value={formulario.nota_media_mensaje}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={"auto"}>
+                                            <Form.Control
+                                                id="nota_baja"
+                                                name="nota_baja"
+                                                type="number" 
+                                                placeholder="% Medio" 
+                                                value={formulario.nota_baja}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col>
+                                            <Form.Control
+                                                id="nota_baja_mensaje"
+                                                name="nota_baja_mensaje"
+                                                type="text" 
+                                                placeholder="mensaje para el usuario al obtener un porcentaje bajo" 
+                                                value={formulario.nota_baja_mensaje}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                </Col>
+                
+            </Row>          
             <Row>
                 <Col xs={12} md={6} className="mb-2">
                     <Row>
@@ -561,7 +691,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         }}
                     />
                 </Col>
-                <Col className="mb-1"> 
+                <Col xs={12} md="auto" className="mb-1"> 
                     <Form.Check 
                         id="pistas"
                         name="pistas"
@@ -575,8 +705,22 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                             })
                         }}
                     />
-                </Col> 
-                
+                </Col>
+                <Col className="mb-1"> 
+                    <Form.Check 
+                        id="mostrar_cantidad_usuarios"
+                        name="mostrar_cantidad_usuarios"
+                        type="checkbox"
+                        label="Mostrar Cantidad Usuarios"
+                        checked={formulario.mostrar_cantidad_usuarios}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.checked
+                            })
+                        }}
+                    />
+                </Col>
             </Row>
             <Row>
                 <Col className="mb-2">

@@ -598,6 +598,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                     {pregunta.imagen.trim() !== '' &&
                                         <Image 
                                             src={pregunta.imagen.trim()} 
+                                            style={{background: 'black'}}
                                             thumbnail
                                         />
                                     }

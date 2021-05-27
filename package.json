@@ -14,6 +14,7 @@
     "bootstrap-icons": "^1.0.0-alpha5",
     "formik": "^2.1.5",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "next": "9.5.0",
     "react": "16.13.1",
     "react-bootstrap": "^1.4.0",

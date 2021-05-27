@@ -12,7 +12,7 @@ const ModalImageView = ({img_url, show, handleClose}) => {
             centered
         >
         <Modal.Body>
-         <Image src={img_url} style={{width: '100%'}}/> 
+         <Image src={img_url} style={{width: '100%', background: 'black'}}/> 
         </Modal.Body>
         </Modal>
      )

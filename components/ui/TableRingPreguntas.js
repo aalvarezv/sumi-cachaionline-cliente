@@ -69,7 +69,7 @@ const TableRingPreguntas = ({
                                 {imagen.trim() !== '' &&
                                     <Image 
                                         src={imagen} 
-                                        style={{width: 150, cursor: 'pointer'}} 
+                                        style={{width: 150, cursor: 'pointer', background: 'black'}} 
                                         onClick={() => handleShowModalPreguntaInfo(pregunta)}
                                         thumbnail
                                     />
