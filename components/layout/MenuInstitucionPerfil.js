@@ -35,49 +35,47 @@ const MenuInstitucionPerfil = () => {
                                 id={`popover-positioned-bottom}`}
                                 className="pb-5"
                             >
-                            {/* <Popover.Title><small><h6>Información del usuario</h6></small></Popover.Title> */}
                                 <Popover.Content> 
-                                <Form.Label>
-                                    <small>
-                                        <strong>Institución</strong>
-                                    </small>
-                                </Form.Label>
-                                <Form.Control
-                                    name="institucion"
-                                    as="select"
-                                    size="sm"
-                                    value={institucion_select.codigo}
-                                    onChange={handleChangeInstitucion}
-                                >
-                                {usuario.institucion_roles.map(institucion => {
-                                    const {codigo_institucion, descripcion_institucion} = institucion
-                                    return <option key={codigo_institucion} value={codigo_institucion}>{descripcion_institucion}</option>
-                                })}
-                                </Form.Control>
-                                {rol_select &&
-                                    <>
-                                    <Form.Label className="mt-1">
+                                    <Form.Label>
                                         <small>
-                                            <strong>Perfil</strong>
+                                            <strong>Institución</strong>
                                         </small>
                                     </Form.Label>
                                     <Form.Control
-                                        name="rol"
+                                        name="institucion"
                                         as="select"
                                         size="sm"
-                                        value={rol_select.codigo_rol}
-                                        onChange={e => {
-                                            selectRol(e.target.value)
-                                        }}
+                                        value={institucion_select.codigo}
+                                        onChange={handleChangeInstitucion}
                                     >
-                                        {roles_institucion.map(rol => {
-                                            const {codigo_rol, descripcion} = rol
-                                            return <option key={codigo_rol} value={codigo_rol}>{descripcion}</option>
+                                        {usuario.institucion_roles.map((institucion, index) => {
+                                            const {codigo_institucion, descripcion_institucion} = institucion
+                                            return <option key={index} value={codigo_institucion}>{descripcion_institucion}</option>
                                         })}
                                     </Form.Control>
-                                    </>
-                                }
-                                    
+                                    {rol_select &&
+                                        <>
+                                            <Form.Label className="mt-1">
+                                                <small>
+                                                    <strong>Perfil</strong>
+                                                </small>
+                                            </Form.Label>
+                                            <Form.Control
+                                                name="rol"
+                                                as="select"
+                                                size="sm"
+                                                value={rol_select.codigo_rol}
+                                                onChange={e => {
+                                                    selectRol(e.target.value)
+                                                }}
+                                            >
+                                                {roles_institucion.map((rol, index) => {
+                                                    const {codigo_rol, descripcion} = rol
+                                                    return <option key={index} value={codigo_rol}>{descripcion}</option>
+                                                })}
+                                            </Form.Control>
+                                        </>
+                                    }
                                 </Popover.Content>
                             </Popover>
                         }
@@ -87,7 +85,7 @@ const MenuInstitucionPerfil = () => {
                             variant="outline-info"
                         >{usuario.nombre}</Button>
                     </OverlayTrigger>
-                </Col>
+                </Col> 
                 <Col 
                     sm={12}
                     md={"auto"}

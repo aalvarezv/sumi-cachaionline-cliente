@@ -52,6 +52,8 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
 
     if(!pregunta) return null
 
+    
+
     return (
         <Modal 
             show={show} 
@@ -88,6 +90,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             const { modulo } = pregunta_modulo
                             return (
                                 <Badge 
+                                    key={modulo.codigo}
                                     pill 
                                     variant="info"
                                     className="mr-1 mb-1"
@@ -102,6 +105,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             const { modulo_contenido } = pregunta_modulo_contenido
                             return (
                                 <Badge 
+                                    key={modulo_contenido.codigo}
                                     variant="secondary"
                                     className="mr-1 mb-1"
                                 >{modulo_contenido.descripcion}</Badge>
@@ -115,6 +119,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             const { modulo_contenido_tema } = pregunta_modulo_contenido_tema
                             return (
                                 <Badge 
+                                    key={modulo_contenido_tema.codigo}
                                     pill
                                     variant="info"
                                     className="mr-1 mb-1"
@@ -129,6 +134,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             const { modulo_contenido_tema_concepto } = pregunta_modulo_contenido_tema_concepto
                             return (
                                 <Badge 
+                                    key={modulo_contenido_tema_concepto.codigo}
                                     variant="secondary"
                                     className="mr-1 mb-1"
                                 >{modulo_contenido_tema_concepto.descripcion}</Badge>
@@ -148,11 +154,11 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col className="text-center">
                         {pregunta.imagen.trim() !== '' &&
                             <Image 
                                 src={pregunta.imagen} 
-                                style={{width: '100%', background: 'black'}} 
+                                style={{width: pregunta.imagen_ancho, background: 'black'}} 
                             />
                         }
                         {pregunta.audio.trim() !== '' &&
@@ -290,7 +296,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                 </Row>
                 {(pregunta.pregunta_pista.length > 0) &&
                     <Row>
-                        <Col>
+                        <Col className="text-center">
 
                             {pregunta.pregunta_pista[indexPista].texto.trim() !== '' &&
                                 <h6>{pregunta.pregunta_pista[indexPista].texto}</h6>
@@ -299,7 +305,7 @@ const ModalPreguntaInfo = ({pregunta, show, handleCloseModalPreguntaInfo}) => {
                             {pregunta.pregunta_pista[indexPista].imagen.trim() !== '' &&
                                 <Image 
                                     src={pregunta.pregunta_pista[indexPista].imagen} 
-                                    style={{width: '100%', background: 'black'}}
+                                    style={{width: pregunta.pregunta_pista[indexPista].imagen_ancho, background: 'black'}}
                                 />
                             }
 

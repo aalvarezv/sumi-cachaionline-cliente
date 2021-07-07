@@ -50,7 +50,7 @@ const ModalRingPreguntas = ({
     //PREGUNTA Info.
     const [showModalPreguntaInfo, setShowModalPreguntaInfo] = useState(false)
     const [pregunta, setPregunta] = useState(null)
-
+   
     useEffect(() => {
 
         const getCantidadPreguntasRing = async () =>{
@@ -114,6 +114,10 @@ const ModalRingPreguntas = ({
             const resp = await clienteAxios.post('/api/ring-preguntas/crear',{
                 codigo_ring: ring.codigo,
                 codigo_pregunta: codigo,
+                puntos_respuesta_correcta: ring.puntos_respuesta_correcta, 
+                puntos_respuesta_incorrecta: ring.puntos_respuesta_incorrecta, 
+                puntos_respuesta_omitida: ring.puntos_respuesta_omitida, 
+                puntos_respuesta_timeout: ring.puntos_respuesta_timeout 
             })
 
             setCantPreguntasRing(resp.data.cantPreguntasRing)
@@ -170,7 +174,11 @@ const ModalRingPreguntas = ({
             if(resultado_pagina.ring_pregunta.length === 0){
                 ring_preguntas_add.push({
                     codigo_pregunta: resultado_pagina.codigo,
-                    codigo_ring: ring.codigo
+                    codigo_ring: ring.codigo,
+                    puntos_respuesta_correcta: ring.puntos_respuesta_correcta, 
+                    puntos_respuesta_incorrecta: ring.puntos_respuesta_incorrecta, 
+                    puntos_respuesta_omitida: ring.puntos_respuesta_omitida, 
+                    puntos_respuesta_timeout: ring.puntos_respuesta_timeout
                 })
             }
         })
@@ -381,79 +389,79 @@ const ModalRingPreguntas = ({
                                 </Col>
                                 <Col>
                                     <InputSelectModulosContenido
-                                    id="codigo_modulo_contenido"
-                                    name="codigo_modulo_contenido"
-                                    
-                                    /*codigo modulo se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo={codigo_modulo}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS CONTENIDOS"
-                                    value={codigo_modulo_contenido}
-                                    onChange={e => setFiltros({
-                                            ...filtros,
-                                            codigo_modulo_contenido_tema: '0',
-                                            codigo_modulo_contenido_tema_concepto: '0',
-                                            [e.target.name]: e.target.value
-                                    })}
+                                        id="codigo_modulo_contenido"
+                                        name="codigo_modulo_contenido"
+                                        
+                                        /*codigo modulo se le pasa a las props del componente
+                                        para filtrar las propiedades del modulo seleccionado.*/
+                                        codigo_modulo={codigo_modulo}
+                                        as="select"
+                                        size="sm"
+                                        label="TODOS LOS CONTENIDOS"
+                                        value={codigo_modulo_contenido}
+                                        onChange={e => setFiltros({
+                                                ...filtros,
+                                                codigo_modulo_contenido_tema: '0',
+                                                codigo_modulo_contenido_tema_concepto: '0',
+                                                [e.target.name]: e.target.value
+                                        })}
                                     />
                                 </Col>
                             </Row>
                             <Row className="mb-2">
                                 <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
                                     <InputSelectModulosContenidoTema
-                                    id="codigo_modulo_contenido_tema"
-                                    name="codigo_modulo_contenido_tema"
-                                    
-                                    /*codigo contenido se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo_contenido={codigo_modulo_contenido}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS TEMAS"
-                                    value={codigo_modulo_contenido_tema}
-                                    onChange={e => setFiltros({
-                                            ...filtros,
-                                            codigo_modulo_contenido_tema_concepto: '0',
-                                            [e.target.name]: e.target.value
-                                    })}
+                                        id="codigo_modulo_contenido_tema"
+                                        name="codigo_modulo_contenido_tema"
+                                        
+                                        /*codigo contenido se le pasa a las props del componente
+                                        para filtrar las propiedades del modulo seleccionado.*/
+                                        codigo_modulo_contenido={codigo_modulo_contenido}
+                                        as="select"
+                                        size="sm"
+                                        label="TODOS LOS TEMAS"
+                                        value={codigo_modulo_contenido_tema}
+                                        onChange={e => setFiltros({
+                                                ...filtros,
+                                                codigo_modulo_contenido_tema_concepto: '0',
+                                                [e.target.name]: e.target.value
+                                        })}
                                     />
                                 </Col>
                                 <Col>
                                     <InputSelectModulosContenidoTemaConcepto
-                                    id="codigo_modulo_contenido_tema_concepto"
-                                    name="codigo_modulo_contenido_tema_concepto"
+                                        id="codigo_modulo_contenido_tema_concepto"
+                                        name="codigo_modulo_contenido_tema_concepto"
 
-                                    /*codigo contenido se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo_contenido_tema={codigo_modulo_contenido_tema}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS CONCEPTOS"
-                                    value={codigo_modulo_contenido_tema_concepto}
-                                    onChange={e => setFiltros({
-                                    ...filtros,
-                                    [e.target.name]: e.target.value
-                                    })}
+                                        /*codigo contenido se le pasa a las props del componente
+                                        para filtrar las propiedades del modulo seleccionado.*/
+                                        codigo_modulo_contenido_tema={codigo_modulo_contenido_tema}
+                                        as="select"
+                                        size="sm"
+                                        label="TODOS LOS CONCEPTOS"
+                                        value={codigo_modulo_contenido_tema_concepto}
+                                        onChange={e => setFiltros({
+                                        ...filtros,
+                                        [e.target.name]: e.target.value
+                                        })}
                                     />
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
                                     <Form.Control
-                                    id="nombre_usuario_creador"
-                                    name="nombre_usuario_creador"
-                                    type="text" 
-                                    size="sm"
-                                    placeholder="CREADA POR USUARIO..." 
-                                    value={nombre_usuario_creador}
-                                    onChange={e => {
-                                    setFiltros({
-                                            ...filtros,
-                                            [e.target.name]: e.target.value.toUpperCase()
-                                    })
-                                    }} 
+                                        id="nombre_usuario_creador"
+                                        name="nombre_usuario_creador"
+                                        type="text" 
+                                        size="sm"
+                                        placeholder="CREADA POR USUARIO..." 
+                                        value={nombre_usuario_creador}
+                                        onChange={e => {
+                                            setFiltros({
+                                                    ...filtros,
+                                                    [e.target.name]: e.target.value.toUpperCase()
+                                            })
+                                        }} 
                                     />
                                 </Col>
                             </Row>
@@ -489,6 +497,7 @@ const ModalRingPreguntas = ({
                                  />
                               </div>
                               <TableRingPreguntas
+                                    ring={ring}
                                     preguntas={resultados_pagina}
                                     pagina_actual = {pagina_actual}
                                     resultados_por_pagina = {resultados_por_pagina}

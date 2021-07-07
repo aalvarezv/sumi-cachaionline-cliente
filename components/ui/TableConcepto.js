@@ -70,7 +70,7 @@ const TableConcepto = ({conceptos, pagina_actual, resultados_por_pagina, handleC
                                     placement="bottom"
                                     container={ref_confirm_eliminar.current}
                                     containerPadding={20}
-                            >   
+                                >   
                                 <Popover id="popover-contained">
                                 <Popover.Title as="h3"><small>¿Desea eliminar el concepto?</small></Popover.Title>
                                 <Popover.Content>

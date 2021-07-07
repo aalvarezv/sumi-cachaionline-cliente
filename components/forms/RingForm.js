@@ -41,6 +41,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
         nota_media_mensaje: 'Sigue así y nadie te parará',
         nota_baja: 40,
         nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
+        puntos_respuesta_correcta: 1,
+        puntos_respuesta_incorrecta: -1,
+        puntos_respuesta_omitida: 0,
+        puntos_respuesta_timeout: 0,
         retroceder: false,
         pistas: false,
         mostrar_cantidad_usuarios: true,
@@ -95,6 +99,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 nota_media_mensaje: ring_modificar.nota_media_mensaje,
                 nota_baja: ring_modificar.nota_baja,
                 nota_baja_mensaje: ring_modificar.nota_baja_mensaje,
+                puntos_respuesta_correcta: ring_modificar.puntos_respuesta_correcta,
+                puntos_respuesta_incorrecta: ring_modificar.puntos_respuesta_incorrecta,
+                puntos_respuesta_omitida: ring_modificar.puntos_respuesta_omitida,
+                puntos_respuesta_timeout: ring_modificar.puntos_respuesta_timeout,
                 retroceder: ring_modificar.retroceder,
                 pistas: ring_modificar.pistas,
                 mostrar_cantidad_usuarios: ring_modificar.mostrar_cantidad_usuarios,
@@ -228,6 +236,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             nota_media_mensaje: 'Sigue así y nadie te parará',
             nota_baja: 40,
             nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
+            puntos_respuesta_correcta: 1,
+            puntos_respuesta_incorrecta: -1,
+            puntos_respuesta_omitida: 0,
+            puntos_respuesta_timeout: 0,
             retroceder: false,
             pistas: false,
             mostrar_cantidad_usuarios: true,
@@ -588,7 +600,87 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                     </Accordion>
                 </Col>
                 
-            </Row>          
+            </Row> 
+            <Row>
+                <Col className="mb-2">
+                    <Accordion defaultActiveKey="1">
+                        <Card>
+                            <Card.Header>
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                    Haga clic para configurar puntaje para preguntas correctas, incorrectas, omitidas y fuera de tiempo.
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <Row>
+                                        <Col xs={"auto"}>
+                                            <Form.Label>Ptos. Correcta</Form.Label>
+                                            <Form.Control
+                                                id="puntos_respuesta_correcta"
+                                                name="puntos_respuesta_correcta"
+                                                type="number" 
+                                                placeholder="Ptos. Correcta" 
+                                                value={formulario.puntos_respuesta_correcta}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={"auto"}>
+                                            <Form.Label>Ptos. Incorrecta</Form.Label>
+                                            <Form.Control
+                                                id="puntos_respuesta_incorrecta"
+                                                name="puntos_respuesta_incorrecta"
+                                                type="number" 
+                                                placeholder="Ptos. Incorrecta" 
+                                                value={formulario.puntos_respuesta_incorrecta}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={"auto"}>
+                                            <Form.Label>Ptos. Omitida</Form.Label>
+                                            <Form.Control
+                                                id="puntos_respuesta_omitida"
+                                                name="puntos_respuesta_omitida"
+                                                type="number" 
+                                                placeholder="Ptos. Omitida" 
+                                                value={formulario.puntos_respuesta_omitida}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={"auto"}>
+                                            <Form.Label>Ptos. Fuera de Tiempo</Form.Label>
+                                            <Form.Control
+                                                id="puntos_respuesta_timeout"
+                                                name="puntos_respuesta_timeout"
+                                                type="number" 
+                                                placeholder="Ptos. Fuera de Tiempo" 
+                                                value={formulario.puntos_respuesta_timeout}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                </Col>
+                
+            </Row>         
             <Row>
                 <Col xs={12} md={6} className="mb-2">
                     <Row>
