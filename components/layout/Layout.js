@@ -23,7 +23,7 @@ const Layout = (props) => {
 
         //Si no está autenticado y no hay token.
         if(!autenticado && !localStorage.getItem('token')){
-            router.push('/login')
+            //router.push('/recupera-clave')
         //Si no está autenticado, pero hay token. (REFRESCA LA PÁGINA)
         }else if(!autenticado && localStorage.getItem('token')){
             router.push('/')

@@ -6,6 +6,7 @@ import { Formik } from "formik"
 import LoginSchema from '../yup/LoginSchema'
 import Layout from '../components/layout/Layout'
 import Logo from '../components/ui/Logo'
+import Link from 'next/link'
 
 
 
@@ -86,15 +87,25 @@ const Login = () => {
                                             isInvalid={!!errors.clave}
                                         />
                                     </Form.Group>
-                                    <Button 
-                                        variant="info" 
-                                        type="submit"
-                                        className="mb-5"
-                                        block
-                                    >
-                                        {isSubmitting ? 'Ingresando...' : 'Ingresar'}
-                                    </Button>
-                                
+                                    <Row>
+                                        <Col>
+                                            <Button 
+                                                variant="info" 
+                                                type="submit"
+                                                className="mb-2"
+                                                block
+                                            >
+                                                {isSubmitting ? 'Ingresando...' : 'Ingresar'}
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="d-flex justify-content-center">
+                                            <Link href="/recupera-clave">
+                                                <a>Olvide mi contraseña</a>
+                                            </Link>
+                                        </Col>
+                                    </Row>
                                 </Form>
                                 </>
                             )}

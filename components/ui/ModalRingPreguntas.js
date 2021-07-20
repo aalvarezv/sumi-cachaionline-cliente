@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { Modal, Container, Row, Col, Badge, Form, Button } from 'react-bootstrap'
 import TableRingPreguntas from './TableRingPreguntas'
 import Logo from './Logo'
@@ -121,6 +122,7 @@ const ModalRingPreguntas = ({
             })
 
             setCantPreguntasRing(resp.data.cantPreguntasRing)
+            toast.success('La Pregunta fue agregada correctamente al Ring.', {containerId: 'sys_msg'})
 
             const new_preguntas_ring = preguntas_ring.map(pregunta_ring => {  
               
@@ -161,6 +163,7 @@ const ModalRingPreguntas = ({
                 }
             })
             setPreguntasRing(new_preguntas_ring)
+            toast.success('La Pregunta fue quitada correctamente del Ring.', {containerId: 'sys_msg'})
 
         }catch(e){
             handleError(e)

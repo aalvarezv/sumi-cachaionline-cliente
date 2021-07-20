@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import { toast } from 'react-toastify'
 import {Table, Button, Row, Col} from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
@@ -69,7 +70,7 @@ const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
                 }
             })
             setUsuariosRingCurso(new_usuarios_ring_curso)
-            
+            toast.success('El Usuario fue agregado correctamente al Ring.', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }
@@ -93,7 +94,7 @@ const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
                 }
             })
             setUsuariosRingCurso(new_usuarios_ring_curso)
-
+            toast.success('El Usuario fue quitado correctamente del Ring.', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }

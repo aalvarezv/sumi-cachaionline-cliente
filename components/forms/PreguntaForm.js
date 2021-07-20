@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
-import { Container, Row, Col, Form, Image, Button, Card, Nav, Alert } from 'react-bootstrap'
+import { Container, Row, Col, Form, Image as ImageBt, Button, Card, Nav, Alert } from 'react-bootstrap'
 import { TiDelete } from 'react-icons/ti'
 import  clienteAxios from '../../config/axios'
-import { getBase64, letras, handleError, getBase64FromURL } from '../../helpers'
+import { getBase64, letras, handleError, getBase64FromURL, getMeta } from '../../helpers'
 import AuthContext from '../../context/auth/AuthContext'
 import ModalPreguntaConfig from '../ui/ModalPreguntaConfig'
 import AlternativaPregunta from '../ui/AlternativaPregunta'
@@ -29,6 +29,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         rut_usuario_creador: rut,
         texto:'',
         imagen: '',
+        imagen_ancho: 0,
+        imagen_alto: 0,
         audio: '',
         video: '',
         duracion: 30,
@@ -138,27 +140,49 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
 
     },[])   
     
+
+
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
-
+        //console.log('archivo: '+archivo[0].type.split('/')[0]);
         //setUploading(true)
         const base64 = await getBase64(archivo[0]) 
+
+        let imagenAncho= 0
+        let imagenAlto= 0
+
         
-        setPregunta({
+
+        /* setPregunta({
             ...pregunta,
             imagen: '',
             video: '',
             audio: '',
-        })
+        })*/
 
         switch (archivo[0].type.split('/')[0]) {
+            
             case 'image':
-                setPregunta({
-                    ...pregunta,
-                    imagen: base64,
-                    video: '',
-                    audio: '',
-                })
+                getMeta(
+                    base64,
+                    function(width, height) {
+                        //válida que el ancho sea <= 485
+                        if(width <=485){
+                            setPregunta({
+                                ...pregunta,
+                                imagen: base64,
+                                imagen_ancho: width,
+                                imagen_alto: height,
+                                video: '',
+                                audio: '',
+                            })
+                        }else{
+                            toast.warning('El ancho de la imagen no debe ser mayor a 485.', {containerId: 'sys_msg'})
+                            return
+                        }
+                        
+                    }
+                );
                 break
             case 'video':
                 setPregunta({
@@ -316,6 +340,21 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 crear: 'Requerido'
             }
             toast.warning('Crear debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
+            setErrores(errors)
+            return false
+        }
+
+        if(pregunta.recordar+pregunta.comprender+pregunta.aplicar+pregunta.analizar+pregunta.evaluar+pregunta.crear !== 1){
+            errors = {
+                ...errors,
+                recordar: 'Requerido',
+                comprender: 'Requerido',
+                aplicar: 'Requerido',
+                analizar:'Requerido',
+                evaluar: 'Requerido',
+                crear: 'Requerido'
+            }
+            toast.warning('La suma de las habilidades debe ser igual a 1', {containerId: 'sys_msg'})
             setErrores(errors)
             return false
         }
@@ -479,6 +518,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             rut_usuario_creador: rut,
             texto:'',
             imagen: '',
+            imagen_ancho: 0,
+            imagen_alto: 0,
             audio: '',
             video: '',
             duracion: 30,
@@ -543,6 +584,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                     >
                         Crear
                     </Button>
+                    
                 :
                     <Button
                         variant="outline-info"
@@ -587,7 +629,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 >   
                                     {pregunta.imagen.trim() === '' && pregunta.audio.trim() === '' && pregunta.video.trim() === ''
                                     ?
-                                        <Image 
+                                        <ImageBt 
                                             src={'/static/img-pregunta.png'} 
                                             style={{opacity: 0.3}}
                                             thumbnail
@@ -596,7 +638,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                         null
                                     }
                                     {pregunta.imagen.trim() !== '' &&
-                                        <Image 
+                                        <ImageBt
                                             src={pregunta.imagen.trim()} 
                                             style={{background: 'black'}}
                                             thumbnail

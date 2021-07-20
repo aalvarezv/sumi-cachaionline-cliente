@@ -7,6 +7,7 @@ import ToastMultiline from '../ui/ToastMultiline'
 import Uploader from '../ui/Uploader'
 import UsuarioFormTabConfig from './UsuarioFormTabConfig'
 
+
 const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
 
     const [usuarioValido, setUsuarioValido] = useState(false)
@@ -21,6 +22,7 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
         inactivo: true
     })
     const [tab_key, setTabKey] = useState("tab_perfil")
+
 
     //1.- definir la variable que almacena los errores.
     const [errores, setErrores] = useState({})
@@ -194,6 +196,8 @@ const UsuarioForm = ({usuario_modificar, handleClickVolver}) => {
         })
 
     }
+
+    
 
     return ( 
     <Container>

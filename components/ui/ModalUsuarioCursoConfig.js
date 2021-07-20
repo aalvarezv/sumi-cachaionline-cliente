@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from 'react-toastify'
 import { Modal, Form, Row, Col, Button, Alert, ListGroup } from "react-bootstrap";
 import Logo from "./Logo";
 import InputSelectNivelAcademico from './InputSelectNivelAcademico'
@@ -89,7 +90,7 @@ const ModalUsuarioCursoConfig = ({
             })
             
             handleInscribirCurso(codigoCurso, 1)
-    
+            toast.success('El Usuario fue agregado al curso correctamente.', {containerId: 'sys_msg'})
         } catch (e) {
             handleError(e)
         }
@@ -108,7 +109,7 @@ const ModalUsuarioCursoConfig = ({
             })
             
             handleInscribirCurso(codigoCurso, 0)
-    
+            toast.success('El Usuario fue quitado del curso correctamente.', {containerId: 'sys_msg'})
         } catch (e) {
             handleError(e)
         }
@@ -139,7 +140,7 @@ const ModalUsuarioCursoConfig = ({
             }
         })
         
-        setCursos(newCursos)
+       setCursos(newCursos)
 
     }
 

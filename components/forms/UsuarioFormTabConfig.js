@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
 import { Container, Row, Col, Table, Button, Alert } from 'react-bootstrap'
 import InputSelectRol from '../ui/InputSelectRol'
@@ -64,7 +65,8 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
             
             const resp = await clienteAxios.post('/api/usuario-instituciones-roles/crear', usuario_institucion_rol)
             setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
-
+            toast.success('El Usuario fue agregado a la insitución y curso correctamente.', {containerId: 'sys_msg'})
+        
         }catch(e){
             handleError(e)
         }
@@ -84,7 +86,7 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
             })
            
             setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
-          
+            toast.success('El Usuario fue quitado de la insitución y curso correctamente.', {containerId: 'sys_msg'}) 
         }catch(e){
             handleError(e)
         }
