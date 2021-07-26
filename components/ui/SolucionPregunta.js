@@ -120,7 +120,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                         placeholder={`Solución ${numero}`}
                         value={texto}
                         onChange={e => {
-                            handleChangeTextoSolucion(numero, e.target.value.toUpperCase())
+                            handleChangeTextoSolucion(numero, e.target.value)
                         }}
                         isInvalid={errores.length > 0 ? errores.filter(error => error.numero === numero).length > 0 : false}
                         // onBlur={validarFormulario}

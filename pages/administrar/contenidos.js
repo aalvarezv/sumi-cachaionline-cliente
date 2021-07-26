@@ -12,13 +12,14 @@ import TableContenido from '../../components/ui/TableContenido'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria'
 import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Contenidos = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [contenidos, setContenidos] = useState([])
-   const [contenido_modificar, setContenidoModificar] = useState({})
+   const [contenidoEnProceso, setContenidoEnProceso] = useState({})
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [codigo_materia, setCodigoMateria] = useState('0')
    const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -66,7 +67,7 @@ const Contenidos = () => {
       const contenido = contenidos.filter(contenido => contenido.codigo === codigo)
       if(contenido.length > 0){
          setMostrarBusqueda(false)
-         setContenidoModificar(contenido[0])
+         setContenidoEnProceso(contenido[0])
       }
       
    }
@@ -76,19 +77,14 @@ const Contenidos = () => {
          await clienteAxios.delete(`/api/contenidos/eliminar/${codigo}`)
          const new_contenidos = contenidos.filter(contenido => contenido.codigo !== codigo)
          setContenidos(new_contenidos)
-         toast.success('CONTENIDO ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Contenido eliminado', {containerId: 'sys_msg'})
       } catch (e) {
          handleError(e)
       }
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
        setMostrarBusqueda(true)
-       setContenidos([])
-       setCodigoMateria('0')
-       setCodigoUnidad('0')
-       setCodigoModulo('0')
-       setFiltroBusqueda('')
    }
 
    const handleSetPaginaActual = numero_pagina => {
@@ -99,7 +95,15 @@ const Contenidos = () => {
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Contenidos</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Contenidos</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={contenidoEnProceso ? 'Modificar contenido' : 'Crear nuevo contenido'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>     
             
@@ -188,7 +192,7 @@ const Contenidos = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setContenidoModificar(null)
+                        setContenidoEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -200,8 +204,8 @@ const Contenidos = () => {
             :
             <Row>
                <ContenidoForm
-                  contenido_modificar = {contenido_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  contenidoEnProceso = {contenidoEnProceso}
+                  setContenidoEnProceso = {setContenidoEnProceso}
                />
             </Row>
             }   

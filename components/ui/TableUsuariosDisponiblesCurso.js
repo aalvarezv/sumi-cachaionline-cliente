@@ -64,7 +64,7 @@ const TableUsuariosDisponiblesCurso = ({usuarios, pagina_actual, resultados_por_
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Rut</th>
+                    <th>RUT</th>
                     <th>Nombre</th>
                     <th>Rol</th>
                     <th></th>

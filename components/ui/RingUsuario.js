@@ -7,58 +7,46 @@ import InvitarRing from './InvitarRing'
 import clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
 import TableRingUsuarios from './TableRingUsuarios'
+import AlertText from './AlertText'
 
-export const RingUsuario = ({show, ring, showInvitarRing, setShowInvitarRing}) => {
+export const RingUsuario = ({ring}) => {
 
     const { usuario, institucion_select } = useContext(AuthContext)
     const [codigo_curso, setCodigoCurso] = useState('0')
     const [usuariosRing, setUsuariosRing] = useState([])
     const [activeTab, setActiveTab] = useState('administrar');
+    const [showInvitarRing, setShowInvitarRing] = useState(false)  
 
-    
     useEffect(() => {
-
-        listarUsuariosRing()
-        setCodigoCurso('0')
-        setActiveTab('administrar')
-  
-        if(!show){
-            setShowInvitarRing(false)
-        }
-  
-      }, [show])
-
+      listarUsuariosRing()
+    }, [ring])
+    
 
     let nivelesAcademicos = []
-    if(ring.ring_nivel_academicos){
-      
-       nivelesAcademicos = ring.ring_nivel_academicos.map(nivelAcademico => ({
-         codigo: nivelAcademico.nivel_academico.codigo,
-         descripcion: nivelAcademico.nivel_academico.descripcion,
-      }))
-      
+    if(ring.niveles_academicos){
+      nivelesAcademicos = ring.niveles_academicos.map(nivelAcademico => (
+          {
+              codigo: nivelAcademico.codigo,
+              descripcion: nivelAcademico.descripcion,
+          }
+      ))
     }
     
     const listarUsuariosRing = async() =>{
       try {
-        
         const resp = await clienteAxios.get('/api/ring-usuarios/listar/usuarios-ring',{
           params: {
             codigoRing: ring.codigo
           }
         })
-       
         setUsuariosRing(resp.data.usuariosRing)
-
       } catch (e) {
-        
         handleError(e)
       }
-
     }
 
     const handleShowInvitarRing = () => {
-      setShowInvitarRing(!showInvitarRing)
+        setShowInvitarRing(!showInvitarRing)
     }
 
     const handleSelectTab = tab => {
@@ -68,8 +56,6 @@ export const RingUsuario = ({show, ring, showInvitarRing, setShowInvitarRing}) =
       setActiveTab(tab)
     }
 
-
-
     return (
         <Container>
             <Tabs 
@@ -78,8 +64,10 @@ export const RingUsuario = ({show, ring, showInvitarRing, setShowInvitarRing}) =
               activeKey={activeTab}
               onSelect={handleSelectTab}
             >
-              <Tab eventKey="administrar" title="Administrar usuarios">
-              
+              <Tab 
+                eventKey="administrar" 
+                title="Agregar o quitar usuarios"
+              >
                 {!showInvitarRing
                 ?
                 <>
@@ -127,14 +115,27 @@ export const RingUsuario = ({show, ring, showInvitarRing, setShowInvitarRing}) =
                   />
                 }
               </Tab>
-              {usuariosRing.length > 0 &&
-                <Tab eventKey="usuarios" title="Usuarios inscritos en ring">
+              
+              <Tab 
+                eventKey="usuarios" 
+                title="Ver usuarios inscritos"
+              >
+                {usuariosRing.length > 0
+                ?
                   <TableRingUsuarios 
                     usuariosRing={usuariosRing}
                   />
-                </Tab>
-              }
+                :
+                  <Row className="my-5">
+                    <Col>
+                      <AlertText
+                        text="No hay usuarios inscritos"
+                      />
+                    </Col>
+                  </Row>
+                }
+              </Tab>
             </Tabs>
-            </Container>
+        </Container>
     )
 }

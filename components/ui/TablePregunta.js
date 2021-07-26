@@ -96,8 +96,8 @@ const TablePregunta = ({preguntas, pagina_actual, resultados_por_pagina, handleE
                         <td className="text-center"
                         >
                             <Button
-                                variant={"outline-info"}
-                                size={"md"}
+                                variant={"info"}
+                                size={"sm"}
                                 onClick={() => handleModificaPregunta(codigo)}
                                 >
                                 Modificar
@@ -108,8 +108,8 @@ const TablePregunta = ({preguntas, pagina_actual, resultados_por_pagina, handleE
                             ref={ref_confirm_eliminar}
                         >
                            <Button
-                                variant={"danger"}
-                                size={"md"}
+                                variant={"secondary"}
+                                size={"sm"}
                                 onClick={e => handleClickEliminar(e, codigo)}
                             >
                                Eliminar

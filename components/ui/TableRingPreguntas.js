@@ -13,7 +13,7 @@ const TableRingPreguntas = ({
         handleAgregarPreguntaRing, 
         handleQuitarPreguntaRing, 
         handleAgregarQuitarPreguntasRingMasivo,
-        handleShowModalPreguntaInfo,
+        handleShowPreguntaInfo,
     }) => {
 
 
@@ -54,7 +54,7 @@ const TableRingPreguntas = ({
                                     <Image 
                                         src={imagen} 
                                         style={{width: 150, cursor: 'pointer', background: 'black'}} 
-                                        onClick={() => handleShowModalPreguntaInfo(pregunta)}
+                                        onClick={() => handleShowPreguntaInfo(pregunta)}
                                         thumbnail
                                     />
                                 }

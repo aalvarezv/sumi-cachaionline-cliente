@@ -22,8 +22,7 @@ const TableMateria = ({materias, pagina_actual, resultados_por_pagina, handleCli
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Código</th>
-                    <th>Descripción</th>
+                    <th>Nombre</th>
                     <th className="text-center">Estado</th>
                     <th></th>
                     <th></th>
@@ -39,25 +38,25 @@ const TableMateria = ({materias, pagina_actual, resultados_por_pagina, handleCli
                             return(
                                 <tr key={index}>
                                 <td>{numFila}</td>  
-                                <td>{codigo}</td>
                                 <td>{nombre}</td> 
                                 <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>  
                                 <td className="text-center">
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
+                                        size={"sm"}
                                         onClick={() => {
                                             handleClickModificar(codigo)
                                         }}
                                     >
-                                     Modificar
+                                     Configurar
                                     </Button>
                                 </td>
                                 <td className="text-center"
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
-                                        variant="danger"
-                                        size={"md"}
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar

@@ -70,7 +70,7 @@ const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
                 }
             })
             setUsuariosRingCurso(new_usuarios_ring_curso)
-            toast.success('El Usuario fue agregado correctamente al Ring.', {containerId: 'sys_msg'})
+            toast.success('Usuario agregado al ring.', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }
@@ -94,7 +94,7 @@ const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
                 }
             })
             setUsuariosRingCurso(new_usuarios_ring_curso)
-            toast.success('El Usuario fue quitado correctamente del Ring.', {containerId: 'sys_msg'})
+            toast.success('Usuario quitado del ring.', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }
@@ -228,7 +228,7 @@ const TableRingUsuariosCurso = ({ring, codigo_institucion, codigo_curso}) => {
                             </Button>
                         </th>
                         <th>#</th>
-                        <th>Rut</th>
+                        <th>RUT</th>
                         <th>Nombre</th>
                         <th>Email</th>
                         </tr>

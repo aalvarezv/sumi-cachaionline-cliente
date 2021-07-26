@@ -9,13 +9,14 @@ import Layout from '../../components/layout/Layout'
 import Privado from '../../components/layout/Privado'
 import NivelAcademicoForm from '../../components/forms/NivelAcademicoForm'
 import TableNivelAcademico from '../../components/ui/TableNivelAcademico'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const NivelesAcademicos = () => {
 
    const [filtro, setFiltroBusqueda] = useState ('')
    const [niveles_academicos, setNivelesAcademicos] = useState ([])
-   const [nivelacademico_modificar, setNivelAcademicoModificar] = useState(null)
+   const [nivelAcademicoEnProceso, setNivelAcademicoEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [textAlert, setTextAlert] = useState('')
    /**** Variables para paginación *****/
@@ -54,14 +55,13 @@ const NivelesAcademicos = () => {
       const nivel_academico = niveles_academicos.filter(nivel_academico => nivel_academico.codigo === codigo)
       if(nivel_academico.length > 0){
          setMostrarBusqueda(false)
-         setNivelAcademicoModificar(nivel_academico[0])
+         setNivelAcademicoEnProceso(nivel_academico[0])
       }
 
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
-      setNivelesAcademicos([])
       setFiltroBusqueda('')
    }
 
@@ -76,19 +76,28 @@ const NivelesAcademicos = () => {
          await clienteAxios.delete(`/api/nivel-academico/eliminar/${codigo}`)
          const new_niveles_academicos = niveles_academicos.filter(nivelAcademico => nivelAcademico.codigo !== codigo)
          setNivelesAcademicos(new_niveles_academicos)
-         toast.success('NIVEL ACADÉMICO ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Nivel académico eliminado', {containerId: 'sys_msg'})
 
       } catch (e) {
          handleError(e)
       }
 
    }
+
         
-    return ( 
+   return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Niveles Académicos</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Niveles Académicos</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={nivelAcademicoEnProceso ? 'Modificar nivel académico' : 'Crear nuevo nivel académico'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             {mostrar_busqueda 
@@ -103,7 +112,7 @@ const NivelesAcademicos = () => {
                      value={filtro} 
                      placeholder="Búsqueda por código ó descripción del nivel académico..."
                      onChange={e => {
-                        setFiltroBusqueda(e.target.value.toUpperCase())
+                        setFiltroBusqueda(e.target.value)
                      }}
                   />
                </Col>
@@ -122,7 +131,7 @@ const NivelesAcademicos = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setNivelAcademicoModificar(null)
+                        setNivelAcademicoEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -134,8 +143,8 @@ const NivelesAcademicos = () => {
             :
             <Row>
                <NivelAcademicoForm
-                  nivelacademico_modificar={nivelacademico_modificar}
-                  handleClickVolver={handleClickVolver}
+                  nivelAcademicoEnProceso={nivelAcademicoEnProceso}
+                  setNivelAcademicoEnProceso={setNivelAcademicoEnProceso}
                />
             </Row>
             }

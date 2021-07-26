@@ -9,7 +9,7 @@ const TableRing = ({
         pagina_actual, 
         resultados_por_pagina, 
         handleEliminarRing, 
-        handleModificarRing
+        handleConfigurarRing
     }) => {
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
@@ -59,8 +59,8 @@ const TableRing = ({
                     <tr>
                     <th>#</th>
                     <th>Nombre</th>
-                    <th>Creador</th>
-                    <th>Creado</th>
+                    <th>Creado por</th>
+                    <th>Fecha hora</th>
                     <th>Privado</th>
                     <th></th>
                     <th></th>
@@ -83,7 +83,7 @@ const TableRing = ({
                                 <td>
                                     <Badge variant={privado ? 'danger' : 'success'}>{privado ? 'Privado' : 'Público'}</Badge>
                                 </td>
-                                <td>
+                                {/* <td>
                                     <Button 
                                         variant="info"
                                         onClick={e => {
@@ -92,8 +92,8 @@ const TableRing = ({
                                     >
                                      Alumnos
                                     </Button>
-                                </td>
-                                <td>
+                                </td> */}
+                                {/* <td>
                                     <Button 
                                         variant="info"
                                         onClick={e => {
@@ -104,18 +104,20 @@ const TableRing = ({
                                     >
                                      Preguntas
                                     </Button>
-                                </td>                                 
+                                </td>                                  */}
                                 <td>
                                     <Button 
-                                        variant="outline-info"
-                                        onClick={e => handleModificarRing(codigo)}
+                                        variant="info"
+                                        size={"sm"}
+                                        onClick={e => handleConfigurarRing(codigo)}
                                     >
-                                     Modificar
+                                     Configurar
                                     </Button>
                                 </td>
                                 <td>
                                     <Button 
-                                        variant="danger"
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar

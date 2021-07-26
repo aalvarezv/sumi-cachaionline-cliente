@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap'
-import ToastMultiline from '../ui/ToastMultiline'
 import { handleError, getBase64 } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import Uploader from '../ui/Uploader'
 
 
-const MateriaForm = ({materia_modificar, handleClickVolver}) => {
+const MateriaForm = ({materiaEnProceso, setMateriaEnProceso}) => {
 
-    const router = useRouter()
-    const [materiaValida, setMateriaValida] = useState(false)
     const [formulario, setFormulario] = useState({
         codigo: '',
         nombre: '',
@@ -20,49 +16,37 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
         imagen: '',
         inactivo: false
     })
-    const [errores, setErrores] = useState({})
 
     useEffect(() => {
 
-        if(materia_modificar){
+        if(materiaEnProceso){
             setFormulario({
-                codigo: materia_modificar.codigo,
-                nombre: materia_modificar.nombre,
-                descripcion: materia_modificar.descripcion,
-                imagen: materia_modificar.imagen,
-                inactivo: materia_modificar.inactivo
+                codigo: materiaEnProceso.codigo,
+                nombre: materiaEnProceso.nombre,
+                descripcion: materiaEnProceso.descripcion,
+                imagen: materiaEnProceso.imagen,
+                inactivo: materiaEnProceso.inactivo
             })
-            setMateriaValida(true)
         }else{
             reseteaFormulario()
-            setMateriaValida(false)
         }
-        setErrores({})
 
-    }, [materia_modificar])
+    }, [materiaEnProceso])
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
-
+       
         //valida el nombre.
         if(formulario.nombre.trim() === ''){
-            errors = {
-                ...errors,
-                nombre: 'Requerido'
-            }
+            toast.error('Ingrese nombre', {containerId: 'sys_msg'})
+            return false
         }
         //valida el descripcion.
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -79,24 +63,18 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-             //previne el envío
-             e.preventDefault()
              //valida el formulario
-             const errors = validarFormulario()
-             //verifica que no hayan errores
-             if(Object.keys(errors).length > 0){
-                 return
-             }
+             if(!validarFormulario()) return
              //materia a enviar
              let materia = {
                  ...formulario,
                 codigo : uuidv4(),
              }
 
-             const resp = await clienteAxios.post('/api/materias/crear', materia)
+             await clienteAxios.post('/api/materias/crear', materia)
              //respuesta de la materia recibido.
-             setMateriaValida(true)
-             toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA CREADA'}]}/>, {containerId: 'sys_msg'})
+             setMateriaEnProceso(materia)
+             toast.success('Materia creada', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -106,19 +84,14 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-             //valida el formulario
-             const errors = validarFormulario()
-             //verifica que no hayan errores
-             if(Object.keys(errors).length > 0){
-                 return
-             }
+           
+            if(!validarFormulario()) return
             //materia a enviar
             let materia = formulario
 
             await clienteAxios.put('/api/materias/actualizar', materia)
             //respuesta de la materia recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'MATERIA ACTUALIZADA'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Materia actualizada', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -143,7 +116,10 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
                     <Col className="d-flex mb-2">
                         <Image 
                             src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
-                            style={{width: 150}}
+                            style={{
+                                width: 150, 
+                                marginRight: 10
+                            }}
                             thumbnail
                         />
                         <Uploader 
@@ -163,11 +139,9 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }} 
-                        isInvalid={errores.hasOwnProperty('nombre')}
-                        onBlur={validarFormulario}
                     />
                 </Form.Group>
                 <Form.Group>
@@ -182,11 +156,9 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('descripcion')}
-                        onBlur={validarFormulario}
                     />
                 </Form.Group>      
                 <Form.Check 
@@ -205,7 +177,7 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
                 />
                 <Row className="justify-content-center">
                     <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                        {materia_modificar
+                        {materiaEnProceso
                         ?
                             <Button 
                                 variant="outline-info"
@@ -222,28 +194,6 @@ const MateriaForm = ({materia_modificar, handleClickVolver}) => {
                             >Crear</Button>
                         }
                     </Col>
-                    <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>     
-                        <Button 
-                            variant="success"
-                            disabled={!materiaValida}
-                            size="lg"
-                            className="btn-block"
-                            onClick={() => {
-                                router.push({
-                                    pathname: '/administrar/unidades',
-                                    query: { materia: formulario.codigo },
-                                })
-                            }}
-                        >+ Agregar Unidades</Button>
-                    </Col>
-                    <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
-                </Col>
                 </Row>
             </Form>
         </Container> )

@@ -9,13 +9,14 @@ import Privado from '../../components/layout/Privado'
 import Paginador from '../../components/ui/Paginador'
 import RolForm from '../../components/forms/RolForm'
 import TableRol from '../../components/ui/TableRol'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Roles = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [roles, setRoles] = useState([])
-   const [rol_modificar, setRolModificar] = useState(null)
+   const [rolEnProceso, setRolEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [textAlert, setTextAlert] = useState('')
    /**** Variables para paginación *****/
@@ -57,7 +58,7 @@ const Roles = () => {
       const rol = roles.filter(rol => rol.codigo === codigo)
       if(rol.length > 0){
          setMostrarBusqueda(false)
-         setRolModificar(rol[0])
+         setRolEnProceso(rol[0])
       }
 
     }
@@ -69,7 +70,7 @@ const Roles = () => {
          await clienteAxios.delete(`/api/roles/eliminar/${codigo}`)
          const new_roles = roles.filter(rol => rol.codigo !== codigo)
          setRoles(new_roles)
-         toast.success('ROL ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Rol eliminado', {containerId: 'sys_msg'})
 
       } catch (e) {
          handleError(e)
@@ -77,9 +78,8 @@ const Roles = () => {
 
    }
 
-    const handleClickVolver = () =>{
+    const handleClickMostrarBusqueda = () =>{
        setMostrarBusqueda(true)
-       setRoles([])
        setFiltroBusqueda('')
     }
 
@@ -91,7 +91,15 @@ const Roles = () => {
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Roles</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Roles</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={rolEnProceso ? 'Modificar rol' : 'Crear nuevo rol'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             {mostrar_busqueda 
@@ -106,7 +114,7 @@ const Roles = () => {
                      value={filtro} 
                      placeholder="Búsqueda por código ó descripción del rol..."
                      onChange={e => {
-                        setFiltroBusqueda(e.target.value.toUpperCase())
+                        setFiltroBusqueda(e.target.value)
                      }}
                   />
                </Col>
@@ -125,7 +133,7 @@ const Roles = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setRolModificar(null)
+                        setRolEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -137,8 +145,8 @@ const Roles = () => {
             :
             <Row>
                <RolForm
-                  rol_modificar={rol_modificar}
-                  handleClickVolver={handleClickVolver}
+                  rolEnProceso={rolEnProceso}
+                  setRolEnProceso={setRolEnProceso}
                />
             </Row>
             }

@@ -23,7 +23,7 @@ const TableUsuario = ({usuarios, pagina_actual, resultados_por_pagina, handleCli
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Rut</th>
+                    <th>RUT</th>
                     <th>Nombre</th>
                     <th>Email</th>
                     <th className="text-center">Estado</th>
@@ -47,20 +47,21 @@ const TableUsuario = ({usuarios, pagina_actual, resultados_por_pagina, handleCli
                                 <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>
                                 <td className="text-center">
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
+                                        size={"sm"}
                                         onClick={() => {
                                             handleClickModificar(rut)
                                         }}
                                     >
-                                     Modificar
+                                     Configurar
                                     </Button>
                                 </td>
                                 <td className="text-center"
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
-                                        variant="danger"
-                                        size={"md"}
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, rut)}
                                     >
                                         Eliminar

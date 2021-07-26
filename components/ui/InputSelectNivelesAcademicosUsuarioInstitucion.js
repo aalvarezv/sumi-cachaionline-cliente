@@ -6,7 +6,7 @@ import { handleError } from '../../helpers'
 
 const InputSelectNivelesAcademicosUsuarioInstitucion = props => {
 
-    const {rut_usuario, codigo_institucion, niveles_academicos, handleSelectNivelAcademico} = props
+    const { rut_usuario, codigo_institucion, niveles_academicos, handleSelectNivelAcademico } = props
     
     const [nivelesAcademicosUsuarioInstitucion, setNivelesAcademicosUsuarioInstitucion] = useState([])
    

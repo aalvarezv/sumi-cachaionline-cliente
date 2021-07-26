@@ -240,7 +240,7 @@ const ModalPreguntaConfig = ({ show, setShow, modulos_init, contenidos_init, tem
     const handleClickAceptar = () => {
         
         if(modulos.length === 0 && contenidos.length === 0 && temas.length === 0 && conceptos.length === 0){
-             toast.warning('La pregunta debe estar asociada al menos a una propiedad.', {containerId: 'sys_msg'})
+             toast.error('La pregunta debe estar asociada al menos a una propiedad.', {containerId: 'sys_msg'})
              return
         }
 

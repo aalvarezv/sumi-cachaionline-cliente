@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import {Container, Row, Col, Button, Card, Form} from 'react-bootstrap'
+import React, { useContext, useState } from 'react'
+import {Alert, Container, Row, Col, Button, Card } from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import { toast } from 'react-toastify'
 import AlertText from '../../components/ui/AlertText'
@@ -7,19 +7,20 @@ import {handleError} from '../../helpers'
 import Layout from '../../components/layout/Layout'
 import Privado from '../../components/layout/Privado'
 import Paginador from '../../components/ui/Paginador'
-import InputSelectInstitucion from '../../components/ui/InputSelectInstitucion'
 import InputSelectNivelAcademico from '../../components/ui/InputSelectNivelAcademico'
 import CursoForm from '../../components/forms/CursoForm'
 import TableCursos from '../../components/ui/TableCursos'
+import AuthContext from '../../context/auth/AuthContext'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Cursos = () => {
 
-   
+   const { institucion_select } = useContext(AuthContext)
+      
    const [cursos, setCursos] = useState([])
-   const [curso_modificar, setCursoModificar] = useState(null)
+   const [cursoEnProceso, setCursoEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
-   const [codigo_institucion, setCodigoInstitucion] = useState('0')
    const [codigo_nivel_academico, setCodigoNivelAcademico] = useState('0')
    const [textAlert, setTextAlert] = useState('')
    /**** Variables para paginación *****/
@@ -36,7 +37,7 @@ const Cursos = () => {
       try{
          const resp = await clienteAxios.get(`/api/cursos/busqueda/institucion-nivel-academico/`, {
             params: {
-               codigo_institucion,
+               codigo_institucion: institucion_select.codigo,
                codigo_nivel_academico,
             }
          })
@@ -49,7 +50,6 @@ const Cursos = () => {
          }
          setPaginaActual(1)
       
-
       }catch(e){
          handleError(e)
       }
@@ -60,7 +60,7 @@ const Cursos = () => {
       const curso = cursos.filter(curso => curso.codigo === codigo)
       if(curso.length > 0){
          setMostrarBusqueda(false)
-         setCursoModificar(curso[0])
+         setCursoEnProceso(curso[0])
       }
    }
 
@@ -69,13 +69,13 @@ const Cursos = () => {
         await clienteAxios.delete(`/api/cursos/eliminar/${codigo}`)
         const new_cursos = cursos.filter(curso => curso.codigo !== codigo)
         setCursos(new_cursos)
-        toast.success('CURSO ELIMINADO', {containerId: 'sys_msg'})
+        toast.success('Curso eliminado', {containerId: 'sys_msg'})
      } catch (e) {
         handleError(e)
      }
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
    }
 
@@ -83,11 +83,20 @@ const Cursos = () => {
       setPaginaActual(numero_pagina)
    }
    
+   
    return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Cursos</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Cursos</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={cursoEnProceso ? 'Modificar curso' : 'Crear nuevo curso'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             
@@ -96,19 +105,6 @@ const Cursos = () => {
             <> 
             <Row className="d-flex justify-content-center">
                <Col className="mb-2 mb-sm-0" xs={12} sm={6}>
-                  <Row className="mb-2">
-                     <Col>
-                        <InputSelectInstitucion
-                           id="codigo_institucion"
-                           name="codigo_institucion"
-                           as="select"
-                           size="sm"
-                           label="TODAS LAS INSTITUCIONES"
-                           value={codigo_institucion}
-                           onChange={e => setCodigoInstitucion(e.target.value)}
-                        />
-                     </Col>
-                  </Row>
                   <Row className="mb-2">
                      <Col>
                         <InputSelectNivelAcademico
@@ -138,7 +134,7 @@ const Cursos = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setCursoModificar(null)
+                        setCursoEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -150,8 +146,8 @@ const Cursos = () => {
             :
             <Row>
                <CursoForm
-                  curso_modificar = {curso_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  cursoEnProceso = {cursoEnProceso}
+                  setCursoEnProceso={setCursoEnProceso}
                />
             </Row>
             }
@@ -176,7 +172,6 @@ const Cursos = () => {
                         cursos = {resultados_pagina}
                         pagina_actual = {pagina_actual}
                         resultados_por_pagina = {resultados_por_pagina}
-                        codigo_institucion = {codigo_institucion}
                         handleClickModificarCurso = {handleClickModificarCurso}
                         handleClickEliminarCurso = {handleClickEliminarCurso}
                      /> 

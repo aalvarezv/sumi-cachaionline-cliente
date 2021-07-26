@@ -14,13 +14,14 @@ import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesM
 import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad'
 import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido'
 import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Conceptos = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [conceptos, setConceptos] = useState([])
-   const [concepto_modificar, setConceptoModificar] = useState({})
+   const [conceptoEnProceso, setConceptoEnProceso] = useState({})
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [codigo_materia, setCodigoMateria] = useState('0')
    const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -70,7 +71,7 @@ const Conceptos = () => {
       const concepto = conceptos.filter(concepto => concepto.codigo === codigo)
       if(concepto.length > 0){
          setMostrarBusqueda(false)
-         setConceptoModificar(concepto[0])
+         setConceptoEnProceso(concepto[0])
       }
 
    }
@@ -86,26 +87,27 @@ const Conceptos = () => {
       }
     }
 
-    const handleClickVolver = () =>{
+    const handleClickMostrarBusqueda = () =>{
        setMostrarBusqueda(true)
-       setConceptos([])
-       setCodigoMateria('0')
-       setCodigoUnidad('0')
-       setCodigoModulo('0')
-       setCodigoContenido('0')
-       setCodigoContenidoTema('0')
-       setFiltroBusqueda('')
     }
 
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
-
+   
     return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Conceptos</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Conceptos</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={conceptoEnProceso ? 'Modificar concepto' : 'Crear nuevo concepto'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body> 
             {mostrar_busqueda 
@@ -236,7 +238,7 @@ const Conceptos = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setConceptoModificar(null)
+                        setConceptoEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -248,8 +250,8 @@ const Conceptos = () => {
             :
             <Row>
                <ConceptoForm
-                  concepto_modificar = {concepto_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  conceptoEnProceso = {conceptoEnProceso}
+                  setConceptoEnProceso = {setConceptoEnProceso}
                />
             </Row>
             }   

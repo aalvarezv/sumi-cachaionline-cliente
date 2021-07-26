@@ -24,7 +24,6 @@ const TableRol = ({roles, pagina_actual, resultados_por_pagina, handleClickModif
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Código</th>
                     <th>Descripción</th>
                     <th className="text-center">Estado</th>
                     <th></th>
@@ -42,25 +41,25 @@ const TableRol = ({roles, pagina_actual, resultados_por_pagina, handleClickModif
                             return(
                                 <tr key={index}>
                                     <td>{numFila}</td> 
-                                    <td>{codigo}</td>     
                                     <td>{descripcion}</td>  
                                     <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>                        
                                     <td className="text-center">
                                         <Button 
-                                            variant="outline-info"
+                                            variant="info"
+                                            size={"sm"}
                                             onClick={() => {
                                                 handleClickModificar(codigo)
                                             }}
                                         >
-                                        Modificar
+                                        Configurar
                                         </Button>
                                     </td>
                                     <td className="text-center"
                                         ref={ref_confirm_eliminar}
                                     >
                                         <Button 
-                                            variant="danger"
-                                            size={"md"}
+                                            variant="secondary"
+                                            size={"sm"}
                                             onClick={e => handleClickEliminar(e, codigo)}
                                         >
                                             Eliminar

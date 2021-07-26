@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
 import ToastMultiline from '../ui/ToastMultiline'
 import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap'
@@ -8,10 +7,8 @@ import  clienteAxios from '../../config/axios'
 import Uploader from '../ui/Uploader'
 
 
-const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
+const InstitucionForm = ({institucionEnProceso, setInstitucionEnProceso}) => {
 
-    const router = useRouter()
-    const [institucionValida, setInstitucionValida] = useState(false)
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
@@ -23,79 +20,53 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
         inactivo: false
     })
 
-    const [errores, setErrores] = useState({})
-   
     useEffect(() => {
 
-        if(institucion_modificar){
+        if(institucionEnProceso){
             setFormulario({
-                codigo: institucion_modificar.codigo,
-                descripcion: institucion_modificar.descripcion,
-                direccion: institucion_modificar.direccion,
-                email: institucion_modificar.email,
-                telefono: institucion_modificar.telefono,
-                website: institucion_modificar.website,
-                logo: institucion_modificar.logo,
-                inactivo: institucion_modificar.inactivo
+                codigo: institucionEnProceso.codigo,
+                descripcion: institucionEnProceso.descripcion,
+                direccion: institucionEnProceso.direccion,
+                email: institucionEnProceso.email,
+                telefono: institucionEnProceso.telefono,
+                website: institucionEnProceso.website,
+                logo: institucionEnProceso.logo,
+                inactivo: institucionEnProceso.inactivo
             })
-            setInstitucionValida(true)
         }else{
             reseteaFormulario()
-            setInstitucionValida(false)
         }
-        setErrores({})
 
-    }, [institucion_modificar])
+    }, [institucionEnProceso])
 
     const validarFormulario = () => {
         
-        let errors = {}
-
         if(formulario.codigo.trim() === ''){
-            errors = {
-                ...errors,
-                codigo: 'Requerido'
-            }
+            toast.error('Ingrese código', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.direccion.trim() === ''){
-            errors = {
-                ...errors,
-                direccion: 'Requerido'
-            }
+            toast.error('Ingrese dirección', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.email.trim() === ''){
-            errors = {
-                ...errors,
-                email: 'Requerido'
-            }
+            toast.error('Ingrese email', {containerId: 'sys_msg'})
+            return false
         }else{
             if(!emailValido(formulario.email)){
-                errors = {
-                    ...errors,
-                    email: 'No es un email válido'
-                }
+                toast.error('No es un email válido', {containerId: 'sys_msg'})
+                return false
             }
         }
-    
-        if(formulario.telefono === ''){
-            errors = {
-                ...errors,
-                telefono: 'Requerido'
-            }
-        }
-       
-        setErrores(errors)
-
-        return errors
+           
+        return true
 
     }
 
@@ -115,22 +86,14 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
             //Institucion a enviar
-            const resp = await clienteAxios.post('/api/instituciones/crear', formulario)
-            setFormulario(resp.data.institucion)
-            setInstitucionValida(true)
-            toast.success(<ToastMultiline mensajes={[{msg: 'INSTITUCIÓN CREADA'}]}/>, {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/instituciones/crear', formulario)
+            setInstitucionEnProceso(formulario)
+            toast.success('Institución creada', {containerId: 'sys_msg'})
         
         }catch(e){
-            setInstitucionValida(false)
             handleError(e)
         }     
 
@@ -139,15 +102,10 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
+            
             await clienteAxios.put('/api/instituciones/actualizar', formulario)
-            toast.success(<ToastMultiline mensajes={[{msg: 'INSTITUCIÓN ACTUALIZADA'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Institución actualizada', {containerId: 'sys_msg'})
 
         }catch(e){
             handleError(e)
@@ -170,7 +128,6 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
         <Form className="mt-3">
             <Row className="d-flex mb-2">
                 <Col sm={12} md={5} lg={7} className="order-2 order-md-1">
-
                     <Form.Label>Codigo</Form.Label>
                     <Form.Control 
                         id="codigo"
@@ -184,9 +141,7 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                             [e.target.name]: e.target.value.toUpperCase()
                             })
                         }} 
-                        disabled={institucion_modificar}
-                        isInvalid={errores.hasOwnProperty('codigo')}
-                        onBlur={validarFormulario}
+                        disabled={institucionEnProceso}
                     />
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control
@@ -197,17 +152,18 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                         value={formulario.descripcion}
                         onChange={e => {setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('descripcion')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
                 <Col className="d-flex order-1 order-md-2 my-3 my-md-0">
                     <Image 
                         src={formulario.logo.trim() === '' ? '/static/no-image.png' : formulario.logo.trim()} 
-                        style={{width: 150}}
+                        style={{
+                            width: 150,
+                            marginRight: 10
+                        }}
                         thumbnail
                     />
                     <Uploader 
@@ -228,11 +184,9 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                         value={formulario.direccion}
                         onChange={e => {setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('direccion')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
             </Form.Group>
@@ -250,8 +204,6 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                                 [e.target.name]: e.target.value.toLowerCase()
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('email')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
                 <Col xs={12} sm={4}>
@@ -259,16 +211,18 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                     <Form.Control
                         id="telefono"
                         name="telefono"
-                        type="number" 
+                        type="text"
+                        maxLength={9} 
                         placeholder="TELÉFONO" 
                         value={formulario.telefono}
-                        onChange={e => {setFormulario({
-                                ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
-                            })
+                        onChange={e => {
+                            if (e.target.value === '' || /^[0-9\b]+$/.test(e.target.value)) {
+                                setFormulario({
+                                    ...formulario,
+                                    [e.target.name]: e.target.value
+                                })
+                            }
                         }}
-                        isInvalid={errores.hasOwnProperty('telefono')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
                 <Col xs={12} sm={4}>
@@ -284,8 +238,6 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                                 [e.target.name]: e.target.value.toLowerCase()
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('website')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
             </Form.Group>
@@ -306,7 +258,7 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
             
             <Row className="d-flex justify-content-center">
                 <Col className="mb-2 mb-sm-0" xs={12} sm={"auto"}>
-                    {institucionValida
+                    {institucionEnProceso
                     ?  
                         <Button 
                             variant="outline-info"
@@ -322,27 +274,6 @@ const InstitucionForm = ({institucion_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-2 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="success"
-                        size="lg"
-                        className="btn-block"
-                        disabled={!institucionValida}
-                        onClick={() => {
-                            router.push({
-                                pathname: '/administrar/cursos',
-                            })
-                        }}
-                    >+Administrar Cursos</Button>
-                </Col>
-                <Col xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

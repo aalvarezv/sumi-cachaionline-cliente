@@ -1,11 +1,16 @@
 import React, {useState, useRef} from 'react'
 import {getNumeroFilaTabla} from '../../helpers'
-import {Table, Button, Row, Col, Badge, Popover, Overlay} from 'react-bootstrap'
+import {Table, Button, Row, Col,  Popover, Overlay} from 'react-bootstrap'
 import ModalUsuariosDisponiblesCurso from '../ui/ModalUsuariosDisponibleCurso'
 
 
-const TableCursos = ({cursos, pagina_actual, resultados_por_pagina, 
-    codigo_institucion, handleClickModificarCurso, handleClickEliminarCurso}) => { 
+const TableCursos = ({
+        cursos, 
+        pagina_actual, 
+        resultados_por_pagina, 
+        handleClickModificarCurso, 
+        handleClickEliminarCurso
+    }) => { 
 
     const [show_confirm_eliminar, setShowConfirmEliminar] = useState(false)
     const [target_confirm_eliminar, setTargetConfirmEliminar] = useState(null)
@@ -41,8 +46,6 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Institución</th>
-                    <th>Código</th>
                     <th>Descripción</th>
                     <th></th>
                     <th></th>
@@ -52,17 +55,16 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                     {cursos.length > 0 &&
                         cursos.map((curso, index) =>{
                             
-                            const {codigo, nivel_academico, letra, institucion} = curso
+                            const {codigo, nivel_academico, letra} = curso
                             let numFila = getNumeroFilaTabla(index, pagina_actual, resultados_por_pagina)
                             return(
                                 <tr key={index}>
                                 <td>{numFila}</td> 
-                                <td>{institucion.descripcion}</td>
-                                <td>{codigo}</td> 
                                 <td>{`${nivel_academico.descripcion} ${letra}`}</td> 
                                 <td className="text-center">
                                     <Button 
                                         variant="info"
+                                        size={"sm"}
                                         onClick={() => {   
                                             handleClickAgregarUsuarioCurso(curso)
                                         }}
@@ -74,18 +76,19 @@ const TableCursos = ({cursos, pagina_actual, resultados_por_pagina,
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
+                                        size={"sm"}
                                         onClick={() => {
                                             handleClickModificarCurso(codigo)    
                                         }}
                                     >
-                                     Modificar
+                                     Configurar
                                     </Button>
                                 </td>
                                 <td className="text-center">
                                     <Button 
-                                        variant="danger"
-                                        size={"md"}
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar

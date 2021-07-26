@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
-import ToastMultiline from '../ui/ToastMultiline'
 import { Container, Form, Button, Row, Col, Nav } from 'react-bootstrap'
-import {handleError } from '../../helpers'
+import { handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
 
-const RolForm = ({rol_modificar, handleClickVolver}) => {
-
-    const router = useRouter()
-    const [rolValido, setRolValido] = useState(false)
+const RolForm = ({rolEnProceso, setRolEnProceso}) => {
+  
     const [formulario, setFormulario] = useState({
         codigo: '',
         descripcion: '',
+        sys_admin: false,
         ver_menu_administrar: false,
         ver_submenu_instituciones:false,
         ver_submenu_niveles_academicos:false,
         ver_submenu_roles:false,
         ver_submenu_usuarios:false,
+        ver_submenu_cursos: false,
         ver_menu_asignaturas:false,
         ver_submenu_materias:false,
         ver_submenu_unidades:false,
@@ -28,56 +26,49 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
         ver_submenu_conceptos:false,
         ver_menu_rings: false,
         ver_menu_preguntas: false,
+        ver_menu_cuestionarios: false,
         inactivo: false
     })
 
-    const [errores, setErrores] = useState({})
-
     useEffect(() => {
 
-        if(rol_modificar){
+        if(rolEnProceso){
             setFormulario({
-                codigo: rol_modificar.codigo,
-                descripcion: rol_modificar.descripcion,
-                ver_menu_administrar: rol_modificar.ver_menu_administrar,
-                ver_submenu_instituciones: rol_modificar.ver_submenu_instituciones,
-                ver_submenu_niveles_academicos: rol_modificar.ver_submenu_niveles_academicos,
-                ver_submenu_roles: rol_modificar.ver_submenu_roles,
-                ver_submenu_usuarios: rol_modificar.ver_submenu_usuarios,
-                ver_menu_asignaturas: rol_modificar.ver_menu_asignaturas,
-                ver_submenu_materias: rol_modificar.ver_submenu_materias,
-                ver_submenu_unidades: rol_modificar.ver_submenu_unidades,
-                ver_submenu_modulos: rol_modificar.ver_submenu_modulos,
-                ver_submenu_contenidos: rol_modificar.ver_submenu_contenidos,
-                ver_submenu_temas: rol_modificar.ver_submenu_temas,
-                ver_submenu_conceptos: rol_modificar.ver_submenu_conceptos,
-                ver_menu_rings: rol_modificar.ver_menu_rings,
-                ver_menu_preguntas: rol_modificar.ver_menu_preguntas,
-                inactivo: rol_modificar.inactivo
+                codigo: rolEnProceso.codigo,
+                descripcion: rolEnProceso.descripcion,
+                sys_admin: rolEnProceso.sys_admin,
+                ver_menu_administrar: rolEnProceso.ver_menu_administrar,
+                ver_submenu_instituciones: rolEnProceso.ver_submenu_instituciones,
+                ver_submenu_niveles_academicos: rolEnProceso.ver_submenu_niveles_academicos,
+                ver_submenu_roles: rolEnProceso.ver_submenu_roles,
+                ver_submenu_usuarios: rolEnProceso.ver_submenu_usuarios,
+                ver_submenu_cursos: rolEnProceso.ver_submenu_cursos,
+                ver_menu_asignaturas: rolEnProceso.ver_menu_asignaturas,
+                ver_submenu_materias: rolEnProceso.ver_submenu_materias,
+                ver_submenu_unidades: rolEnProceso.ver_submenu_unidades,
+                ver_submenu_modulos: rolEnProceso.ver_submenu_modulos,
+                ver_submenu_contenidos: rolEnProceso.ver_submenu_contenidos,
+                ver_submenu_temas: rolEnProceso.ver_submenu_temas,
+                ver_submenu_conceptos: rolEnProceso.ver_submenu_conceptos,
+                ver_menu_rings: rolEnProceso.ver_menu_rings,
+                ver_menu_preguntas: rolEnProceso.ver_menu_preguntas,
+                ver_menu_cuestionarios: rolEnProceso.ver_menu_cuestionarios,
+                inactivo: rolEnProceso.inactivo
             })
-            setRolValido(true)
         }else{
             reseteaFormulario()
-            setRolValido(false)
         }
-        setErrores({})
 
-    }, [rol_modificar])
+    }, [rolEnProceso])
 
     const validarFormulario = () => {
         
-        let errors = {}
-
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -85,11 +76,13 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
         setFormulario({
             codigo: '',
             descripcion: '',
+            sys_admin: false,
             ver_menu_administrar: false,
             ver_submenu_instituciones:false,
             ver_submenu_niveles_academicos:false,
             ver_submenu_roles:false,
             ver_submenu_usuarios:false,
+            ver_submenu_cursos: false,
             ver_menu_asignaturas:false,
             ver_submenu_materias:false,
             ver_submenu_unidades:false,
@@ -99,6 +92,7 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
             ver_submenu_conceptos:false,
             ver_menu_rings: false,
             ver_menu_preguntas: false,
+            ver_menu_cuestionarios: false,
             inactivo: false,
         })
     }
@@ -106,26 +100,18 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return    
             //rol a enviar
             let rol = {
                 ...formulario,
                 codigo : uuidv4(),
             }
-
-            const resp = await clienteAxios.post('/api/roles/crear', rol)
-            setRolValido(true)
-            toast.success(<ToastMultiline mensajes={[{msg: 'ROL CREADO'}]}/>, {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/roles/crear', rol)
+            setRolEnProceso(rol)
+            toast.success('Rol creado', {containerId: 'sys_msg'})
         
         }catch(e){
-            setRolValido(false)
             handleError(e)
         }                                                
     }
@@ -133,47 +119,59 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
+
             await clienteAxios.put('/api/roles/actualizar', formulario)
-            toast.success(<ToastMultiline mensajes={[{msg: 'ROL ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Rol actualizado', {containerId: 'sys_msg'})
 
         }catch(e){
             handleError(e)
         }
     }
-
+         
     return (
         <Container>
         <Form>
-            <Form.Group>
-                <Form.Label>Descripcion</Form.Label>
-                <Form.Control
-                    id="descripcion"
-                    name="descripcion"
-                    type="text" 
-                    placeholder="DESCRIPCIÓN" 
-                    value={formulario.descripcion}
-                    onChange={e => {setFormulario({
-                            ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                        })
-                    }}
-                    isInvalid={errores.hasOwnProperty('descripcion')}
-                    onBlur={validarFormulario}
-                />
-            </Form.Group>
+            <Row className="mb-4">
+                <Col>
+                    <Form.Label>Descripción</Form.Label>
+                    <Form.Control
+                        id="descripcion"
+                        name="descripcion"
+                        type="text" 
+                        placeholder="DESCRIPCIÓN" 
+                        value={formulario.descripcion}
+                        onChange={e => {setFormulario({
+                                ...formulario,
+                            [e.target.name]: e.target.value
+                            })
+                        }}
+                    />
+                </Col>
+                {/* <Col className="">
+                    
+                    <Form.Check 
+                        id="sys_admin"
+                        name="sys_admin"
+                        type="checkbox"
+                        label="Es administrador de sistema"
+                        checked={formulario.sys_admin}
+                        onChange={e => {
+                            setFormulario({
+                                ...formulario,
+                                [e.target.name]: e.target.checked
+                            })
+                        }}
+                    />
+                </Col> */}
+            </Row>
             <Nav variant="tabs" activeKey="opciones-menu">
                 <Nav.Item>
                     <Nav.Link 
                         eventKey="opciones-menu"
                         className="font-weight-bold"
-                    >Habilitar opciones de menú</Nav.Link>
+                    >Opciones de menú que puede ver el rol</Nav.Link>
                     <Container>                 
                         <Row className="mt-2">
                             <Col xs={12} className="mb-1">
@@ -246,6 +244,21 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                     type="checkbox"
                                     label="Usuarios"
                                     checked={formulario.ver_submenu_usuarios}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                            <Col xs={12} sm="auto">
+                                <Form.Check 
+                                    id="ver_submenu_cursos"
+                                    name="ver_submenu_cursos"
+                                    type="checkbox"
+                                    label="Cursos"
+                                    checked={formulario.ver_submenu_cursos}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,
@@ -402,6 +415,24 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                                 />
                             </Col>
                         </Row>
+                        <Row className="mb-3">
+                            <Col xs={12} className="mb-1">
+                                <Form.Check 
+                                    id="ver_menu_cuestionarios"
+                                    name="ver_menu_cuestionarios"
+                                    type="checkbox"
+                                    label="Menú Cuestionarios"
+                                    className="font-weight-bold text-info"
+                                    checked={formulario.ver_menu_cuestionarios}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                        </Row>
                     </Container>
                 </Nav.Item>
             </Nav>
@@ -421,7 +452,7 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {rol_modificar
+                    {rolEnProceso
                     ?
                         <Button 
                             variant="outline-info"
@@ -437,30 +468,6 @@ const RolForm = ({rol_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="success"
-                        disabled={!rolValido}
-                        size="lg"
-                        className="btn-block"
-                        onClick={() => {
-                            router.push({
-                                pathname: '/administrar/usuarios',
-                                query: { 
-                                    rol: formulario.codigo
-                                },
-                            })
-                        }}
-                    >+ Agregar Usuarios</Button>
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

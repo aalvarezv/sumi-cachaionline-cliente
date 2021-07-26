@@ -1,6 +1,5 @@
 import React, { useState, useContext, createRef, useEffect} from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import moment from 'moment';
 import { toast } from 'react-toastify'
 import { Card, Accordion, Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap'
 import {handleError } from '../../helpers'
@@ -15,7 +14,7 @@ import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import InputSelectTipoDuracionPregunta from '../../components/ui/InputSelectTipoDuracionPregunta'
  
 
-const RingForm = ({ring_modificar, handleClickVolver}) => {
+const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
 
     const {usuario, institucion_select} = useContext(AuthContext)
 
@@ -63,60 +62,58 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     const ref_custom_date_desde = createRef()
     const ref_custom_date_hasta = createRef()
     
-    const [errores, setErrores] = useState({})
-   
     useEffect(() => {
        
-        if(ring_modificar){
+        if(ringEnProceso){
             
             setFormulario({
-                codigo: ring_modificar.codigo,
-                nombre: ring_modificar.nombre,
-                descripcion: ring_modificar.descripcion,
-                rut_usuario_creador: ring_modificar.rut_usuario_creador,
+                codigo: ringEnProceso.codigo,
+                nombre: ringEnProceso.nombre,
+                descripcion: ringEnProceso.descripcion,
+                rut_usuario_creador: ringEnProceso.rut_usuario_creador,
                 codigo_institucion: institucion_select.codigo,
-                niveles_academicos: ring_modificar.ring_nivel_academicos.map(ringNivelAcademico => {
+                niveles_academicos: ringEnProceso.niveles_academicos.map(nivelAcademico => {
                     return{
-                        codigo: ringNivelAcademico.nivel_academico.codigo,
-                        descripcion: ringNivelAcademico.nivel_academico.descripcion,
+                        codigo: nivelAcademico.codigo,
+                        descripcion: nivelAcademico.descripcion,
                         selected: true,
                     }
                 }),
-                codigo_materia: ring_modificar.codigo_materia,
-                codigo_tipo_juego: ring_modificar.codigo_tipo_juego,
-                codigo_modalidad: ring_modificar.codigo_modalidad,
-                fecha_hora_inicio: new Date(ring_modificar.fecha_hora_inicio),
-                fecha_hora_fin: new Date(ring_modificar.fecha_hora_fin),
-                tipo_duracion_pregunta: ring_modificar.tipo_duracion_pregunta,
-                duracion_pregunta: ring_modificar.duracion_pregunta,
-                tipo_duracion_pregunta: ring_modificar.tipo_duracion_pregunta,
-                duracion_pregunta: ring_modificar.duracion_pregunta,
-                revancha: ring_modificar.revancha,
-                revancha_cantidad: ring_modificar.revancha_cantidad,
-                nota_alta: ring_modificar.nota_alta,
-                nota_alta_mensaje: ring_modificar.nota_alta_mensaje,
-                nota_media: ring_modificar.nota_media,
-                nota_media_mensaje: ring_modificar.nota_media_mensaje,
-                nota_baja: ring_modificar.nota_baja,
-                nota_baja_mensaje: ring_modificar.nota_baja_mensaje,
-                puntos_respuesta_correcta: ring_modificar.puntos_respuesta_correcta,
-                puntos_respuesta_incorrecta: ring_modificar.puntos_respuesta_incorrecta,
-                puntos_respuesta_omitida: ring_modificar.puntos_respuesta_omitida,
-                puntos_respuesta_timeout: ring_modificar.puntos_respuesta_timeout,
-                retroceder: ring_modificar.retroceder,
-                pistas: ring_modificar.pistas,
-                mostrar_cantidad_usuarios: ring_modificar.mostrar_cantidad_usuarios,
-                privado: ring_modificar.privado,
-                inactivo: ring_modificar.inactivo,
+                codigo_materia: ringEnProceso.codigo_materia,
+                codigo_tipo_juego: ringEnProceso.codigo_tipo_juego,
+                codigo_modalidad: ringEnProceso.codigo_modalidad,
+                fecha_hora_inicio: new Date(ringEnProceso.fecha_hora_inicio),
+                fecha_hora_fin: new Date(ringEnProceso.fecha_hora_fin),
+                tipo_duracion_pregunta: ringEnProceso.tipo_duracion_pregunta,
+                duracion_pregunta: ringEnProceso.duracion_pregunta,
+                tipo_duracion_pregunta: ringEnProceso.tipo_duracion_pregunta,
+                duracion_pregunta: ringEnProceso.duracion_pregunta,
+                revancha: ringEnProceso.revancha,
+                revancha_cantidad: ringEnProceso.revancha_cantidad,
+                nota_alta: ringEnProceso.nota_alta,
+                nota_alta_mensaje: ringEnProceso.nota_alta_mensaje,
+                nota_media: ringEnProceso.nota_media,
+                nota_media_mensaje: ringEnProceso.nota_media_mensaje,
+                nota_baja: ringEnProceso.nota_baja,
+                nota_baja_mensaje: ringEnProceso.nota_baja_mensaje,
+                puntos_respuesta_correcta: ringEnProceso.puntos_respuesta_correcta,
+                puntos_respuesta_incorrecta: ringEnProceso.puntos_respuesta_incorrecta,
+                puntos_respuesta_omitida: ringEnProceso.puntos_respuesta_omitida,
+                puntos_respuesta_timeout: ringEnProceso.puntos_respuesta_timeout,
+                retroceder: ringEnProceso.retroceder,
+                pistas: ringEnProceso.pistas,
+                mostrar_cantidad_usuarios: ringEnProceso.mostrar_cantidad_usuarios,
+                privado: ringEnProceso.privado,
+                inactivo: ringEnProceso.inactivo,
             })
 
-            if(ring_modificar.tipo_duracion_pregunta == '2'){
+            if(ringEnProceso.tipo_duracion_pregunta == '2'){
                 setShowDuracionPregunta(true)
             }else{
                 setShowDuracionPregunta(false)
             }
 
-            if(ring_modificar.revancha){
+            if(ringEnProceso.revancha){
                 setShowRevanchaCantidad(true)
             }else{
                 setShowRevanchaCantidad(false)
@@ -126,18 +123,13 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
             reseteaFormulario()
         }
     
-    }, [ring_modificar])
-
+    }, [ringEnProceso])
 
     const validarFormulario = (e, fechaHoraInicio = formulario.fecha_hora_inicio, fechaHoraFin = formulario.fecha_hora_fin) => {
         
-        let errors = {}
-
         if(formulario.nombre.trim() === ''){
-            errors = {
-                ...errors,
-                nombre: 'Requerido'
-            }
+            toast.error('Ingrese nombre del ring', {containerId: 'sys_msg'})
+            return false
         }
         
         //Se valida fechahora solo si se envían, que es cuando se selecciona una fechahora en los input datepicker.
@@ -148,65 +140,47 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
         const horaFin  = new Date(fechaHoraFin).toTimeString().split(' ')[0].substring(0,5)
   
         if(fechaInicio >= fechaFin && horaInicio >= horaFin){
-            errors = {
-                ...errors,
-                fecha_hora_inicio: 'Debe ser menor a fecha hora fin',
-            }
+            toast.error('Fecha y hora de inicio del juego ser menor a su fecha y hora de fin', {containerId: 'sys_msg'})
+            return false
         }
        
         if(formulario.niveles_academicos.length === 0){
-            errors = {
-                ...errors,
-               niveles_academicos: 'Requerido',
-            }
+            toast.error('Seleccione al menos un nivel académico', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.codigo_materia === '0'){
-            errors = {
-                ...errors,
-                codigo_materia: 'Requerido',
-            }
+            toast.error('Seleccione materia', {containerId: 'sys_msg'})
+            return false
+
         }
 
         if(formulario.codigo_tipo_juego === '0'){
-            errors = {
-                ...errors,
-                codigo_tipo_juego: 'Requerido'
-            }
+            toast.error('Seleccione tipo de juego', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.codigo_modalidad === '0'){
-            errors = {
-                ...errors,
-                codigo_modalidad: 'Requerido',
-            }
+            toast.error('Seleccione modalidad del juego', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.tipo_duracion_pregunta === '0'){
-            errors = {
-               ...errors,
-               tipo_duracion_pregunta: 'Requerio',
-            }
+            toast.error('Seleccione tipo de duración de preguntas', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.tipo_duracion_pregunta === '2' && formulario.duracion_pregunta === '0' || formulario.duracion_pregunta === ''){
-            
-            errors = {
-                ...errors,
-                duracion_pregunta: 'Requerido',
-            }
+            toast.error('Ingrese duración de pregunta en segundos', {containerId: 'sys_msg'})
+            return false
         }
 
         if(formulario.revancha && formulario.revancha_cantidad === '0' || formulario.revancha_cantidad === '' ){
-            errors = {
-                ...errors,
-                revancha_cantidad: 'Requerido',
-            }
+            toast.error('Ingrese cantidad de revanchas', {containerId: 'sys_msg'})
+            return false
         }
 
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -252,13 +226,8 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     const handleCrearRing = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                toast.error('Complete los campos marcados en rojo', {containerId: 'sys_msg'})
+            if(!validarFormulario()){
                 return
             }
             //ring a enviar
@@ -268,9 +237,11 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 niveles_academicos: formulario.niveles_academicos.filter(nivelAcademico => nivelAcademico.selected === true)
             }
 
-            const resp = await clienteAxios.post('/api/rings/crear', ring)
-            reseteaFormulario()
-            toast.success('RING CREADO', {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/rings/crear', ring)
+            
+            setRingEnProceso(ring)
+
+            toast.success('Ring creado', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -280,12 +251,8 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
     const handleActualizarRing = async e => {
 
         try{
-            //previne el envío
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
+           
+            if(!validarFormulario()){
                 return
             }
             
@@ -294,9 +261,9 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                 niveles_academicos: formulario.niveles_academicos.filter(nivelAcademico => nivelAcademico.selected === true)
             }
           
-            const resp = await clienteAxios.put('/api/rings/actualizar', ring)
-            ring = resp.data
-            toast.success('RING ACTUALIZADO', {containerId: 'sys_msg'})
+            await clienteAxios.put('/api/rings/actualizar', ring)
+            
+            toast.success('Ring actualizado', {containerId: 'sys_msg'})
 
 
         }catch(e){
@@ -328,11 +295,9 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         value={formulario.nombre}
                         onChange={e => {setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('nombre')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
                 <Col xs={12} md={"auto"} className="mb-2">
@@ -348,12 +313,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                                 ...formulario,
                                 fecha_hora_inicio : date,
                             })
-                            validarFormulario(null, date, formulario.fecha_hora_fin)
                         }}
                         customInput={
                             <CustomDateInput 
                                 label="Inicio del juego"
-                                isInvalid={errores.hasOwnProperty('fecha_hora_inicio')}
                                 ref = {ref_custom_date_desde}
                             />
                         }
@@ -372,12 +335,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                                 ...formulario,
                                 fecha_hora_fin : date,
                             })
-                            validarFormulario(null, formulario.fecha_hora_inicio, date)
                         }}
                         customInput={
                             <CustomDateInput
                                 label = "Fin del juego" 
-                                isInvalid={errores.hasOwnProperty('fecha_hora_inicio')}
                                 ref = {ref_custom_date_hasta}
                             />
                         }
@@ -420,8 +381,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         value={formulario.niveles_academicos}
                         niveles_academicos={formulario.niveles_academicos}
                         handleSelectNivelAcademico={handleSelectNivelAcademico}
-                        isInvalid={errores.hasOwnProperty('niveles_academicos')}
-                        onBlur={validarFormulario}
                         multiple
                     /> 
                 </Col>
@@ -436,7 +395,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         value={formulario.descripcion}
                         onChange={e => {setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
                     />
@@ -455,8 +414,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                             ...formulario,
                             [e.target.name]: e.target.value
                         })}
-                        isInvalid={errores.hasOwnProperty('codigo_materia')}
-                        onBlur={validarFormulario}
                     />
                 </Col>
             </Row>
@@ -472,8 +429,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                             ...formulario,
                             [e.target.name]: e.target.value
                         })}
-                        isInvalid={errores.hasOwnProperty('codigo_tipo_juego')}
-                        onBlur={validarFormulario}
                     />   
                 </Col>
                 <Col className="mb-2">
@@ -488,8 +443,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                             ...formulario,
                             [e.target.name]: e.target.value
                         })}
-                        isInvalid={errores.hasOwnProperty('codigo_modalidad')}
-                        onBlur={validarFormulario}
                     />     
                 </Col>
             </Row>  
@@ -679,11 +632,10 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         </Card>
                     </Accordion>
                 </Col>
-                
             </Row>         
-            <Row>
+             <Row>
                 <Col xs={12} md={6} className="mb-2">
-                    <Row>
+                   <Row>
                         <Col xs={9}>
                             <Form.Label className="text-muted">Tiempo para responder</Form.Label>
                             <InputSelectTipoDuracionPregunta
@@ -703,9 +655,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                                         setShowDuracionPregunta(false)
                                     }
                                 }}
-                                isInvalid={errores.hasOwnProperty('tipo_duracion_pregunta')}
-                                onBlur={validarFormulario}
-                            />
+                            /> 
                         </Col>
                         <Col xs={3}>
                             <Form.Label className="text-muted">Segundos</Form.Label>
@@ -720,14 +670,12 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                                     [e.target.name]: e.target.value,
                                     })
                                 }}
-                                isInvalid={errores.hasOwnProperty('duracion_pregunta')}
-                                onBlur={validarFormulario}
                                 disabled = {!showDuracionPregunta}
                             />
                         </Col>
                     </Row>
                 </Col>
-                <Col md={"auto"} className="mb-2">
+                {/* <Col md={"auto"} className="mb-2">
                     <Form.Check
                         id="revancha"
                         name="revancha"
@@ -747,7 +695,6 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                                 setShowRevanchaCantidad(false)
                             }
                         }}
-                        onBlur={validarFormulario}
                     />
                     <Form.Control
                         id="revancha_cantidad"
@@ -758,14 +705,12 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         onChange={e => {
                             setFormulario({
                                 ...formulario,
-                                [e.target.name]: e.target.value.toUpperCase()
+                                [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('revancha_cantidad')}
-                        onBlur={validarFormulario}
                         disabled = {!showRevanchaCantidad}
                     />
-                </Col>
+                </Col> */}
             </Row> 
             <Row> 
                 <Col xs={12} md="auto" className="mb-1">
@@ -788,7 +733,7 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         id="pistas"
                         name="pistas"
                         type="checkbox"
-                        label="Pistas"
+                        label="Mostrar pistas"
                         checked={formulario.pistas}
                         onChange={e => {
                             setFormulario({
@@ -831,10 +776,9 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                     />
                 </Col>
             </Row>
-            
             <Row className="justify-content-center">
                 <Col className="mb-2 mb-md-0" xs={12} md={"auto"}>
-                    {!ring_modificar
+                    {!ringEnProceso
                     ?
                         <Button 
                             variant="info"
@@ -844,27 +788,14 @@ const RingForm = ({ring_modificar, handleClickVolver}) => {
                         >Crear</Button>
                     :
                         <Button
-                            variant="outline-info"
+                            variant="info"
                             size="lg"
                             className="btn-block"
                             onClick={handleActualizarRing}
-                        >
-                           Actualizar 
-                        </Button>
+                        >Actualizar</Button>
                     }
-                    
-                </Col>
-                
-                <Col xs={12} md={"auto"}>
-                    <Button 
-                        variant="outline-primary"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
-           
         </Form>
      </Container> )
 }

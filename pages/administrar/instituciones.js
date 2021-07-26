@@ -9,13 +9,14 @@ import Privado from '../../components/layout/Privado'
 import Paginador from '../../components/ui/Paginador'
 import InstitucionForm from '../../components/forms/InstitucionForm'
 import TableInstitucion from '../../components/ui/TableInstitucion'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Instituciones = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [instituciones, setInstituciones] = useState([])
-   const [institucion_modificar, setInstitucionModificar] = useState(null)
+   const [institucionEnProceso, setInstitucionEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [textAlert, setTextAlert] = useState('')
     /**** Variables para paginación *****/
@@ -55,7 +56,7 @@ const Instituciones = () => {
       const institucion = instituciones.filter(institucion => institucion.codigo === codigo)
       if(institucion.length > 0){
          setMostrarBusqueda(false)
-         setInstitucionModificar(institucion[0])
+         setInstitucionEnProceso(institucion[0])
       }
 
    }
@@ -65,25 +66,33 @@ const Instituciones = () => {
          await clienteAxios.delete(`/api/instituciones/eliminar/${codigo}`)
          const new_instituciones = instituciones.filter(institucion => institucion.codigo !== codigo)
          setInstituciones(new_instituciones)
-         toast.success('INSTITUCIÓN ELIMINADA', {containerId: 'sys_msg'})
+         toast.success('Institución eliminada', {containerId: 'sys_msg'})
       } catch (e) {
          handleError(e)
       }
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
    }
         
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
-   
+
     return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Instituciones</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Instituciones</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={institucionEnProceso ? 'Modificar institucion' : 'Crear nueva institucion'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             {mostrar_busqueda 
@@ -98,7 +107,7 @@ const Instituciones = () => {
                      value={filtro} 
                      placeholder="Búsqueda por código ó nombre de institución..."
                      onChange={e => {
-                        setFiltroBusqueda(e.target.value.toUpperCase())
+                        setFiltroBusqueda(e.target.value)
                      }}
                   />
                </Col>
@@ -117,7 +126,7 @@ const Instituciones = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setInstitucionModificar(null)
+                        setInstitucionEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -129,8 +138,8 @@ const Instituciones = () => {
             :
             <Row>
                <InstitucionForm
-                  institucion_modificar={institucion_modificar}
-                  handleClickVolver={handleClickVolver}
+                  institucionEnProceso={institucionEnProceso}
+                  setInstitucionEnProceso={setInstitucionEnProceso}
                />
             </Row>
             }

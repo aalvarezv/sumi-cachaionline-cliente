@@ -7,7 +7,7 @@ const TableRingUsuarios = ({usuariosRing}) => {
             <thead>
                 <tr>
                 <th>#</th>
-                <th>Rut</th>
+                <th>RUT</th>
                 <th>Nombre</th>
                 <th>Email</th>
                 </tr>

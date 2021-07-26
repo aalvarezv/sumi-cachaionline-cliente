@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { v4 as uuidv4 } from 'uuid'
-import { Container, Row, Col, Table, Button, Alert } from 'react-bootstrap'
+import { Container, Row, Col, Table, Button } from 'react-bootstrap'
 import InputSelectRol from '../ui/InputSelectRol'
 import InputSelectInstitucion from '../ui/InputSelectInstitucion'
 import clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
 import ModalUsuarioCursoConfig from '../ui/ModalUsuarioCursoConfig'
+import AuthContext from '../../context/auth/AuthContext'
+import { useContext } from 'react'
 
-const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) => {
+const UsuarioFormConfig = ({rut_usuario, nombre_usuario}) => {
 
+    const {institucion_select, rol_select} = useContext(AuthContext)
     const [usuario_instituciones_roles, setUsuarioInstitucionesRoles] = useState([])
     const [formulario, setFormulario] = useState({
         rut_usuario: rut_usuario,
-        codigo_institucion: '',
+        codigo_institucion: institucion_select.codigo,
         codigo_rol: '',
     })
+
     const [showModalUsuarioCursoConfig, setShowModalUsuarioCursoConfig] = useState(false)
     const [paramsUsuarioCursoConfig, setParamsUsuarioCursoConfig] = useState({
         usuario: {
@@ -26,46 +29,45 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
         rol: null,
     })
 
-
-    const [errores, setErrores] = useState({})
-
-
     //al iniciar el componente carga las instituciones y roles a los que pertenece el usuario.
     useEffect(() => {
-        
-        const listarUsuarioInstitucionesRoles = async () => {
 
-            const resp = await clienteAxios.get(`/api/usuario-instituciones-roles/listar/${rut_usuario}`)
+        setFormulario({
+            ...formulario,
+            codigo_rol: ''
+        })
+
+        const listarUsuarioInstitucionesRoles = async () => {
+           
+            const resp = await clienteAxios.get(`/api/usuario-instituciones-roles/listar/`, {
+                params: {
+                    rut_usuario: formulario.rut_usuario,
+                    codigo_institucion: formulario.codigo_institucion
+                }
+            })
             setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
 
         }
 
-        if(rut_usuario){
+        if(formulario.rut_usuario && formulario.codigo_institucion){
             listarUsuarioInstitucionesRoles()
         }
 
-    }, [rut_usuario])
+    }, [formulario.rut_usuario, formulario.codigo_institucion])
 
-    const handleClickAgregarUsuarioInstitucionRol = async e => {
+
+    const handleClickAgregarUsuarioInstitucionRol = async () => {
 
         try{
-            //previne el envío
-            e.preventDefault()
+
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
+            if(!validarFormulario()){
                 return
             }
-            //modulo a enviar
-            let usuario_institucion_rol = {
-                ...formulario, 
-                codigo : uuidv4(),
-            }
             
-            const resp = await clienteAxios.post('/api/usuario-instituciones-roles/crear', usuario_institucion_rol)
+            const resp = await clienteAxios.post('/api/usuario-instituciones-roles/crear', formulario)
             setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
-            toast.success('El Usuario fue agregado a la insitución y curso correctamente.', {containerId: 'sys_msg'})
+            toast.success('Rol asociado al usuario', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -73,20 +75,20 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
 
     }
 
-    const handleClickEliminarUsuarioInstitucionRol = async (e, codigo) => {
+    const handleClickEliminarUsuarioInstitucionRol = async (e, codigo_rol) => {
 
         try{
-            //previne el envío
-            e.preventDefault()
-
-            const resp = await clienteAxios.delete(`/api/usuario-instituciones-roles/eliminar/${codigo}`,{
+           
+            const resp = await clienteAxios.delete(`/api/usuario-instituciones-roles/eliminar`,{
                 params:{
-                    rut_usuario
+                    rut_usuario: formulario.rut_usuario,
+                    codigo_institucion: formulario.codigo_institucion,
+                    codigo_rol,
                 }
             })
            
             setUsuarioInstitucionesRoles(resp.data.usuario_instituciones_roles)
-            toast.success('El Usuario fue quitado de la insitución y curso correctamente.', {containerId: 'sys_msg'}) 
+            toast.success('Rol eliminado del usuario', {containerId: 'sys_msg'}) 
         }catch(e){
             handleError(e)
         }
@@ -94,26 +96,14 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
     }
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
-        
-        //valida la institución.
-        if(formulario.codigo_institucion.trim() === '' || formulario.codigo_institucion.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_institucion: 'Requerida'
-            }
-        }
+       
         //valida el rol.
         if(formulario.codigo_rol.trim() === '' || formulario.codigo_rol.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_rol: 'Requerido'
-            }
+            toast.error('Seleccione un rol.', {containerId: 'sys_msg'}) 
+            return false
         }
-        setErrores(errors)
-
-        return errors
+        
+        return true
     }
 
     const handleConfigurarUsuarioCurso = (institucion, rol) => {
@@ -135,19 +125,6 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
                 paramsUsuarioCursoConfig={paramsUsuarioCursoConfig}
                 setShowModalUsuarioCursoConfig={setShowModalUsuarioCursoConfig}
             />
-            <Row>
-                <Col>
-                    <Alert variant="info" className="d-flex justify-content-between">
-                        <h5>
-                            Inscribir usuario en Institución
-                        </h5>
-                        <Button 
-                            variant="info"
-                            onClick={handleClickVolver}
-                        >Volver</Button>
-                    </Alert>
-                </Col>
-            </Row>
             <Row className="mb-3">
                 <Col sm={12} md={6}>
                     <Row className="mb-2">
@@ -161,8 +138,7 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
                                     ...formulario,
                                     [e.target.name]: e.target.value
                                 })}
-                                isInvalid={errores.hasOwnProperty('codigo_institucion')}
-                                onBlur={validarFormulario}
+                                disabled={!rol_select.sys_admin}
                             />
                         </Col>
                     </Row>
@@ -172,14 +148,12 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
                                 id="codigo_rol"
                                 name="codigo_rol"
                                 as="select"
-                                codigos={[2,3,4,5]}
+                                codigos={[]}
                                 value={formulario.codigo_rol}
                                 onChange={e => setFormulario({
                                     ...formulario,
                                     [e.target.name]: e.target.value
                                 })}
-                                isInvalid={errores.hasOwnProperty('codigo_rol')}
-                                onBlur={validarFormulario}
                             />
                         </Col>
                     </Row>
@@ -195,11 +169,10 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
             {usuario_instituciones_roles.length > 0 &&
             <Row>
                 <Col>
-                    <Table striped bordered hover responsive>
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>Institución</th>
-                                <th>Perfil</th>
+                                <th>Rol</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -207,11 +180,10 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
                                
                                 return (
                                 <tr key={usuarioInstitucionRol.codigo}>
-                                    <td>{usuarioInstitucionRol.institucion.descripcion}</td>
                                     <td>{usuarioInstitucionRol.rol.descripcion}</td>
                                     <td className="text-center">
                                         {(usuarioInstitucionRol.rol.codigo === '2' || usuarioInstitucionRol.rol.codigo === '3') &&
-                                                                    
+                      
                                             <Button 
                                                 variant="info"
                                                 size="sm"
@@ -225,9 +197,9 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
                                     </td>
                                     <td className="text-center">
                                         <Button 
-                                            variant="danger"
+                                            variant="secondary"
                                             size="sm"
-                                            onClick={e => {handleClickEliminarUsuarioInstitucionRol(e, usuarioInstitucionRol.codigo)}}
+                                            onClick={e => {handleClickEliminarUsuarioInstitucionRol(e, usuarioInstitucionRol.rol.codigo)}}
                                         >Eliminar</Button>
                                     </td>
                                 </tr>
@@ -243,4 +215,4 @@ const UsuarioFormTabConfig = ({rut_usuario, nombre_usuario, handleClickVolver}) 
     )
 }
 
-export default React.memo(UsuarioFormTabConfig)
+export default React.memo(UsuarioFormConfig)

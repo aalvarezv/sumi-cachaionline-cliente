@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {Container, Row, Col, Button, Form, Card} from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import { toast } from 'react-toastify'
@@ -9,15 +9,22 @@ import Privado from '../../components/layout/Privado'
 import Paginador from '../../components/ui/Paginador'
 import UsuarioForm from '../../components/forms/UsuarioForm'
 import TableUsuario from '../../components/ui/TableUsuario'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
+import { Stepper, Step } from 'react-form-stepper'
+import UsuarioFormConfig from '../../components/forms/UsuarioFormConfig'
+import AuthContext from '../../context/auth/AuthContext'
 
 
 const Usuarios = () => {
 
+   const { institucion_select } = useContext(AuthContext)
    const [filtro, setFiltroBusqueda] = useState('')
    const [usuarios, setUsuarios] = useState([])
-   const [usuario_modificar, setUsuarioModificar] = useState(null)
+   const [usuarioEnProceso, setUsuarioEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [textAlert, setTextAlert] = useState('')
+   const [step, setStep] = useState(0)
+
    /**** Variables para paginación *****/
    const [pagina_actual, setPaginaActual] = useState(1)
    const [resultados_por_pagina, setResultadosPorPagina] = useState(10)
@@ -28,13 +35,14 @@ const Usuarios = () => {
    /*************************************/
 
 
-    const handleClickBuscar = async () => {
+   const handleClickBuscar = async () => {
 
       try{
 
          const resp = await clienteAxios.get('/api/usuarios/busqueda',{
             params:{
                filtro,
+               codigo_institucion: institucion_select.codigo
             }
          })
          setUsuarios(resp.data.usuarios)
@@ -56,7 +64,7 @@ const Usuarios = () => {
      const usuario = usuarios.filter(usuario => usuario.rut === rut)
      if(usuario.length > 0){
         setMostrarBusqueda(false)
-        setUsuarioModificar(usuario[0])
+        setUsuarioEnProceso(usuario[0])
      }
 
    }
@@ -65,10 +73,15 @@ const Usuarios = () => {
 
       try {
 
-         await clienteAxios.delete(`/api/usuarios/eliminar/${rut}`)
+         await clienteAxios.delete('/api/usuarios/eliminar', {
+            params: {
+               rut,
+               codigo_institucion: institucion_select.codigo
+            }
+         })
          const new_usuarios = usuarios.filter(usuario => usuario.rut !== rut)
          setUsuarios(new_usuarios)
-         toast.success('USUARIO ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Usuario eliminado', {containerId: 'sys_msg'})
 
       } catch (e) {
          handleError(e)
@@ -76,19 +89,61 @@ const Usuarios = () => {
 
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
+      setStep(0)
    }
 
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
-        
+   
+   
    return ( 
          <Layout>
          <Privado>  
             <Container>
-            <h5 className="text-center my-4">Administrar Usuarios</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Usuarios</h5> 
+            :
+               <>
+               <AlertMostrarBusqueda
+                  label={usuarioEnProceso ? 'Modificar usuario' : 'Crear nuevo usuario'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               >
+                  <Button
+                     variant="info"
+                     size="sm"
+                     className="mr-2"
+                     disabled={step === 0}
+                     onClick={() => setStep(step - 1)}
+                  >
+                     Anterior
+                  </Button>
+                  <Button
+                     variant="info"
+                     size="sm"
+                     className="mr-2"
+                     disabled={usuarioEnProceso === null}
+                     onClick={() => {
+                        if(step < 1){
+                           setStep(step + 1)
+                        }else{
+                           setStep(0)
+                           setMostrarBusqueda(true)
+                        }
+                     }}
+                  >
+                     {step < 1 ? 'Siguiente' : 'Finalizar'}
+                  </Button>
+               </AlertMostrarBusqueda>
+               <Stepper activeStep={step}>
+                  <Step label="Completar datos usuario" />
+                  <Step label="Configurar perfiles y cursos" />
+               </Stepper>
+               </>
+            }
             <Card className=" ">
             <Card.Body>
             {mostrar_busqueda 
@@ -103,7 +158,7 @@ const Usuarios = () => {
                      value={filtro} 
                      placeholder="Búsqueda por RUT ó Nombre del usuario..."
                      onChange={e => {
-                        setFiltroBusqueda(e.target.value.toUpperCase())
+                        setFiltroBusqueda(e.target.value)
                      }}
                   />
                </Col>
@@ -122,7 +177,7 @@ const Usuarios = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setUsuarioModificar(null)
+                        setUsuarioEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -131,13 +186,23 @@ const Usuarios = () => {
                </Col>
             </Row>
             </>
-            :
-            <Row>
-               <UsuarioForm
-                  usuario_modificar={usuario_modificar}
-                  handleClickVolver={handleClickVolver}
+            : step === 0 
+              
+            ?
+               <Row>
+                  <UsuarioForm
+                     usuarioEnProceso={usuarioEnProceso}
+                     setUsuarioEnProceso={setUsuarioEnProceso}
+                  />
+               </Row>
+            : step === 1 && usuarioEnProceso 
+            
+            &&
+               <UsuarioFormConfig
+                     rut_usuario = {usuarioEnProceso.rut}
+                     nombre_usuario = {usuarioEnProceso.nombre}
                />
-            </Row>
+            
             }
             </Card.Body>
             </Card>

@@ -144,21 +144,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
-        //console.log('archivo: '+archivo[0].type.split('/')[0]);
-        //setUploading(true)
+
         const base64 = await getBase64(archivo[0]) 
-
-        let imagenAncho= 0
-        let imagenAlto= 0
-
-        
-
-        /* setPregunta({
-            ...pregunta,
-            imagen: '',
-            video: '',
-            audio: '',
-        })*/
 
         switch (archivo[0].type.split('/')[0]) {
             
@@ -177,7 +164,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 audio: '',
                             })
                         }else{
-                            toast.warning('El ancho de la imagen no debe ser mayor a 485.', {containerId: 'sys_msg'})
+                            toast.error('El ancho de la imagen no debe ser mayor a 485.', {containerId: 'sys_msg'})
                             return
                         }
                         
@@ -202,7 +189,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 break
             }
         }
-        //setUploading(false)
+
     }
 
     const handleQuitarArchivoPregunta = () => {
@@ -262,126 +249,76 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     }
     
     const validarFormulario = () => {
-        //Almacena los errores de formulario.
-        let errors = {}
-
-        setErrorSolucion([])
-        setErrorPista([])
+       
         //Verifica que haya ingresado una imagen a la pregunta.
         if(pregunta.imagen.trim() === '' && pregunta.video.trim() === '' && pregunta.audio.trim() === ''){
-            toast.warning('Agregue una imagen, video ó audio de la pregunta.', {containerId: 'sys_msg'})
+            toast.error('Agregue una imagen, video ó audio de la pregunta.', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.duracion <= 0 && pregunta.duracion === ''){
-            errors = {
-                ...errors,
-                duracion: 'Requerido'
-            }
-            toast.warning('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Debe ingresar el tiempo máximo para responder la pregunta.', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.recordar < 0 || pregunta.recordar > 1){
-            errors = {
-                ...errors,
-                recordar: 'Requerido'
-            }
-            toast.warning('Recordar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Recordar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
 
         if(pregunta.comprender < 0 || pregunta.comprender > 1){
-            errors = {
-                ...errors,
-                comprender: 'Requerido'
-            }
-            toast.warning('Comprender debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Comprender debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.aplicar < 0 || pregunta.aplicar > 1){
-            errors = {
-                ...errors,
-                aplicar: 'Requerido'
-            }
-            toast.warning('Aplicar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Aplicar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.analizar < 0 || pregunta.analizar > 1){
-            errors = {
-                ...errors,
-                analizar: 'Requerido'
-            }
-            toast.warning('Analizar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Analizar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.evaluar < 0 || pregunta.evaluar > 1){
-            errors = {
-                ...errors,
-                evaluar: 'Requerido'
-            }
-            toast.warning('Evaluar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Evaluar debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.crear < 0 || pregunta.crear > 1){
-            errors = {
-                ...errors,
-                crear: 'Requerido'
-            }
-            toast.warning('Crear debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('Crear debe ser mayor o igual que 0 y menor o igual que 1', {containerId: 'sys_msg'})
             return false
         }
 
         if(pregunta.recordar+pregunta.comprender+pregunta.aplicar+pregunta.analizar+pregunta.evaluar+pregunta.crear !== 1){
-            errors = {
-                ...errors,
-                recordar: 'Requerido',
-                comprender: 'Requerido',
-                aplicar: 'Requerido',
-                analizar:'Requerido',
-                evaluar: 'Requerido',
-                crear: 'Requerido'
-            }
-            toast.warning('La suma de las habilidades debe ser igual a 1', {containerId: 'sys_msg'})
-            setErrores(errors)
+            toast.error('La suma de las habilidades debe ser igual a 1', {containerId: 'sys_msg'})
             return false
         }
         
         
         //Verifica que exista al menos 2 alternativas posibles.
         if(alternativas.length < 2){
-            toast.warning('La pregunta debe tener al menos dos alternativas posible.', {containerId: 'sys_msg'})
+            toast.error('La pregunta debe tener al menos dos alternativas posible.', {containerId: 'sys_msg'})
             return false
         }
         //Verifica que existe al menos 1 alternativa seleccionada como correcta.
         if(alternativas.filter(alternativa => alternativa.correcta === true).length === 0 ){
-            toast.warning('Seleccione al menos una alternativa como la opción correcta.', {containerId: 'sys_msg'})
+            toast.error('Seleccione al menos una alternativa como la opción correcta.', {containerId: 'sys_msg'})
             return false
         }
 
         //Verifica que existe al menos una solución.
         if(soluciones.length === 0){
-            toast.warning('La pregunta debe tener al menos una solución posible.', {containerId: 'sys_msg'})
+            toast.error('La pregunta debe tener al menos una solución posible.', {containerId: 'sys_msg'})
             return false
         }
 
         //Verifica que las soluciones tengan texto o una imagen.
         let new_error_solucion = soluciones.filter(solucion => solucion.texto === '' && solucion.imagen === '' && solucion.video === '' && solucion.audio === '')
         if(new_error_solucion.length > 0){
-            toast.warning('Verifique que todas las soluciones ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
-            setErrorSolucion(new_error_solucion)
+            toast.error('Verifique que todas las soluciones ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
             return false
         }
 
@@ -390,8 +327,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             //Verifica que las soluciones tengan texto o una imagen.
             let new_error_pista = pistas.filter(pista => pista.texto === '' && pista.imagen === '' && pista.video === '' && pista.audio === '')
             if(new_error_pista.length > 0){
-                toast.warning('Verifique que todas las pistas ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
-                setErrorPista(new_error_pista)
+                toast.error('Verifique que todas las pistas ingresadas tengan al menos un texto ó imagen asignados.', {containerId: 'sys_msg'})
                 return false
             }
         }
@@ -445,7 +381,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             
             resetearFormulario()
 
-            toast.success('PREGUNTA CREADA', {containerId: 'sys_msg'})
+            toast.success('Pregunta creada', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -502,7 +438,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
             }
 
             await clienteAxios.put('/api/preguntas/actualizar', pregunta_full)
-            toast.success('PREGUNTA ACTUALIZADA', {containerId: 'sys_msg'})
+            toast.success('Pregunta actualizada', {containerId: 'sys_msg'})
 
             setErrores({})
 
@@ -559,8 +495,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         <Container className="p-3">
         <Row>
             <Col>
-                <Alert variant="info" className="text-muted">
-                    Aquí va una instrucción para crear la pregunta.
+                <Alert variant="info">
+                    Complete los campos para crear o actualizar la pregunta.
                 </Alert>
             </Col>
             <Col xs="auto">
@@ -705,7 +641,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                                             [e.target.name]: parseInt(e.target.value.replace(/\D/,'')),
                                                             })
                                                         }}
-                                                        isInvalid={errores.hasOwnProperty('duracion')}
                                                     />
                                                 </Form.Group>
                                             </Col>
@@ -724,7 +659,14 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                         </Row>  
                     </Form.Group> 
                 }
-                <Row className="p-3">
+                <Row>
+                    <Col>
+                        <Alert variant="info">
+                            La suma de las habilidades debe ser igual a 1.
+                        </Alert>
+                    </Col>
+                </Row>
+                <Row className="px-3">
                     <Col>
                         <Form.Label><small>Recordar</small></Form.Label>
                         <Form.Control
@@ -737,7 +679,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('recordar')}
                         />
                     </Col>
                     <Col>
@@ -752,7 +693,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('comprender')}
                         />
                     </Col>
                     <Col>
@@ -767,7 +707,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('aplicar')}
                         />
                     </Col>
                     <Col>
@@ -782,7 +721,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('analizar')}
                         />
                     </Col>
                     <Col>
@@ -797,7 +735,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('evaluar')}
                         />
                     </Col>
                     <Col>
@@ -812,7 +749,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                                 [e.target.name]: parseFloat(e.target.value),
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('crear')}
                         />
                     </Col>
                 </Row>

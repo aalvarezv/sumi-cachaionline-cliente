@@ -1,4 +1,4 @@
-import React,{ useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { useRouter } from 'next/router'
 import AuthContext from '../../context/auth/AuthContext'
 import { Button, Col, Form, OverlayTrigger, Popover, Row } from 'react-bootstrap'
@@ -12,6 +12,11 @@ const MenuInstitucionPerfil = () => {
 
     const handleChangeInstitucion = e => {
         selectInstitucion(e.target.value)
+        router.push('/')
+    }
+
+    const handleChangeRol = e => {
+        selectRol(e.target.value)
         router.push('/')
     }
 
@@ -65,9 +70,7 @@ const MenuInstitucionPerfil = () => {
                                                 as="select"
                                                 size="sm"
                                                 value={rol_select.codigo_rol}
-                                                onChange={e => {
-                                                    selectRol(e.target.value)
-                                                }}
+                                                onChange={handleChangeRol}
                                             >
                                                 {roles_institucion.map((rol, index) => {
                                                     const {codigo_rol, descripcion} = rol
@@ -94,7 +97,10 @@ const MenuInstitucionPerfil = () => {
                     <Button 
                         variant="danger"
                         className="btn-block"
-                        onClick={() => cerrarSesion()}
+                        onClick={() => {
+                            cerrarSesion()
+                            router.push('/login')
+                        }}
                     >Salir
                     </Button>    
                 </Col>

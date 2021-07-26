@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Container, Form, Button, Row, Col } from 'react-bootstrap'
-import ToastMultiline from '../ui/ToastMultiline'
 import { handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria'
 import InputSelectMateria from '../ui/InputSelectMateria'
 
-const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
+const ModuloForm = ({moduloEnProceso, setModuloEnProceso}) => {
 
     const [formulario, setFormulario] = useState({
         codigo: '',
@@ -17,54 +16,42 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
         inactivo: false
     })
     const [codigo_materia, setCodigoMateria] = useState('0')
-    const [errores, setErrores] = useState({})
-
 
     useEffect(() => {
         
         //cuando se selecciona o cambia el result_select
-        if(modulo_modificar){
+        if(moduloEnProceso){
 
-            setCodigoMateria(modulo_modificar.unidad.codigo_materia)
+            setCodigoMateria(moduloEnProceso.unidad.codigo_materia)
 
             setFormulario({
-                codigo: modulo_modificar.codigo,
-                descripcion: modulo_modificar.descripcion,
-                codigo_unidad: modulo_modificar.codigo_unidad,
-                inactivo: modulo_modificar.inactivo
+                codigo: moduloEnProceso.codigo,
+                descripcion: moduloEnProceso.descripcion,
+                codigo_unidad: moduloEnProceso.codigo_unidad,
+                inactivo: moduloEnProceso.inactivo
             })
 
         }else{
             reseteaFormulario()
         }
-        setErrores({})
-
-    }, [modulo_modificar])
+    }, [moduloEnProceso])
 
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
+        
+        //valida la unidad.
+        if(formulario.codigo_unidad.trim() === '' || formulario.codigo_unidad.trim() === '0'){
+            toast.error('Seleccione unidad', {containerId: 'sys_msg'})
+            return false
+        }
 
         //valida la descripcion.
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
-        //valida la unidad.
-        if(formulario.codigo_unidad.trim() === '' || formulario.codigo_unidad.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_unidad: 'Requerido'
-            }
-        }
-
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -84,13 +71,7 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
         
         try{
             //previne el envío
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+           if(!validarFormulario()) return
             //modulo a enviar
             let modulo = {
                 ...formulario,
@@ -98,10 +79,14 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
             }
 
             const resp = await clienteAxios.post('/api/modulos/crear', modulo)
-            //respuesta del modulo recibido.
-            modulo = resp.data
-            reseteaFormulario()
-            toast.success(<ToastMultiline mensajes={[{msg: 'MÓDULO CREADO'}]}/>, {containerId: 'sys_msg'})
+
+            setModuloEnProceso({
+                ...modulo,
+                unidad: {
+                    codigo_materia
+                }
+            })
+            toast.success('Módulo creado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -112,19 +97,14 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+           
+            if(!validarFormulario()) return
             //modulo a enviar
             let modulo = formulario
 
             await clienteAxios.put('/api/modulos/actualizar', modulo)
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'MÓDULO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Módulo actualizado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -133,24 +113,7 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
 
     return ( 
     <Container>
-
         <Form className="p-3">
-            <Form.Group>
-                <Form.Label>Descripción</Form.Label>
-                <Form.Control
-                    id="descripcion"
-                    name="descripcion"
-                    type="text" 
-                    placeholder="DESCRIPCIÓN" 
-                    value={formulario.descripcion}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value.toUpperCase()
-                    })}
-                    isInvalid={errores.hasOwnProperty('descripcion')}
-                    onBlur={validarFormulario}
-                />
-            </Form.Group>
             <Form.Group >
                 <Form.Label className="text-muted">Materia</Form.Label>
                 <InputSelectMateria
@@ -182,11 +145,22 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
                         ...formulario,
                         [e.target.name]: e.target.value
                     })}
-                
-                    isInvalid={errores.hasOwnProperty('codigo_unidad')}
-                    onBlur={validarFormulario}
                 />                    
             </Form.Group>  
+            <Form.Group>
+                <Form.Label>Descripción</Form.Label>
+                <Form.Control
+                    id="descripcion"
+                    name="descripcion"
+                    type="text" 
+                    placeholder="DESCRIPCIÓN" 
+                    value={formulario.descripcion}
+                    onChange={e => setFormulario({
+                        ...formulario,
+                        [e.target.name]: e.target.value
+                    })}
+                />
+            </Form.Group>
             <Form.Check 
                 id="inactivo"
                 name="inactivo"
@@ -201,7 +175,7 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
             />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {modulo_modificar
+                    {moduloEnProceso
                     ?
                         <Button 
                             variant="outline-info"
@@ -218,14 +192,6 @@ const ModuloForm = ({modulo_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

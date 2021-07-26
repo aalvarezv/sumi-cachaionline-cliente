@@ -1,85 +1,54 @@
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import React, { useContext, useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
-import { Container, Form, Card, Button, Row, Col } from 'react-bootstrap'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
-import ToastMultiline from '../ui/ToastMultiline'
 import InputSelectNivelAcademico from '../ui/InputSelectNivelAcademico'
-import InputSelectInstitucion from '../ui/InputSelectInstitucion'
+import AuthContext from '../../context/auth/AuthContext'
 
-const CursoForm = ({curso_modificar, handleClickVolver}) => {
+const CursoForm = ({cursoEnProceso, setCursoEnProceso}) => {
 
-    const router = useRouter()
-    const [cursoValido, setCursoValido] = useState(false)
+    const { institucion_select } = useContext(AuthContext)
+
     const [formulario, setFormulario] = useState({
         codigo: '',
         letra: '',
-        codigo_institucion: '0',
+        codigo_institucion: institucion_select.codigo,
         codigo_nivel_academico: '0',
         inactivo: false
     })
     
-    const [errores, setErrores] = useState({})
-
     useEffect(() => {
 
-        if(curso_modificar){
+        if(cursoEnProceso){
             setFormulario({
-                codigo: curso_modificar.codigo,
-                letra: curso_modificar.letra,
-                codigo_institucion: curso_modificar.codigo_institucion,
-                codigo_nivel_academico: curso_modificar.codigo_nivel_academico,
-                inactivo: curso_modificar.inactivo
+                codigo: cursoEnProceso.codigo,
+                letra: cursoEnProceso.letra,
+                codigo_institucion: cursoEnProceso.codigo_institucion,
+                codigo_nivel_academico: cursoEnProceso.codigo_nivel_academico,
+                inactivo: cursoEnProceso.inactivo
             })
-            setCursoValido(true)
         }else{
             reseteaFormulario()
-            setCursoValido(false)
         }
-        setErrores({})
 
-    }, [curso_modificar])
+    }, [cursoEnProceso])
 
-    //carga la institución en el formulario si existe en la url.
-    useEffect(() => {
-        if(router.query.institucion){
-            setFormulario({
-                ...formulario,
-                codigo_institucion: router.query.institucion
-            })
-        }
-    }, [])
-    
+   
     const validarFormulario = () => {
         
-        let errors = {}
-
-        if(formulario.letra.trim() === ''){
-            errors = {
-                ...errors,
-                letra: 'Requerido'
-            }
+        if(formulario.codigo_nivel_academico.trim() === '' || formulario.codigo_nivel_academico.trim() === '0'){
+            toast.error('Seleccione nivel academico', {containerId: 'sys_msg'})
+            return false
         }
         
-        if(formulario.codigo_institucion.trim() === '' || formulario.codigo_institucion.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_institucion: 'Requerido'
-            }
+        if(formulario.letra.trim() === ''){
+            toast.error('Ingrese Letra', {containerId: 'sys_msg'})
+            return false
         }
 
-        if(formulario.codigo_nivel_academico.trim() === '' || formulario.codigo_nivel_academico.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_nivel_academico: 'Requerido'
-            }
-        }
-
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -87,7 +56,7 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
         setFormulario({
             codigo: '',
             letra: '',
-            codigo_institucion: (router.query.institucion ? router.query.institucion : '0'),
+            codigo_institucion: institucion_select.codigo,
             codigo_nivel_academico: '0',
             inactivo: false
         })
@@ -96,24 +65,19 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
             //curso a enviar
             let curso = {
                 ...formulario,
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/cursos/crear', curso)
-            curso = resp.data
-            reseteaFormulario()
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO CREADO'}]}/>, {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/cursos/crear', curso)
+
+            setCursoEnProceso(curso)
+
+            toast.success('Curso creado', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -123,42 +87,19 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
+
             let curso = formulario
             await clienteAxios.put('/api/cursos/actualizar', curso)
-            toast.success(<ToastMultiline mensajes={[{msg: 'CURSO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Curso actualizado', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }
     }
-
-  
    
     return ( 
     <Container>
         <Form>
-            <Form.Group>
-                <Form.Label>Institución</Form.Label>
-                <InputSelectInstitucion
-                    id="codigo_institucion"
-                    name="codigo_institucion"
-                    as="select"
-                    value={formulario.codigo_institucion}
-                    onChange={e => setFormulario({
-                        ...formulario,
-                        [e.target.name]: e.target.value
-                    })}
-                    isInvalid={errores.hasOwnProperty('codigo_institucion')}
-                    onBlur={validarFormulario}
-                    disabled={router.query.institucion} 
-                />
-            </Form.Group>
             <Form.Group as={Row}>
                 <Col sm={8}>
                     <Form.Group>
@@ -172,12 +113,10 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
                                 ...formulario,
                                 [e.target.name]: e.target.value
                             })}
-                            isInvalid={errores.hasOwnProperty('codigo_nivel_academico')}
-                            onBlur={validarFormulario}
                         />
                     </Form.Group>
                 </Col>
-                <Col sm={4}>
+                <Col sm={"auto"}>
                     <Form.Group>
                         <Form.Label>Letra</Form.Label>
                         <Form.Control
@@ -190,8 +129,6 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
                                 ...formulario,
                                 [e.target.name]: e.target.value.toUpperCase()
                             })} 
-                            isInvalid={errores.hasOwnProperty('letra')}
-                            onBlur={validarFormulario}
                         />
                     </Form.Group>
                 </Col>
@@ -213,7 +150,7 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
             </Row>
             <Row className="justify-content-start">
                 <Col className="mb-3 mb-sm-0 " xs={12} sm={"auto"}>
-                    {curso_modificar
+                    {cursoEnProceso
                     ?   
                         <Button 
                             variant="outline-info"
@@ -229,14 +166,6 @@ const CursoForm = ({curso_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
         </Form>    

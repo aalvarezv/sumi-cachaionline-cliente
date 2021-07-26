@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Container, Form, Button, Row, Col } from 'react-bootstrap'
-import ToastMultiline from '../ui/ToastMultiline'
 import { handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import InputSelectMateria from '../ui/InputSelectMateria'
@@ -11,7 +10,7 @@ import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad'
 import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido'
 
 
-const TemaForm = ({tema_modificar, handleClickVolver}) => {
+const TemaForm = ({temaEnProceso, setTemaEnProceso}) => {
     
     const [codigo_materia, setCodigoMateria] = useState('0')
     const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -23,55 +22,42 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
         inactivo: false,
     })
 
-    const [errores, setErrores] = useState({})
-
-
     useEffect(() => {
         
         //cuando se selecciona o cambia el result_select
-        if(tema_modificar){
+        if(temaEnProceso){
 
-            setCodigoModulo(tema_modificar.modulo_contenido.codigo_modulo)
-            setCodigoUnidad(tema_modificar.modulo_contenido.modulo.codigo_unidad)
-            setCodigoMateria(tema_modificar.modulo_contenido.modulo.unidad.codigo_materia)
+            setCodigoModulo(temaEnProceso.modulo_contenido.codigo_modulo)
+            setCodigoUnidad(temaEnProceso.modulo_contenido.modulo.codigo_unidad)
+            setCodigoMateria(temaEnProceso.modulo_contenido.modulo.unidad.codigo_materia)
 
             setFormulario({
-                codigo: tema_modificar.codigo,
-                descripcion: tema_modificar.descripcion,
-                codigo_modulo_contenido: tema_modificar.codigo_modulo_contenido,
-                inactivo: tema_modificar.inactivo
+                codigo: temaEnProceso.codigo,
+                descripcion: temaEnProceso.descripcion,
+                codigo_modulo_contenido: temaEnProceso.codigo_modulo_contenido,
+                inactivo: temaEnProceso.inactivo
             })
 
         }else{
             reseteaFormulario()
         }
-        setErrores({})
 
-    }, [tema_modificar])
+    }, [temaEnProceso])
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
-
-        //valida la descripcion.
-        if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
-        }
 
         //valida la unidad.
         if(formulario.codigo_modulo_contenido.trim() === '' || formulario.codigo_modulo_contenido.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_modulo_contenido: 'Requerido'
-            }
+            toast.error('Seleccione contenido', {containerId: 'sys_msg'})
+            return false
+        }
+        //valida la descripcion.
+        if(formulario.descripcion.trim() === ''){
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -92,23 +78,29 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
             //contenido a enviar
             let tema = {
                 ...formulario,
                 codigo : uuidv4(),
              }
 
-             const resp = await clienteAxios.post('/api/temas/crear', tema)
-             reseteaFormulario()
-             toast.success(<ToastMultiline mensajes={[{msg: 'TEMA CREADO'}]}/>, {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/temas/crear', tema)
+
+            setTemaEnProceso({
+                 ...tema,
+                 modulo_contenido:{
+                    codigo_modulo,
+                    modulo: {
+                        codigo_unidad,
+                        unidad: {
+                            codigo_materia
+                        }
+                    }
+                 }   
+            })
+            
+            toast.success('Tema creado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -119,19 +111,14 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
             //valida el formulario
-            /*const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }*/
+            if(!validarFormulario()) return
             //tema a enviar
             let tema = formulario
 
             await clienteAxios.put('/api/temas/actualizar', tema)
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'TEMA ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Tema actualizado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -141,22 +128,7 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
     return ( 
         <Container>
             <Form className="p-3">
-                <Form.Group>
-                    <Form.Label>Descripción</Form.Label>
-                    <Form.Control
-                        id="descripcion"
-                        name="descripcion"
-                        type="text" 
-                        placeholder="DESCRIPCIÓN" 
-                        value={formulario.descripcion}
-                        onChange={e => setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                        })}
-                        isInvalid={errores.hasOwnProperty('descripcion')}
-                        onBlur={validarFormulario}
-                    />
-                </Form.Group> 
+
                 <Form.Group as={Row}>
                     <Col xs={12} sm={6} className="mb-3 mb-sm-0">
                         <Form.Label className="text-muted">Materia</Form.Label>
@@ -241,11 +213,23 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
                                     [e.target.name]: e.target.value
                                 })
                             }}
-                            isInvalid={errores.hasOwnProperty('codigo_modulo_contenido')}
-                            onBlur={validarFormulario}
                         />
                     </Col>
                 </Form.Group>
+                <Form.Group>
+                    <Form.Label>Descripción</Form.Label>
+                    <Form.Control
+                        id="descripcion"
+                        name="descripcion"
+                        type="text" 
+                        placeholder="DESCRIPCIÓN" 
+                        value={formulario.descripcion}
+                        onChange={e => setFormulario({
+                            ...formulario,
+                            [e.target.name]: e.target.value
+                        })}
+                    />
+                </Form.Group> 
                 <Form.Check 
                     id="inactivo"
                     name="inactivo"
@@ -260,7 +244,7 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
                 />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {tema_modificar
+                    {temaEnProceso
                     ?
                         <Button 
                             variant="outline-info"
@@ -277,14 +261,6 @@ const TemaForm = ({tema_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
             </Form>

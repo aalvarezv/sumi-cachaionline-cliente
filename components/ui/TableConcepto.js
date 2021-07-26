@@ -46,7 +46,8 @@ const TableConcepto = ({conceptos, pagina_actual, resultados_por_pagina, handleC
                                 <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>                        
                                 <td className="text-center">
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
+                                        size={"sm"}
                                         onClick={() => {
                                             handleClickModificarConcepto(codigo)    
                                         }}
@@ -58,8 +59,8 @@ const TableConcepto = ({conceptos, pagina_actual, resultados_por_pagina, handleC
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
-                                        variant="danger"
-                                        size={"md"}
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar

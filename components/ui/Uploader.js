@@ -5,6 +5,7 @@ import Spinner from './Spinner'
 const dropzoneStyle = {
     width: '100%',
     height: '100%',
+    minHeight: '150px',
     border : "3px dashed #DDE1E5",
     color: "#C0C0C0",
     textAlign: "center"

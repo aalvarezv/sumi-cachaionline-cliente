@@ -11,7 +11,7 @@ const TableUsuariosInvitarRing = ({usuariosInvitarRing, pagina_actual, resultado
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Rut</th>
+                    <th>RUT</th>
                     <th>Nombre</th>
                     <th></th>
                     <th className="text-center">Estado Invitación</th>

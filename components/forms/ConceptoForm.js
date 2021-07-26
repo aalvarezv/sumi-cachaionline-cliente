@@ -12,7 +12,7 @@ import InputSelectModulosContenido from '../../components/ui/InputSelectModulosC
 import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema'
 
 
-const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
+const ConceptoForm = ({conceptoEnProceso, setConceptoEnProceso}) => {
     
     const [codigo_materia, setCodigoMateria] = useState('0')
     const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -30,55 +30,44 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
         inactivo: false,
     })
 
-    const [errores, setErrores] = useState({})
-
     useEffect(() => {
         
         //cuando se selecciona o cambia el result_select
-        if(concepto_modificar){
+        if(conceptoEnProceso){
 
-            setCodigoModuloContenido(concepto_modificar.modulo_contenido_tema.codigo_modulo_contenido)
-            setCodigoModulo(concepto_modificar.modulo_contenido_tema.modulo_contenido.codigo_modulo)
-            setCodigoUnidad(concepto_modificar.modulo_contenido_tema.modulo_contenido.modulo.codigo_unidad)
-            setCodigoMateria(concepto_modificar.modulo_contenido_tema.modulo_contenido.modulo.unidad.codigo_materia)
+            setCodigoModuloContenido(conceptoEnProceso.modulo_contenido_tema.codigo_modulo_contenido)
+            setCodigoModulo(conceptoEnProceso.modulo_contenido_tema.modulo_contenido.codigo_modulo)
+            setCodigoUnidad(conceptoEnProceso.modulo_contenido_tema.modulo_contenido.modulo.codigo_unidad)
+            setCodigoMateria(conceptoEnProceso.modulo_contenido_tema.modulo_contenido.modulo.unidad.codigo_materia)
 
             setFormulario({
-                codigo: concepto_modificar.codigo,
-                descripcion: concepto_modificar.descripcion,
-                codigo_modulo_contenido_tema: concepto_modificar.codigo_modulo_contenido_tema,
-                inactivo: concepto_modificar.inactivo
+                codigo: conceptoEnProceso.codigo,
+                descripcion: conceptoEnProceso.descripcion,
+                codigo_modulo_contenido_tema: conceptoEnProceso.codigo_modulo_contenido_tema,
+                inactivo: conceptoEnProceso.inactivo
             })
 
         }else{
             reseteaFormulario()
         }
-        setErrores({})
 
-    }, [concepto_modificar])
+    }, [conceptoEnProceso])
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
-
-        //valida la descripcion.
-        if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
-        }
-
+        
         //valida la unidad.
         if(formulario.codigo_modulo_contenido_tema.trim() === '' || formulario.codigo_modulo_contenido_tema.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_modulo_contenido_tema: 'Requerido'
-            }
+            toast.success('Seleccione tema', {containerId: 'sys_msg'})
+            return false
         }
-
-        setErrores(errors)
-
-        return errors
+        
+        //valida la descripcion.
+        if(formulario.descripcion.trim() === ''){
+            toast.success('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
+        }
+       
+        return true
 
     }
 
@@ -98,24 +87,33 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+          
+            if(!validarFormulario()) return
             //concepto a enviar
             let concepto = {
                 ...formulario,
                 codigo : uuidv4(),
-             }
+            }
              /**Revisar y corregir la ruta de la llamada */
-             const resp = await clienteAxios.post('/api/conceptos/crear', concepto)
+            await clienteAxios.post('/api/conceptos/crear', concepto)
 
-             reseteaFormulario()
-             toast.success(<ToastMultiline mensajes={[{msg: 'CONCEPTO CREADO'}]}/>, {containerId: 'sys_msg'})
+            setConceptoEnProceso({
+                ...concepto,
+                modulo_contenido_tema:{
+                    codigo_modulo_contenido,
+                    modulo_contenido: {
+                        codigo_modulo,
+                        modulo:{
+                            codigo_unidad,
+                            unidad: {
+                                codigo_materia
+                            }
+                        }
+                    }
+                }   
+            })
+
+            toast.success('Concepto creado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -126,19 +124,13 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+           if(!validarFormulario()) return 
             //concepto a enviar
             let concepto = formulario
 
             await clienteAxios.put('/api/conceptos/actualizar', concepto)
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'CONCEPTO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Concepto Actualizado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -148,22 +140,6 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
     return ( 
         <Container>
             <Form className="p-3">
-                <Form.Group>
-                    <Form.Label>Descripción</Form.Label>
-                    <Form.Control
-                        id="descripcion"
-                        name="descripcion"
-                        type="text" 
-                        placeholder="DESCRIPCIÓN" 
-                        value={formulario.descripcion}
-                        onChange={e => setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                        })}
-                        isInvalid={errores.hasOwnProperty('descripcion')}
-                        onBlur={validarFormulario}
-                    />
-                </Form.Group> 
                 <Form.Group as={Row}>
                     <Col xs={12} sm={6} className="mb-3 mb-sm-0">
                         <Form.Label className="text-muted">Materia</Form.Label>
@@ -281,11 +257,23 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
                                 })
 
                             }}
-                            isInvalid={errores.hasOwnProperty('codigo_modulo_contenido_tema')}
-                            onBlur={validarFormulario}
                         />
                     </Col>
                 </Form.Group>
+                <Form.Group>
+                    <Form.Label>Descripción</Form.Label>
+                    <Form.Control
+                        id="descripcion"
+                        name="descripcion"
+                        type="text" 
+                        placeholder="DESCRIPCIÓN" 
+                        value={formulario.descripcion}
+                        onChange={e => setFormulario({
+                            ...formulario,
+                            [e.target.name]: e.target.value
+                        })}
+                    />
+                </Form.Group> 
                 <Form.Check 
                     id="inactivo"
                     name="inactivo"
@@ -300,7 +288,7 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
                 />
                 <Row className="justify-content-center">
                     <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                        {concepto_modificar
+                        {conceptoEnProceso
                         ?
                             <Button 
                                 variant="outline-info"
@@ -317,14 +305,6 @@ const ConceptoForm = ({concepto_modificar, handleClickVolver}) => {
                                 onClick={handleClickCrear}
                             >Crear</Button>
                         }
-                    </Col>
-                    <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                        <Button 
-                            variant="info"
-                            size="lg"
-                            className="btn-block"
-                            onClick={handleClickVolver}
-                        >Volver</Button>
                     </Col>
                 </Row>
             </Form>

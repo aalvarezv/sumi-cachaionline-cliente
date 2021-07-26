@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from 'react-toastify'
-import { Modal, Form, Row, Col, Button, Alert, ListGroup } from "react-bootstrap";
+import { Modal, Row, Col, Button, Alert, ListGroup } from "react-bootstrap";
 import Logo from "./Logo";
-import InputSelectNivelAcademico from './InputSelectNivelAcademico'
-import AlertText from "./AlertText";
 import { handleError } from "../../helpers";
 import clienteAxios from "../../config/axios";
 
@@ -14,25 +12,19 @@ const ModalUsuarioCursoConfig = ({
         setShowModalUsuarioCursoConfig,
     }) => {
     
-    const [codigoNivelAcademico, setCodigoNivelAcademico] = useState('0')
     const [cursos, setCursos] = useState([])
-    const [textAlert, setTextAlert] = useState('')
    
     const { usuario, institucion, rol } = paramsUsuarioCursoConfig
 
     useEffect(() => {
-        if(codigoNivelAcademico !== '0'){
+
+        if(paramsUsuarioCursoConfig.institucion){
             listarCursos()
-        }else{
-            setCursos([])
         }
-    }, [codigoNivelAcademico])
+    }, [paramsUsuarioCursoConfig])
  
     const handleCloseModal = () => {
-     
         setShowModalUsuarioCursoConfig(false)
-        setCodigoNivelAcademico('0')
-
     }
 
     const listarCursos = async () => {
@@ -44,17 +36,11 @@ const ModalUsuarioCursoConfig = ({
                 rut_usuario: usuario.rut_usuario,
                 codigo_rol: rol.codigo,
                 codigo_institucion: institucion.codigo,
-                codigo_nivel_academico: codigoNivelAcademico,
 
               }
            })
            
-           setCursos(resp.data.cursos)
-           if(resp.data.cursos.length > 0){
-              setTextAlert("")
-           }else{
-              setTextAlert("No se encontraron resultados")
-           }
+           setCursos(resp.data.cursos)             
   
         }catch(e){
            handleError(e)
@@ -64,25 +50,7 @@ const ModalUsuarioCursoConfig = ({
     const handleClickInscribirUsuarioCurso = async codigoCurso => {
        
         try {
-
-            //el rol alumno solo puede tener un curso asociado.
-            if(rol.codigo === '2'){
-                //elimina los cursos actuales. 
-                for(let curso of cursos){
-                    
-                    if(curso.inscrito > 0){
-                        await clienteAxios.delete(`/api/cursos-usuarios-roles/eliminar/${curso.codigo}`,{
-                            params: { 
-                                rut_usuario: usuario.rut_usuario,
-                                codigo_rol: rol.codigo
-                            }
-                        })
-                    }
-
-                }
-
-            }
-        
+       
             await clienteAxios.post('/api/cursos-usuarios-roles/crear',{
                 codigo_curso: codigoCurso, 
                 rut_usuario: usuario.rut_usuario,
@@ -90,7 +58,8 @@ const ModalUsuarioCursoConfig = ({
             })
             
             handleInscribirCurso(codigoCurso, 1)
-            toast.success('El Usuario fue agregado al curso correctamente.', {containerId: 'sys_msg'})
+            toast.success('Usuario agregado al curso', {containerId: 'sys_msg'})
+
         } catch (e) {
             handleError(e)
         }
@@ -101,15 +70,17 @@ const ModalUsuarioCursoConfig = ({
 
         try {
         
-            await clienteAxios.delete(`/api/cursos-usuarios-roles/eliminar/${codigoCurso}`,{
+            await clienteAxios.delete(`/api/cursos-usuarios-roles/eliminar`,{
                 params: { 
                     rut_usuario: usuario.rut_usuario,
+                    codigo_curso: codigoCurso,
                     codigo_rol: rol.codigo
                 }
             })
             
             handleInscribirCurso(codigoCurso, 0)
-            toast.success('El Usuario fue quitado del curso correctamente.', {containerId: 'sys_msg'})
+            toast.success('Usuario eliminado del curso', {containerId: 'sys_msg'})
+
         } catch (e) {
             handleError(e)
         }
@@ -119,15 +90,6 @@ const ModalUsuarioCursoConfig = ({
     const handleInscribirCurso = (codigoCurso, inscribir) => {
 
         let newCursos = [...cursos]
-        //si es rol alumno, quita todos los inscritos para luego agregar el seleccionado.
-        if(rol.codigo === '2'){
-            newCursos = newCursos.map(curso => {
-                return{
-                    ...curso,
-                    inscrito: 0
-                }
-            })
-        }
  
         newCursos = newCursos.map(curso => {
             if(curso.codigo === codigoCurso){
@@ -163,10 +125,10 @@ const ModalUsuarioCursoConfig = ({
             </Button>
         </Modal.Header>
         <Modal.Body>
-            <Alert variant="info" >
+            <Alert variant="dark" >
                 <Row>
                     <Col>
-                        <h6 className="font-weight-bold">{`Rut: ${usuario.rut_usuario}`}</h6>
+                        <h6 className="font-weight-bold">{`RUT: ${usuario.rut_usuario}`}</h6>
                     </Col>
                 </Row>
                 <Row>
@@ -185,14 +147,6 @@ const ModalUsuarioCursoConfig = ({
                     </Col>
                 </Row>
             </Alert>
-            <InputSelectNivelAcademico
-                id="codigoNivelAcademico"
-                name="codigoNivelAcademico"
-                as="select"
-                className="mb-3"
-                value={codigoNivelAcademico}
-                onChange={e => setCodigoNivelAcademico(e.target.value)}
-            />
             {cursos.length > 0 &&
                 <>
                     <h5 className="text-info text-center">
@@ -203,6 +157,7 @@ const ModalUsuarioCursoConfig = ({
                             const { codigo, letra, nivel_academico, inscrito } = curso
                             return (
                                 <ListGroup.Item 
+                                    key={codigo}
                                     variant={inscrito === 0 ? "light" : "info"}
                                     className="cursor-pointer"
                                     style={{
@@ -222,8 +177,6 @@ const ModalUsuarioCursoConfig = ({
                                     {`${nivel_academico.descripcion} ${letra}`}
                                     {inscrito > 0 && <span>&#10003;</span>}
                                 </span>
-                                   
-
                                 </ListGroup.Item>
                             )
                         })}

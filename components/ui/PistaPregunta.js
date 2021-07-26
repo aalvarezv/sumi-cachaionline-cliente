@@ -118,7 +118,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                         placeholder={`Pista ${numero}`}
                         value={texto}
                         onChange={e => {
-                            handleChangeTextoPista(numero, e.target.value.toUpperCase())
+                            handleChangeTextoPista(numero, e.target.value)
                         }}
                         isInvalid={errores.length > 0 ? errores.filter(error => error.numero === numero).length > 0 : false}
                     />

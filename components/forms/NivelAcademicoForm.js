@@ -6,7 +6,7 @@ import { Container, Form, Button, Row, Col } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 
-const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
+const NivelAcademicoForm = ({nivelAcademicoEnProceso, setNivelAcademicoEnProceso}) => {
 
     const [formulario, setFormulario] = useState({
         codigo: '',
@@ -15,45 +15,34 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
         inactivo: false
     })
 
-    const [errores, setErrores] = useState({})
-
     useEffect(() => {
 
-        if(nivelacademico_modificar){
+        if(nivelAcademicoEnProceso){
             setFormulario({
-                codigo: nivelacademico_modificar.codigo,
-                descripcion: nivelacademico_modificar.descripcion,
-                nivel: nivelacademico_modificar.nivel,
-                inactivo: nivelacademico_modificar.inactivo
+                codigo: nivelAcademicoEnProceso.codigo,
+                descripcion: nivelAcademicoEnProceso.descripcion,
+                nivel: nivelAcademicoEnProceso.nivel,
+                inactivo: nivelAcademicoEnProceso.inactivo
             })
         }else{
             reseteaFormulario()
         }
-        setErrores({})
 
-    }, [nivelacademico_modificar])
+    }, [nivelAcademicoEnProceso])
 
     const validarFormulario = () => {
         
-        let errors = {}
-
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
         if(Number(formulario.nivel) === 0){
-            errors = {
-                ...errors,
-                nivel: 'Requerido'
-            }
+            toast.error('Ingrese número nivel', {containerId: 'sys_msg'})
+            return false
         }
 
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -69,25 +58,18 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
+
             //Unidad a enviar
             let nivelacademico = {
                 ...formulario,
                 codigo : uuidv4(),
             }
 
-            const resp = await clienteAxios.post('/api/nivel-academico/crear', nivelacademico)
-            
-            nivelacademico = resp.data
-            reseteaFormulario()
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADEMICO CREADO'}]}/>, {containerId: 'sys_msg'})
+            await clienteAxios.post('/api/nivel-academico/crear', nivelacademico)
+            setNivelAcademicoEnProceso(nivelacademico)
+            toast.success('Nivel académico creado', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -97,16 +79,13 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
+
             let nivelacademico = formulario
             await clienteAxios.put('/api/nivel-academico/actualizar', nivelacademico)
-            toast.success(<ToastMultiline mensajes={[{msg: 'NIVEL ACADÉMICO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+
+            toast.success('Nivel académico actualizado', {containerId: 'sys_msg'})
         }catch(e){
             handleError(e)
         }
@@ -125,11 +104,9 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                      value={formulario.descripcion}
                      onChange={e => {setFormulario({
                              ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
+                            [e.target.name]: e.target.value
                          })
                      }}
-                     isInvalid={errores.hasOwnProperty('descripcion')}
-                     onBlur={validarFormulario}
                  />
              </Form.Group>
              <Form.Group>
@@ -149,8 +126,6 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                             })
                         }
                      }}
-                     isInvalid={errores.hasOwnProperty('nivel')}
-                     onBlur={validarFormulario}
                  />
              </Form.Group>       
             <Form.Check 
@@ -170,7 +145,7 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
             
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {nivelacademico_modificar
+                    {nivelAcademicoEnProceso
                     ?
                         <Button 
                             variant="outline-info"
@@ -186,14 +161,6 @@ const NivelAcademicoForm = ({nivelacademico_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
         </Form>

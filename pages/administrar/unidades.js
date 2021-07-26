@@ -10,13 +10,14 @@ import Paginador from '../../components/ui/Paginador'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import UnidadForm from '../../components/forms/UnidadForm'
 import TableUnidad from '../../components/ui/TableUnidad'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Unidades = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [unidades, setUnidades] = useState([])
-   const [unidad_modificar, setUnidadModificar] = useState(null)
+   const [unidadEnProceso, setUnidadEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [codigo_materia, setCodigoMateria] = useState('0')
    const [textAlert, setTextAlert] = useState('')
@@ -57,7 +58,7 @@ const Unidades = () => {
       const unidad = unidades.filter(unidad => unidad.codigo === codigo)
       if(unidad.length > 0){
          setMostrarBusqueda(false)
-         setUnidadModificar(unidad[0])
+         setUnidadEnProceso(unidad[0])
       }
    }
 
@@ -66,31 +67,36 @@ const Unidades = () => {
         await clienteAxios.delete(`/api/unidades/eliminar/${codigo}`)
         const new_unidades = unidades.filter(unidad => unidad.codigo !== codigo)
         setUnidades(new_unidades)
-        toast.success('UNIDAD ELIMINADA', {containerId: 'sys_msg'})
+        toast.success('Unidad eliminada', {containerId: 'sys_msg'})
      } catch (e) {
         handleError(e)
      }
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
-      setUnidades([])
-      setCodigoMateria('0')
-      setFiltroBusqueda('')
    }
 
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
+
    
    return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Unidades</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Unidades</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={unidadEnProceso ? 'Modificar unidad' : 'Crear nueva unidad'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
-            
             {mostrar_busqueda 
             ?
             <> 
@@ -139,7 +145,7 @@ const Unidades = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setUnidadModificar(null)
+                        setUnidadEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -151,8 +157,8 @@ const Unidades = () => {
             :
             <Row>
                <UnidadForm
-                  unidad_modificar = {unidad_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  unidadEnProceso = {unidadEnProceso}
+                  setUnidadEnProceso = {setUnidadEnProceso}
                />
             </Row>
             }

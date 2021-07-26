@@ -9,13 +9,14 @@ import Privado from '../../components/layout/Privado'
 import Paginador from '../../components/ui/Paginador'
 import MateriaForm from '../../components/forms/MateriaForm'
 import TableMateria from '../../components/ui/TableMateria'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Materias = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [materias, setMaterias] = useState([])
-   const [materia_modificar, setMateriaModificar] = useState({})
+   const [materiaEnProceso, setMateriaEnProceso] = useState({})
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [textAlert, setTextAlert] = useState('')
     /**** Variables para paginación *****/
@@ -55,7 +56,7 @@ const Materias = () => {
      const materia = materias.filter(materia => materia.codigo === codigo)
      if(materia.length > 0){
         setMostrarBusqueda(false)
-        setMateriaModificar(materia[0])
+        setMateriaEnProceso(materia[0])
      }
    }
 
@@ -65,28 +66,35 @@ const Materias = () => {
         await clienteAxios.delete(`/api/materias/eliminar/${codigo}`)
         const new_materias = materias.filter(materia => materia.codigo !== codigo)
         setMaterias(new_materias)
-        toast.success('MATERIA ELIMINADA', {containerId: 'sys_msg'})
+        toast.success('Materia eliminada', {containerId: 'sys_msg'})
      } catch (e) {
         handleError(e)
      }
 
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
-      setMaterias([])
-      setFiltroBusqueda('')
    }
 
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
-       
+   
+
    return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Materias</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Materias</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={materiaEnProceso ? 'Modificar materia' : 'Crear nueva materia'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             {mostrar_busqueda 
@@ -101,13 +109,13 @@ const Materias = () => {
                            value={filtro} 
                            placeholder="Busqueda por código ó descripción de materia..."
                            onChange={e => {
-                              setFiltroBusqueda(e.target.value.toUpperCase())
+                              setFiltroBusqueda(e.target.value)
                            }}
                         />
                      </Col>
                      <Col className="mb-2 mb-sm-0" xs={12} sm="auto">
                         <Button 
-                           variant="outline-info"
+                           variant="info"
                            className="btn-block"
                            onClick={e =>{
                               handleClickBuscar()
@@ -120,7 +128,7 @@ const Materias = () => {
                            variant="info"
                            className="btn-block"
                            onClick={e =>{
-                              setMateriaModificar(null)
+                              setMateriaEnProceso(null)
                               setMostrarBusqueda(false)
                               setTextAlert('')
                            }}>
@@ -132,8 +140,8 @@ const Materias = () => {
             :
                <Row>
                   <MateriaForm
-                     materia_modificar={materia_modificar}
-                     handleClickVolver={handleClickVolver}
+                     materiaEnProceso={materiaEnProceso}
+                     setMateriaEnProceso={setMateriaEnProceso}
                   />
                </Row>
             }

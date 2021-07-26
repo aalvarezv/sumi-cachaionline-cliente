@@ -46,20 +46,21 @@ const TableContenido = ({contenidos, pagina_actual, resultados_por_pagina, handl
                                 <td className="text-center"><Badge variant={inactivo ? 'danger' : 'info'} >{inactivo ? 'Inactivo': 'Activo'}</Badge></td>                           
                                 <td className="text-center">
                                     <Button 
-                                        variant="outline-info"
+                                        variant="info"
+                                        size={"sm"}
                                         onClick={() => {
                                             handleClickModificarContenido(codigo)    
                                         }}
                                     >
-                                     Modificar
+                                     Configurar
                                     </Button>
                                 </td>
                                 <td className="text-center"
                                     ref={ref_confirm_eliminar}
                                 >
                                     <Button 
-                                        variant="danger"
-                                        size={"md"}
+                                        variant="secondary"
+                                        size={"sm"}
                                         onClick={e => handleClickEliminar(e, codigo)}
                                     >
                                         Eliminar

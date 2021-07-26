@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Container, Form, Button, Row, Col } from 'react-bootstrap'
-import ToastMultiline from '../ui/ToastMultiline'
 import { handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import InputSelectMateria from '../ui/InputSelectMateria'
 import InputSelectUnidadesMateria from '../ui/InputSelectUnidadesMateria'
 import InputSelectModulosUnidad from '../ui/InputSelectModulosUnidad'
 
-const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
+const ContenidoForm = ({contenidoEnProceso, setContenidoEnProceso}) => {
 
     const [formulario, setFormulario] = useState({
         codigo: '',
@@ -20,21 +19,19 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
     const [codigo_materia, setCodigoMateria] = useState('0')
     const [codigo_unidad, setCodigoUnidad] = useState('0')
 
-    const [errores, setErrores] = useState({})
-
     useEffect(() => {
         
         //cuando se selecciona o cambia el result_select
-        if(contenido_modificar){
+        if(contenidoEnProceso){
 
-            setCodigoUnidad(contenido_modificar.modulo.codigo_unidad)
-            setCodigoMateria(contenido_modificar.modulo.unidad.codigo_materia)
+            setCodigoUnidad(contenidoEnProceso.modulo.codigo_unidad)
+            setCodigoMateria(contenidoEnProceso.modulo.unidad.codigo_materia)
 
             setFormulario({
-                codigo: contenido_modificar.codigo,
-                descripcion: contenido_modificar.descripcion,
-                codigo_modulo: contenido_modificar.codigo_modulo,
-                inactivo: contenido_modificar.inactivo
+                codigo: contenidoEnProceso.codigo,
+                descripcion: contenidoEnProceso.descripcion,
+                codigo_modulo: contenidoEnProceso.codigo_modulo,
+                inactivo: contenidoEnProceso.inactivo
             })
 
         }else{
@@ -42,33 +39,24 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
             setCodigoUnidad('0')
             reseteaFormulario()
         }
-        setErrores({})
 
-    }, [contenido_modificar])
+    }, [contenidoEnProceso])
 
     const validarFormulario = () => {
-        //setea los errores para que no exista ninguno.
-        let errors = {}
+
+        //valida el módulo
+        if(formulario.codigo_modulo.trim() === '' || formulario.codigo_modulo.trim() === '0'){
+            toast.error('Seleccione módulo', {containerId: 'sys_msg'})
+            return false
+        }
 
         //valida la descripcion.
         if(formulario.descripcion.trim() === ''){
-            errors = {
-                ...errors,
-                descripcion: 'Requerido'
-            }
+            toast.error('Ingrese descripción', {containerId: 'sys_msg'})
+            return false
         }
 
-        //valida la unidad.
-        if(formulario.codigo_modulo.trim() === '' || formulario.codigo_modulo.trim() === '0'){
-            errors = {
-                ...errors,
-                codigo_modulo: 'Requerido'
-            }
-        }
-
-        setErrores(errors)
-
-        return errors
+        return true
 
     }
 
@@ -87,23 +75,28 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
     const handleClickCrear = async e => {
         
         try{
-            //previne el envío
-            e.preventDefault()
+
             //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
+            if(!validarFormulario()) return
             //contenido a enviar
             let contenido = {
                 ...formulario,
                 codigo : uuidv4(),
              }
 
-             const resp = await clienteAxios.post('/api/contenidos/crear', contenido)
-             reseteaFormulario()
-             toast.success(<ToastMultiline mensajes={[{msg: 'CONTENIDO CREADO'}]}/>, {containerId: 'sys_msg'})
+             await clienteAxios.post('/api/contenidos/crear', contenido)
+             
+             setContenidoEnProceso({
+                ...contenido,
+                modulo: {
+                    codigo_unidad,
+                    unidad: {
+                        codigo_materia
+                    }
+                }
+             })
+
+             toast.success('Contenido creado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -114,17 +107,11 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
     const handleClickActualizar = async e => {
         
         try{
-            e.preventDefault()
-            //valida el formulario
-            const errors = validarFormulario()
-            //verifica que no hayan errores
-            if(Object.keys(errors).length > 0){
-                return
-            }
-
+            if(!validarFormulario()) return
+            
             await clienteAxios.put('/api/contenidos/actualizar', formulario)
             //respuesta del usuario recibido.
-            toast.success(<ToastMultiline mensajes={[{msg: 'CONTENIDO ACTUALIZADO'}]}/>, {containerId: 'sys_msg'})
+            toast.success('Contenido actualizado', {containerId: 'sys_msg'})
  
         }catch(e){
              handleError(e)
@@ -134,60 +121,48 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
     return ( 
         <Container>
             <Form className="p-3"> 
-                <Form.Group>
-                    <Form.Label>Descripción</Form.Label>
-                    <Form.Control
-                        id="descripcion"
-                        name="descripcion"
-                        type="text" 
-                        placeholder="DESCRIPCIÓN" 
-                        value={formulario.descripcion}
-                        onChange={e => setFormulario({
-                            ...formulario,
-                            [e.target.name]: e.target.value.toUpperCase()
-                        })}
-                        isInvalid={errores.hasOwnProperty('descripcion')}
-                        onBlur={validarFormulario}
-                    />
-                </Form.Group> 
-                <Form.Group>
-                    <Form.Label className="text-muted">Materia</Form.Label>
-                    <InputSelectMateria
-                        id="codigo_materia"
-                        name="codigo_materia"
-                        as="select"
-                        size="sm"
-                        value={codigo_materia}
-                        onChange={e => {
-                            setCodigoMateria(e.target.value)
-                            setCodigoUnidad('0')
-                            setFormulario({
-                                ...formulario,
-                                codigo_modulo: '0',
-                            })
-                        }}
-                    />
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label className="text-muted">Unidad</Form.Label>
-                    <InputSelectUnidadesMateria
-                        id="codigo_unidad"
-                        name="codigo_unidad"
-                        /*codigo materia se le pasa a las props del componente
-                        para filtrar las unidades de la materia seleccionada.*/
-                        codigo_materia={codigo_materia}
-                        as="select"
-                        size="sm"
-                        value={codigo_unidad}
-                        onChange={e => {
-                            setCodigoUnidad(e.target.value)
-                            setFormulario({
-                                ...formulario,
-                                codigo_modulo: '0',
-                            })
-                        }}
-                    />
-                </Form.Group>
+                <Row>
+                    <Col>
+                        <Form.Label className="text-muted">Materia</Form.Label>
+                        <InputSelectMateria
+                            id="codigo_materia"
+                            name="codigo_materia"
+                            as="select"
+                            size="sm"
+                            value={codigo_materia}
+                            onChange={e => {
+                                setCodigoMateria(e.target.value)
+                                setCodigoUnidad('0')
+                                setFormulario({
+                                    ...formulario,
+                                    codigo_modulo: '0',
+                                })
+                            }}
+                        />
+                    </Col>
+                    <Col>
+                        <Form.Label className="text-muted">Unidad</Form.Label>
+                        <InputSelectUnidadesMateria
+                            id="codigo_unidad"
+                            name="codigo_unidad"
+                            /*codigo materia se le pasa a las props del componente
+                            para filtrar las unidades de la materia seleccionada.*/
+                            codigo_materia={codigo_materia}
+                            as="select"
+                            size="sm"
+                            value={codigo_unidad}
+                            onChange={e => {
+                                setCodigoUnidad(e.target.value)
+                                setFormulario({
+                                    ...formulario,
+                                    codigo_modulo: '0',
+                                })
+                            }}
+                        />
+                    </Col>
+                    
+                </Row>
+                
                 <Form.Group>
                     <Form.Label>Módulos</Form.Label>
                     <InputSelectModulosUnidad
@@ -205,10 +180,22 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
                                 [e.target.name]: e.target.value
                             })
                         }}
-                        isInvalid={errores.hasOwnProperty('codigo_modulo')}
-                        onBlur={validarFormulario}
                     />
                 </Form.Group>
+                <Form.Group>
+                    <Form.Label>Descripción</Form.Label>
+                    <Form.Control
+                        id="descripcion"
+                        name="descripcion"
+                        type="text" 
+                        placeholder="DESCRIPCIÓN" 
+                        value={formulario.descripcion}
+                        onChange={e => setFormulario({
+                            ...formulario,
+                            [e.target.name]: e.target.value
+                        })}
+                    />
+                </Form.Group> 
                 <Form.Check 
                     id="inactivo"
                     name="inactivo"
@@ -223,7 +210,7 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
                 />
             <Row className="justify-content-center">
                 <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    {contenido_modificar
+                    {contenidoEnProceso
                     ?
                         <Button 
                             variant="outline-info"
@@ -240,14 +227,6 @@ const ContenidoForm = ({contenido_modificar, handleClickVolver}) => {
                             onClick={handleClickCrear}
                         >Crear</Button>
                     }
-                </Col>
-                <Col className="mb-3 mb-sm-0" xs={12} sm={"auto"}>
-                    <Button 
-                        variant="info"
-                        size="lg"
-                        className="btn-block"
-                        onClick={handleClickVolver}
-                    >Volver</Button>
                 </Col>
             </Row>
             </Form>

@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react'
-import { Container, Row, Col, Badge, Form, Button } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Alert, Container, Row, Col, Badge, Form, Button } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 import TableRingPreguntas from './TableRingPreguntas'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria'
@@ -11,12 +12,15 @@ import { handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
 import AlertText from './AlertText'
 import Paginador from './Paginador'
+import PreguntaInfo from './PreguntaInfo'
 
-export const RingPregunta = ({showModalPreguntasRing, ring}) => {
 
+export const RingPregunta = ({ring}) => {
 
     const [preguntas_ring, setPreguntasRing] = useState([])
     const [cantPreguntasRing, setCantPreguntasRing] = useState(0)
+   
+    const [pregunta, setPregunta] = useState(null)
     
     const [textAlert, setTextAlert] = useState('')
     const [filtros, setFiltros] = useState({
@@ -33,7 +37,6 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
         codigo_modulo_contenido_tema, codigo_modulo_contenido_tema_concepto,
         nombre_usuario_creador } = filtros
 
-
     /**** Variables para paginación *****/
     const [pagina_actual, setPaginaActual] = useState(1)
     const [resultados_por_pagina, setResultadosPorPagina] = useState(4)
@@ -43,34 +46,19 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
     const resultados_pagina = preguntas_ring.slice(indice_primer_resultado, indice_ultimo_resultado)
     /*************************************/
 
-    
-    useEffect(() => {
-
-        const getCantidadPreguntasRing = async () =>{
-
-            try{
-
-                const resp = await clienteAxios.get('/api/ring-preguntas/count/preguntas',{
-                    params: {
-                        codigo_ring: ring.codigo
-                    }
-                })
-
-                setCantPreguntasRing(resp.data.cantPreguntasRing)
-    
-            }catch(e){
-                handleError(e)
-            }
-
+    const getCantidadPreguntasRing = async () =>{
+        try{
+            const resp = await clienteAxios.get('/api/ring-preguntas/count/preguntas',{
+                params: {
+                    codigo_ring: ring.codigo
+                }
+            })
+            setCantPreguntasRing(resp.data.cantPreguntasRing)
+        }catch(e){
+            handleError(e)
         }
-
-        if(showModalPreguntasRing){
-            getCantidadPreguntasRing()
-        }
-        
-    }, [showModalPreguntasRing])
-
-
+    }
+    
     const handleClickBuscarPreguntas = async () => {
         try{
             const resp = await clienteAxios.get('/api/preguntas/listar/ring', {
@@ -87,6 +75,8 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
                         limit: 1, 
                     }
             })
+
+            getCantidadPreguntasRing()
             //Si no hay preguntas, mostrar un mensajillo.
             if(resp.data.preguntas.length > 0){
                 setTextAlert("")
@@ -115,7 +105,7 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
             })
 
             setCantPreguntasRing(resp.data.cantPreguntasRing)
-            toast.success('La Pregunta fue agregada correctamente al Ring.', {containerId: 'sys_msg'})
+            toast.success('Pregunta agregada al ring.', {containerId: 'sys_msg'})
 
             const new_preguntas_ring = preguntas_ring.map(pregunta_ring => {  
               
@@ -156,7 +146,7 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
                 }
             })
             setPreguntasRing(new_preguntas_ring)
-            toast.success('La Pregunta fue quitada correctamente del Ring.', {containerId: 'sys_msg'})
+            toast.success('Pregunta quitada del ring.', {containerId: 'sys_msg'})
 
         }catch(e){
             handleError(e)
@@ -256,13 +246,44 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
         setPaginaActual(numero_pagina)
     }
 
+    const handleShowPreguntaInfo = pregunta => {
+        setPregunta(pregunta)
+    } 
+
+    const handleClosePreguntaInfo = () => {
+        setPregunta(null)
+    }    
 
 
     return (
         <Container>
-            <>
+            {pregunta 
+            ?   
+                <>
+                <Alert
+                    variant="info"
+                >
+                    <Row>
+                        <Col>
+                            <h5>Detalle Pregunta</h5>
+                        </Col>
+                        <Col className="d-flex justify-content-end">
+                            <Button
+                                variant={"info"}
+                                size={"sm"}
+                                onClick={handleClosePreguntaInfo}
+                            >Volver</Button>
+                        </Col>
+                    </Row>
+                </Alert>
+                <PreguntaInfo
+                    pregunta={pregunta}
+                />
+                </>
+            :
+                <>  
                 <Row> 
-                    <Col className="font-weight-bold mb-2 ml-2">
+                    <Col className="font-weight-bold mb-2 ml-3">
                         <h5>Filtros de búsqueda preguntas</h5>
                     </Col>
                 </Row> 
@@ -403,7 +424,7 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
                                     onChange={e => {
                                         setFiltros({
                                                 ...filtros,
-                                                [e.target.name]: e.target.value.toUpperCase()
+                                                [e.target.name]: e.target.value
                                         })
                                     }} 
                                 />
@@ -448,7 +469,7 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
                                 handleAgregarPreguntaRing = {handleAgregarPreguntaRing}
                                 handleQuitarPreguntaRing = {handleQuitarPreguntaRing}
                                 handleAgregarQuitarPreguntasRingMasivo = {handleAgregarQuitarPreguntasRingMasivo}
-                                handleShowModalPreguntaInfo={handleShowModalPreguntaInfo}
+                                handleShowPreguntaInfo={handleShowPreguntaInfo}
                         /> 
                     </Col>
                     :
@@ -458,8 +479,9 @@ export const RingPregunta = ({showModalPreguntasRing, ring}) => {
                         /> 
                     </Col>
                     }   
-                </Row>                 
-            </>
+                </Row> 
+                </>
+            }    
         </Container>
     )
 }

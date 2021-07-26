@@ -11,13 +11,14 @@ import ModuloForm from '../../components/forms/ModuloForm'
 import TableModulo from '../../components/ui/TableModulo'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Modulos = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [modulos, setModulos] = useState([])
-   const [modulo_modificar, setModuloModificar] = useState(null)
+   const [moduloEnProceso, setModuloEnProceso] = useState(null)
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [codigo_materia, setCodigoMateria] = useState('0')
    const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -63,7 +64,7 @@ const Modulos = () => {
       const modulo = modulos.filter(modulo => modulo.codigo === codigo)
       if(modulo.length > 0){
          setMostrarBusqueda(false)
-         setModuloModificar(modulo[0])
+         setModuloEnProceso(modulo[0])
       }
 
    }
@@ -74,19 +75,15 @@ const Modulos = () => {
          await clienteAxios.delete(`/api/modulos/eliminar/${codigo}`)
          const new_modulos = modulos.filter(modulo => modulo.codigo !== codigo)
          setModulos(new_modulos)
-         toast.success('MÓDULO ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Módulo eliminado', {containerId: 'sys_msg'})
       } catch (e) {
          handleError(e)
       }
 
    }
 
-    const handleClickVolver = () =>{
+    const handleClickMostrarBusqueda = () =>{
       setMostrarBusqueda(true)
-      setModulos([])
-      setCodigoMateria('0')
-      setCodigoUnidad('0')
-      setFiltroBusqueda('')
     }
 
    const handleSetPaginaActual = numero_pagina => {
@@ -97,7 +94,15 @@ const Modulos = () => {
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Módulos</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Módulos</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={moduloEnProceso ? 'Modificar módulo' : 'Crear nuevo módulo'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>
             {mostrar_busqueda 
@@ -166,7 +171,7 @@ const Modulos = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setModuloModificar(null)
+                        setModuloEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -178,8 +183,8 @@ const Modulos = () => {
             :
             <Row>
                <ModuloForm
-                  modulo_modificar = {modulo_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  moduloEnProceso = {moduloEnProceso}
+                  setModuloEnProceso = {setModuloEnProceso}
                />
             </Row>
             }

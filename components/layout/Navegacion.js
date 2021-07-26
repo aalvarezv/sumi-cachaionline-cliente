@@ -7,28 +7,21 @@ import AuthContext from '../../context/auth/AuthContext'
 import MenuInstitucionPerfil from './MenuInstitucionPerfil'
 import clienteAxios from '../../config/axios'
 import { Button, 
-    Col,
     Nav, 
     Navbar, 
     NavDropdown,
-    Row
 } from 'react-bootstrap'
 import ModalCargaMasivaUsuario from '../ui/ModalCargaMasivaUsuario'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 
 
-
 const Navegacion = () => {
 
-    const { usuario, autenticado, rol_select, cerrarSesion} = useContext(AuthContext)
+    const { usuario, autenticado, rol_select } = useContext(AuthContext)
     const { socket } = useContext(SocketContext)
     const [showCargaMasivaUsuarios, setShowCargaMasivaUsuarios] = useState(false)
     const [navbarExpand, setNavbarExpand] = useState(true)
 
-    const handleShowCargaMasivaUsuarios = () => {
-    
-    }
-    
     const {cantidadInvitaciones, setCantidadInvitacionesRing} = useContext(SocketInvitacionesRingContext)
 
 
@@ -61,12 +54,11 @@ const Navegacion = () => {
       
     }, [usuario])
 
-    //const windowDimensions = useWindowDimensions()
+    const windowDimensions = useWindowDimensions()
     
-    // if(windowDimensions.width > 989 && windowDimensions.width < 991 && !navbarExpand){
-    //     console.log('expandir')
-    //     setNavbarExpand(true)
-    // }
+    if(windowDimensions.width > 989 && windowDimensions.width < 991 && !navbarExpand){
+        setNavbarExpand(true)
+    }
 
     return (
         <>
@@ -133,7 +125,7 @@ const Navegacion = () => {
                                 :
                                     null
                                 }
-                                {rol_select.ver_menu_rings
+                                {rol_select.ver_submenu_cursos
                                 ?
                                     <Link href="/administrar/cursos" passHref>
                                         <NavDropdown.Item>Cursos</NavDropdown.Item>
@@ -201,11 +193,11 @@ const Navegacion = () => {
                         :
                             null
                         }
-                        <NavDropdown title="Carga masiva" id="cargaMasiva-nav-dropdown">
+                        {/* <NavDropdown title="Carga masiva" id="cargaMasiva-nav-dropdown">
                             <Link href="#" passHref>
                                 <Nav.Link onClick={() => {setShowCargaMasivaUsuarios(true)}}>Usuarios</Nav.Link>
                             </Link>
-                        </NavDropdown>
+                        </NavDropdown> */}
                         {rol_select.ver_menu_preguntas 
                         ?
                             <Link href="/administrar/preguntas" passHref>
@@ -217,20 +209,28 @@ const Navegacion = () => {
                         {rol_select.ver_menu_rings
                         ?
                             <NavDropdown title="Rings" id="administrar-nav-dropdown">
+                                <Link href="/administrar/rings" passHref>
+                                    <NavDropdown.Item>Administrar</NavDropdown.Item>
+                                </Link>
                                 <Link href="/administrar/ring-invitaciones" passHref>
                                     <NavDropdown.Item>
                                         {`Invitaciones [${cantidadInvitaciones}]`}
                                     </NavDropdown.Item>
                                 </Link>
-                                <Link href="/administrar/rings" passHref>
-                                    <NavDropdown.Item>Administrar</NavDropdown.Item>
-                                </Link>
                             </NavDropdown>
                         :
                             null
                         }
+                        {rol_select.ver_menu_cuestionarios 
+                        ?
+                            <Link href="/quest-sugerencias" passHref>
+                                <Nav.Link>Cuestionario</Nav.Link>
+                            </Link>
+                        :
+                            null
+                        }
                         
-                        </>
+                    </>
                     }
                 </Nav> 
                 <Nav>

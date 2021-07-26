@@ -160,7 +160,7 @@ const FiltrosBusquedaPregunta = ({filtros_default, handleClickBuscar}) => {
                     onChange={e => {
                     setFiltros({
                         ...filtros,
-                        [e.target.name]: e.target.value.toUpperCase()
+                        [e.target.name]: e.target.value
                     })
                     }} 
                 />

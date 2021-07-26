@@ -13,13 +13,14 @@ import InputSelectMateria from '../../components/ui/InputSelectMateria'
 import InputSelectUnidadesMateria from '../../components/ui/InputSelectUnidadesMateria'
 import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnidad'
 import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido'
+import AlertMostrarBusqueda from '../../components/ui/AlertMostrarBusqueda'
 
 
 const Temas = () => {
 
    const [filtro, setFiltroBusqueda] = useState('')
    const [temas, setTemas] = useState([])
-   const [tema_modificar, setTemaModificar] = useState({})
+   const [temaEnProceso, setTemaEnProceso] = useState({})
    const [mostrar_busqueda, setMostrarBusqueda] = useState(true)
    const [codigo_materia, setCodigoMateria] = useState('0')
    const [codigo_unidad, setCodigoUnidad] = useState('0')
@@ -69,7 +70,7 @@ const Temas = () => {
       const tema = temas.filter(tema => tema.codigo === codigo)
       if(tema.length > 0){
          setMostrarBusqueda(false)
-         setTemaModificar(tema[0])
+         setTemaEnProceso(tema[0])
       }
    }
 
@@ -78,31 +79,35 @@ const Temas = () => {
          await clienteAxios.delete(`/api/temas/eliminar/${codigo}`)
          const new_temas = temas.filter(tema => tema.codigo !== codigo)
          setTemas(new_temas)
-         toast.success('TEMA ELIMINADO', {containerId: 'sys_msg'})
+         toast.success('Tema eliminado', {containerId: 'sys_msg'})
       } catch (e) {
          handleError(e)
       }
    }
 
-   const handleClickVolver = () =>{
+   const handleClickMostrarBusqueda = () =>{
        setMostrarBusqueda(true)
-       setTemas([])
-       setCodigoMateria('0')
-       setCodigoUnidad('0')
-       setCodigoModulo('0')
-       setCodigoContenido('0')
-       setFiltroBusqueda('')
    }
 
    const handleSetPaginaActual = numero_pagina => {
       setPaginaActual(numero_pagina)
    }
 
+   
+
     return ( 
          <Layout>
          <Privado>
             <Container>
-            <h5 className="text-center my-4">Administrar Temas</h5>
+            {mostrar_busqueda
+            ?
+               <h5 className="text-center my-4">Administrar Temas</h5> 
+            :
+               <AlertMostrarBusqueda
+                  label={temaEnProceso ? 'Modificar tema' : 'Crear nuevo tema'}
+                  handleClickMostrarBusqueda={handleClickMostrarBusqueda}
+               />
+            }
             <Card>
             <Card.Body>    
             {mostrar_busqueda 
@@ -208,7 +213,7 @@ const Temas = () => {
                      variant="info"
                      className="btn-block"
                      onClick={e =>{
-                        setTemaModificar(null)
+                        setTemaEnProceso(null)
                         setMostrarBusqueda(false)
                         setTextAlert('')
                      }}>
@@ -219,8 +224,8 @@ const Temas = () => {
             :
             <Row>
                <TemaForm
-                  tema_modificar = {tema_modificar}
-                  handleClickVolver = {handleClickVolver}
+                  temaEnProceso = {temaEnProceso}
+                  setTemaEnProceso = {setTemaEnProceso}
                />
             </Row>
             }   

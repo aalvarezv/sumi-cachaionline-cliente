@@ -276,7 +276,7 @@ const Preguntas = () => {
                                     onChange={e => {
                                     setFiltros({
                                           ...filtros,
-                                          [e.target.name]: e.target.value.toUpperCase()
+                                          [e.target.name]: e.target.value
                                     })
                                     }} 
                                  />
