@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { useRouter } from 'next/router'
 import AuthContext from '../../context/auth/AuthContext'
 import { Button, Col, Form, OverlayTrigger, Popover, Row } from 'react-bootstrap'
+import { toast } from 'react-toastify'
 
 const MenuInstitucionPerfil = () => {
 
@@ -10,14 +11,22 @@ const MenuInstitucionPerfil = () => {
 
     const router = useRouter()
 
-    const handleChangeInstitucion = e => {
+    const handleChangeInstitucion = (e) => {
+        
+        const newInstitucionSelect  = usuario.institucion_roles.filter((institucion) => institucion.codigo_institucion === e.target.value)[0]
+        toast.dark(`Has cambiado de la institución ${institucion_select.descripcion} a ${newInstitucionSelect.descripcion_institucion}`, {containerId: 'sys_msg'})
         selectInstitucion(e.target.value)
         router.push('/')
+
     }
 
     const handleChangeRol = e => {
+        
+        const newRolSelect  = roles_institucion.filter((rol) => rol.codigo_rol === e.target.value)[0]
+        toast.dark(`Has cambiado tu perfil de ${rol_select.descripcion} a ${newRolSelect.descripcion}`, {containerId: 'sys_msg'})
         selectRol(e.target.value)
         router.push('/')
+
     }
 
     return ( 

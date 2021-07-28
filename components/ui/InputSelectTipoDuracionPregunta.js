@@ -50,7 +50,11 @@ const InputSelectTipoDuracionJuego = props => {
                         if(tipoDuracionPregunta.length > 0) {
                             tooltipLabel = tipoDuracionPregunta[0].info
                         }  
-                        
+
+                        if(tooltipLabel.trim() === ''){
+                            setShowToolTip(false)
+                        }
+
                         return <Tooltip id="tooltip-duracion-pregunta" {...props} onClick={() => setShowToolTip(false)}>
                                 {tooltipLabel}
                             </Tooltip>

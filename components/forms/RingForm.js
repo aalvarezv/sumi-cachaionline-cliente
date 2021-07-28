@@ -241,7 +241,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
             
             setRingEnProceso(ring)
 
-            toast.success('Ring creado', {containerId: 'sys_msg'})
+            toast.success('Tu ring ha sido creado ahora puedes agregar alumnos y preguntas pulsando el botón siguiente', {containerId: 'sys_msg'})
         
         }catch(e){
             handleError(e)
@@ -263,7 +263,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
           
             await clienteAxios.put('/api/rings/actualizar', ring)
             
-            toast.success('Ring actualizado', {containerId: 'sys_msg'})
+            toast.success('Tu ring se ha actualizado ahora puedes agregar o quitar alumnos y preguntas pulsando el botón siguiente', {containerId: 'sys_msg'})
 
 
         }catch(e){
@@ -713,7 +713,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                 </Col> */}
             </Row> 
             <Row> 
-                <Col xs={12} md="auto" className="mb-1">
+                {/* <Col xs={12} md="auto" className="mb-1">
                     <Form.Check 
                         id="retroceder"
                         name="retroceder"
@@ -727,7 +727,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                             })
                         }}
                     />
-                </Col>
+                </Col> */}
                 <Col xs={12} md="auto" className="mb-1"> 
                     <Form.Check 
                         id="pistas"

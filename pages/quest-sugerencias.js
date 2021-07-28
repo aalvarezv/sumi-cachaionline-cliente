@@ -199,7 +199,7 @@ const CargaRespuestasSugerencias = () => {
                     
                 </Col>
             </Row> 
-            <Row>
+            <Row className="mt-5">
                 
                 <Col className="d-flex justify-content-center">
                     {isLoading
@@ -431,7 +431,7 @@ const EnviaRespuestas = () => {
                 }
             </Col>
         </Row>
-        <Row>
+        <Row className="mt-5">
             <Col className="d-flex justify-content-center">
                 {isLoading
                 ?
@@ -442,7 +442,7 @@ const EnviaRespuestas = () => {
                         size="lg"
                         onClick={handleEnviarSugerencias}
                     >
-                        Enviar Sugerencias
+                        Enviar Respuestas
                     </Button>
                 }
             </Col>
