@@ -4,6 +4,7 @@ import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap'
 import { rutEsValido, rutFormat, handleError, getBase64 } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import Uploader from '../ui/Uploader'
+import { TiDelete } from 'react-icons/ti'
 
 
 const UsuarioForm = ({ usuarioEnProceso, setUsuarioEnProceso }) => {
@@ -169,6 +170,14 @@ const UsuarioForm = ({ usuarioEnProceso, setUsuarioEnProceso }) => {
 
     }
 
+    const handleQuitarImagenUsuario = () => {
+        setFormulario({
+            ...formulario,
+            imagen: ''
+        })
+
+    }
+
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getArchivos = async archivos => {
 
@@ -216,13 +225,38 @@ const UsuarioForm = ({ usuarioEnProceso, setUsuarioEnProceso }) => {
                         />
                     </Col>
                     <Col className="d-flex order-1 order-md-2 my-3 my-md-0">
-                        <Image 
-                            src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
-                            style={{width: 150}}
-                            thumbnail
-                        />       
+                            
+                        <div
+                            className="d-flex"
+                            style={{position:"relative", minWidth:150}}
+                        >
+                            <Image 
+                                src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                                style={{width: 150}}
+                                thumbnail
+                            /> 
+                            
+                            {formulario.imagen.trim() !== '' &&
+                                <span
+                                    onClick={handleQuitarImagenUsuario}
+                                    style={{
+                                        position: 'absolute', 
+                                        top: -16, 
+                                        right: -13,
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <TiDelete 
+                                        size={"1.5rem"} 
+                                        color={"red"}
+                                    />
+                                </span>
+                            }
+                        </div>
+                              
                         <Uploader 
                             titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                            formatosValidos={["image/*"]}
                             getArchivos={getArchivos}
                         /> 
                     </Col>

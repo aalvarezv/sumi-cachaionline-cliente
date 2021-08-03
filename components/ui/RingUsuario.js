@@ -23,15 +23,20 @@ export const RingUsuario = ({ring}) => {
     
 
     let nivelesAcademicos = []
+   
     if(ring.niveles_academicos){
-      nivelesAcademicos = ring.niveles_academicos.map(nivelAcademico => (
-          {
-              codigo: nivelAcademico.codigo,
-              descripcion: nivelAcademico.descripcion,
-          }
-      ))
+      nivelesAcademicos = ring.niveles_academicos.map(nivel => {
+        
+        const { codigo, descripcion } = nivel
+        return ({
+              codigo,
+              descripcion,
+        })
+
+      })
+
     }
-    
+
     const listarUsuariosRing = async() =>{
       try {
         const resp = await clienteAxios.get('/api/ring-usuarios/listar/usuarios-ring',{

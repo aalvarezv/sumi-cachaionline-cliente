@@ -5,6 +5,7 @@ import { Container, Form, Button, Image, Row, Col } from 'react-bootstrap'
 import { handleError, getBase64 } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import Uploader from '../ui/Uploader'
+import { TiDelete } from 'react-icons/ti'
 
 
 const MateriaForm = ({materiaEnProceso, setMateriaEnProceso}) => {
@@ -98,15 +99,20 @@ const MateriaForm = ({materiaEnProceso, setMateriaEnProceso}) => {
         }
     }
 
+    const handleQuitarImagenMateria = () => {
+        setFormulario({
+            ...formulario,
+            imagen: '',
+        })
+    }
+
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getArchivos = async archivos => {
-    
         const base64 = await getBase64(archivos[0])
         setFormulario({
             ...formulario,
             imagen: base64
         })
-
     }
 
     return ( 
@@ -114,16 +120,38 @@ const MateriaForm = ({materiaEnProceso, setMateriaEnProceso}) => {
             <Form>
                 <Row>
                     <Col className="d-flex mb-2">
-                        <Image 
-                            src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
-                            style={{
-                                width: 150, 
-                                marginRight: 10
-                            }}
-                            thumbnail
-                        />
+                        <div
+                            className="d-flex"
+                            style={{position:"relative", minWidth:150}}
+                        >
+                            <Image 
+                                src={formulario.imagen.trim() === '' ? '/static/no-image.png' : formulario.imagen.trim()} 
+                                style={{
+                                    width: 150, 
+                                    marginRight: 10
+                                }}
+                                thumbnail
+                            />
+                            {formulario.imagen.trim() !== '' &&
+                                <span
+                                    onClick={handleQuitarImagenMateria}
+                                    style={{
+                                        position: 'absolute', 
+                                        top: -16, 
+                                        right: -13,
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <TiDelete 
+                                        size={"1.5rem"} 
+                                        color={"red"}
+                                    />
+                                </span>
+                            }
+                        </div>
                         <Uploader 
                             titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
+                            formatosValidos={["image/*"]}
                             getArchivos={getArchivos}
                         />
                     </Col>

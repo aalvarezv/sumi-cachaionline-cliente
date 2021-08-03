@@ -141,7 +141,6 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
     },[])   
     
 
-
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getMultimediaPregunta = async archivo => {
 
@@ -150,31 +149,22 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         switch (archivo[0].type.split('/')[0]) {
             
             case 'image':
-                getMeta(
-                    base64,
-                    function(width, height) {
-                        //válida que el ancho sea <= 485
-                        if(width <=485){
-                            setPregunta({
-                                ...pregunta,
-                                imagen: base64,
-                                imagen_ancho: width,
-                                imagen_alto: height,
-                                video: '',
-                                audio: '',
-                            })
-                        }else{
-                            toast.error('El ancho de la imagen no debe ser mayor a 485.', {containerId: 'sys_msg'})
-                            return
-                        }
-                        
-                    }
-                );
+                const meta = await getMeta(base64)
+                setPregunta({
+                    ...pregunta,
+                    imagen: base64,
+                    imagen_ancho: meta.width,
+                    imagen_alto: meta.height,
+                    video: '',
+                    audio: '',
+                })
                 break
             case 'video':
                 setPregunta({
                     ...pregunta,
                     imagen: '',
+                    imagen_ancho: 0,
+                    imagen_alto: 0,
                     video: base64,
                     audio: '',
                 })
@@ -183,6 +173,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 setPregunta({
                     ...pregunta,
                     imagen: '',
+                    imagen_ancho: 0,
+                    imagen_alto: 0,
                     video: '',
                     audio: base64,
                 })
@@ -196,6 +188,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
         setPregunta({
             ...pregunta,
             imagen: '',
+            imagen_ancho: 0,
+            imagen_alto: 0,
             audio: '',
             video: '',
         })
@@ -221,6 +215,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 numero: pistas.length + 1,
                 texto: '',
                 imagen: '',
+                imagen_ancho: 0,
+                imagen_alto: 0,
                 audio: '',
                 video: '',
             }
@@ -235,6 +231,8 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                 numero: soluciones.length + 1,
                 texto: '',
                 imagen: '',
+                imagen_ancho: 0,
+                imagen_alto: 0,
                 audio: '',
                 video: '',
             }
@@ -653,6 +651,7 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                             <Col xs="4" className="d-flex justify-content-center py-0 ">
                                 <Uploader 
                                     titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN, AUDIO O VIDEO"}
+                                    formatosValidos={["image/*","audio/*","video/*"]}
                                     getArchivos={getMultimediaPregunta}
                                 /> 
                             </Col>  
@@ -673,11 +672,14 @@ const PreguntaForm = ({pregunta_modificar, handleMostrarBusquedaPreguntas}) => {
                             id="recordar"
                             name="recordar"
                             type="number" 
+                            min={0}
+                            max={1}
                             value={pregunta.recordar}
-                            onChange={e => {setPregunta({
+                            onChange={e => {
+                                setPregunta({
                                     ...pregunta,
-                                [e.target.name]: parseFloat(e.target.value),
-                                })
+                                    [e.target.name]: parseFloat(e.target.value),
+                                })        
                             }}
                         />
                     </Col>

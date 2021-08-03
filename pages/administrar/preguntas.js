@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import Layout from '../../components/layout/Layout'
@@ -16,10 +16,12 @@ import InputSelectModulosUnidad from '../../components/ui/InputSelectModulosUnid
 import InputSelectModulosContenido from '../../components/ui/InputSelectModulosContenido'
 import InputSelectModulosContenidoTema from '../../components/ui/InputSelectModulosContenidoTema'
 import InputSelectModulosContenidoTemaConcepto from '../../components/ui/InputSelectModulosContenidoTemaConcepto'
+import AuthContext from '../../context/auth/AuthContext'
 
 
 const Preguntas = () => {
 
+   const { usuario, rol_select } = useContext(AuthContext)
    const [preguntas, setPreguntas] = useState([])
    const [pregunta_modificar, setPreguntaModificar] = useState(null)
    const [filtros, setFiltros] = useState({
@@ -58,6 +60,7 @@ const Preguntas = () => {
                   codigo_modulo_contenido_tema: filtros.codigo_modulo_contenido_tema,
                   codigo_modulo_contenido_tema_concepto: filtros.codigo_modulo_contenido_tema_concepto,
                   nombre_usuario_creador: filtros.nombre_usuario_creador,
+                  rut_usuario_creador: rol_select.sys_admin === 0 ? usuario.rut : null
                }
          })
          if(resp.data.preguntas.length > 0){

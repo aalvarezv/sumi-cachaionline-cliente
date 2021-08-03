@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Row, Col, Form, Image } from 'react-bootstrap'
 import { TiDelete } from 'react-icons/ti'
-import { getBase64 } from '../../helpers'
+import { getBase64, getMeta } from '../../helpers'
 import Uploader from './Uploader'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 
@@ -17,41 +17,52 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         setPistas(new_pistas)
     } 
     
-    const handleChangeArchivoPista = (numero_pista, tipo_archivo, base64) => {
-    
-        const new_pistas = pistas.map(pista => {
-
+    const handleChangeArchivoPista = async (numero_pista, tipo_archivo, base64) => {
+        
+        let newPistas = []
+        for(let pista of pistas){
+            
             if(pista.numero === numero_pista){
                 switch (tipo_archivo) {
                     case 'image':
-                        return {
+                        const meta = await getMeta(base64)
+                        newPistas.push({
                             ...pista,
                             imagen: base64,
+                            imagen_ancho: meta.width,
+                            imagen_alto: meta.height,
                             audio: '',
                             video: '',
-                        }
+                        })
+                        break
                     case 'audio':
-                        return {
+                        newPistas.push({
                             ...pista,
                             imagen: '',
+                            imagen_ancho: 0,
+                            imagen_alto: 0,
                             audio: base64,
                             video: '',
-                        }
+                        })
+                        break
                     case 'video':
-                        return {
+                        newPistas.push({
                             ...pista,
                             imagen: '',
+                            imagen_ancho: 0,
+                            imagen_alto: 0,
                             audio: '',
                             video: base64,
-                        }
+                        })
+                        break
                 }
             }else{
-                return pista
+                newPistas.push(pista)
             }  
 
-        })
-        
-        setPistas(new_pistas)
+        }
+
+        setPistas(newPistas)
 
     }
 
@@ -72,6 +83,8 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
         const new_pistas = pistas.map(pista => pista.numero === numero_pista ? ({
             ...pista,
             imagen: '',
+            imagen_ancho: 0,
+            imagen_alto: 0,
             audio: '',
             video: '',
         }): pista)
@@ -194,6 +207,7 @@ const PistaPregunta = ({pistas, errores, setPistas}) => {
                     <Uploader 
                         titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
                         index={numero}
+                        formatosValidos={["image/*","audio/*","video/*"]}
                         getArchivos={getMultimediaPista}
                     />
                 </Col>

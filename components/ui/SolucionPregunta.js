@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Row, Col, Form, Image } from 'react-bootstrap'
 import { TiDelete } from 'react-icons/ti'
-import { getBase64 } from '../../helpers'
+import { getBase64, getMeta } from '../../helpers'
 import Uploader from './Uploader'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 
@@ -17,41 +17,53 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         setSoluciones(new_soluciones)
     } 
     
-    const handleChangeArchivoSolucion = (numero_solucion, tipo_archivo, base64) => {
-        /*const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? (): solucion)*/
-        const new_soluciones = soluciones.map(solucion => {
+    const handleChangeArchivoSolucion = async (numero_solucion, tipo_archivo, base64) => {
+
+        let newSoluciones = []
+        for(let solucion of soluciones){
 
             if(solucion.numero === numero_solucion){
                 switch (tipo_archivo) {
                     case 'image':
-                        return {
+                        const meta = await getMeta(base64)
+                        newSoluciones.push({
                             ...solucion,
                             imagen: base64,
+                            imagen_ancho: meta.width,
+                            imagen_alto: meta.height,
                             audio: '',
                             video: '',
-                        }
+                        })
+                        break
                     case 'audio':
-                        return {
+                        newSoluciones.push({
                             ...solucion,
                             imagen: '',
+                            imagen_ancho: 0,
+                            imagen_alto: 0,
                             audio: base64,
                             video: '',
-                        }
+                        })
+                        break
                     case 'video':
-                        return {
+                        newSoluciones.push({
                             ...solucion,
                             imagen: '',
+                            imagen_ancho: 0,
+                            imagen_alto: 0,
                             audio: '',
                             video: base64,
-                        }
+                        })
+                        break
                 }
             }else{
-                return solucion
+                newSoluciones.push(solucion)
             }
 
-        })
-       
-        setSoluciones(new_soluciones)
+        }
+
+        setSoluciones(newSoluciones)
+
     }
 
     const handleQuitarSolucion = (numero_solucion) => {
@@ -71,6 +83,8 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
         const new_soluciones = soluciones.map(solucion => solucion.numero === numero_solucion ? ({
             ...solucion,
             imagen: '',
+            imagen_ancho: 0,
+            imagen_alto: 0,
             audio: '',
             video: '',
         }): solucion)
@@ -81,7 +95,6 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
     const getMultimediaSolucion = async  (numero_solucion, archivo) => {
         const base64 = await getBase64(archivo[0])
         const tipo_archivo = archivo[0].type.split('/')[0]
-
         handleChangeArchivoSolucion(numero_solucion, tipo_archivo, base64)
     }
 
@@ -198,6 +211,7 @@ const SolucionPregunta = ({soluciones, errores, setSoluciones}) => {
                     <Uploader 
                         titulo={"HAZ CLICK O ARRASTRA Y SUELTA UNA IMAGEN"}
                         index={numero}
+                        formatosValidos={["image/*","audio/*","video/*"]}
                         getArchivos={getMultimediaSolucion}
                     />
                 </Col>

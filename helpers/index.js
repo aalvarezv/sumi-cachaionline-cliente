@@ -155,8 +155,18 @@ export const emailValido = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase())
 }
 
-export const getMeta = (url, callback) => {
-    var img = new Image();
-    img.src = url;
-    img.onload = function() { callback(this.width, this.height); }
+export const getMeta = (url) => {
+
+    return new Promise((resolve, reject) => {
+        let img = new Image();
+        img.src = url;
+        img.onload = function() { 
+            resolve({
+                width: this.width, 
+                height: this.height
+            })
+        }
+    })
+
+    
 }

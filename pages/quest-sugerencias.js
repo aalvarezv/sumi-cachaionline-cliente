@@ -164,6 +164,10 @@ const CargaRespuestasSugerencias = () => {
                     ?
                         <Uploader 
                             titulo={"HAZ CLICK O ARRASTRA Y SUELTA UN ARCHIVO EXCEL"}
+                            formatosValidos={[
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "application/vnd.ms-excel"
+                            ]}
                             getArchivos={getArchivos}
                         />
                     :
@@ -397,6 +401,10 @@ const EnviaRespuestas = () => {
                 ?
                     <Uploader 
                         titulo={"HAZ CLICK O ARRASTRA Y SUELTA UN ARCHIVO EXCEL"}
+                        formatosValidos={[
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            "application/vnd.ms-excel"
+                        ]}
                         getArchivos={getArchivos}
                     />
                 :

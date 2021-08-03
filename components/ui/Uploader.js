@@ -11,36 +11,38 @@ const dropzoneStyle = {
     textAlign: "center"
 }
 
-function Uploader({titulo, index, getArchivos}) {
+function Uploader({titulo, index, formatosValidos = [], getArchivos}) {
 
   const [uploading, setUploading] = useState(false)
 
   const {getRootProps, getInputProps} = useDropzone({
-    accept: "image/*,audio/*,video/*,application/*",
-    multiple: false,
-    onDrop: acceptedFiles => {
-      
-      acceptedFiles.forEach((file) => {
-        const reader = new FileReader()
-   
-        reader.onabort = () => console.log('file reading was aborted')
-        reader.onerror = () => console.log('file reading has failed')
-        reader.onloadstart = () => setUploading(true)
-        reader.onloadend = () => setUploading(false)
-        
-        reader.readAsArrayBuffer(file)
-      })
 
-      if(acceptedFiles.length > 0){
-        //retorna los archivos al componente superior.
-        if(index){
-            getArchivos(index, acceptedFiles)
-        }else{
-            getArchivos(acceptedFiles)
-        }
+      accept: formatosValidos.join(','),
+      multiple: false,
+      onDrop: acceptedFiles => {
+        
+        acceptedFiles.forEach((file) => {
+          const reader = new FileReader()
+    
+          reader.onabort = () => console.log('file reading was aborted')
+          reader.onerror = () => console.log('file reading has failed')
+          reader.onloadstart = () => setUploading(true)
+          reader.onloadend = () => setUploading(false)
           
-      }
-    },
+          reader.readAsArrayBuffer(file)
+          
+        })
+
+        if(acceptedFiles.length > 0){
+          //retorna los archivos al componente superior.
+          if(index){
+              getArchivos(index, acceptedFiles)
+          }else{
+              getArchivos(acceptedFiles)
+          }
+            
+        }
+      },
 
   })
 
