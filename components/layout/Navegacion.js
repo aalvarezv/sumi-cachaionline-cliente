@@ -223,8 +223,8 @@ const Navegacion = () => {
                         }
                         {rol_select.ver_menu_cuestionarios 
                         ?
-                            <Link href="/quest-sugerencias" passHref>
-                                <Nav.Link>Cuestionario</Nav.Link>
+                            <Link href="/cuestionarios" passHref>
+                                <Nav.Link>Cuestionarios</Nav.Link>
                             </Link>
                         :
                             null

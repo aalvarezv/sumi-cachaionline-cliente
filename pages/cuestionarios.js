@@ -9,50 +9,55 @@ import clienteAxios from '../config/axios'
 import AuthContext from '../context/auth/AuthContext'
 import Layout from '../components/layout/Layout'
 import { toast } from 'react-toastify'
-import InputSelectFormSugerencias from '../components/ui/InputSelectFormSugerencias'
+import InputSelectCuestionario from '../components/ui/InputSelectCuestionario'
 import Spinner from '../components/ui/Spinner'
 import { RiFileExcel2Fill } from 'react-icons/ri'
 import { TiDelete } from 'react-icons/ti'
+import EstadisticaCuestionario from '../components/ui/EstadisticaCuestionario'
 
 
 
-const CargaRespuestasSugerencias = () => {
+const CargaCuestionarioSugerencias = () => {
 
     const { usuario } = useContext(AuthContext)
-    const ref_fecha_formulario = createRef()
+    const ref_fecha_cuestionario = createRef()
 
     const [isLoading, setIsLoading] = useState(false)
 
-    const [formulario, setFormulario] = useState({
+    const [cuestionario, setCuestionario] = useState({
         codigo_materia: '0',
-        nombre_formulario: '',
-        fecha_formulario: new Date(),
+        nombre_cuestionario: '',
+        fecha_cuestionario: new Date(),
+        link_cuestionario: '',
         archivo_base64: '',
     })
 
     const {
         codigo_materia, 
-        nombre_formulario, 
-        fecha_formulario, 
-        archivo_base64} = formulario
+        nombre_cuestionario, 
+        fecha_cuestionario, 
+        link_cuestionario,
+        archivo_base64
+    } = cuestionario
 
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getArchivos = async archivos => {
     
         const base64 = await getBase64(archivos[0])
-        setFormulario({
-            ...formulario,
+        setCuestionario({
+            ...cuestionario,
             archivo_base64: base64
         })
 
     }
 
-    const reseteaFormulario = () => {
-        setFormulario({
+    const reseteacuestionario = () => {
+        setCuestionario({
             codigo_materia: '0',
-            nombre_formulario: '',
-            fecha_formulario: new Date(),
+            nombre_cuestionario: '',
+            fecha_cuestionario: new Date(),
+            link_cuestionario: '',
             archivo_base64: '',
         })
     }
@@ -64,8 +69,8 @@ const CargaRespuestasSugerencias = () => {
             return
         }
 
-        if(nombre_formulario.trim() === ''){
-            toast.error('Ingrese nombre del formulario', {containerId: 'sys_msg'})
+        if(nombre_cuestionario.trim() === ''){
+            toast.error('Ingrese nombre del cuestionario', {containerId: 'sys_msg'})
             return
         }
 
@@ -79,16 +84,17 @@ const CargaRespuestasSugerencias = () => {
 
             try {
 
-                const resp = await clienteAxios.post('/api/sugerencia-alternativa-pregunta/cargar-preguntas', {
+                const resp = await clienteAxios.post('/api/cuestionario-sugerencias/cargar-preguntas', {
                     rut_usuario: usuario.rut, 
-                    nombre_formulario,
+                    nombre_cuestionario,
                     codigo_materia,
-                    fecha_formulario,
+                    fecha_cuestionario,
+                    link_cuestionario,
                     archivo_base64
                 })
                 setIsLoading(false)
                 toast.success('Sugerencias cargadas correctamente', {containerId: 'sys_msg'})
-                reseteaFormulario()
+                reseteacuestionario()
 
             } catch (e) {
                 setIsLoading(false)
@@ -104,21 +110,21 @@ const CargaRespuestasSugerencias = () => {
             <Row className="mb-1">
                 <Col>
                     <DatePicker
-                        id="fecha_formulario"
-                        name="fecha_formulario"
-                        selected={fecha_formulario}
+                        id="fecha_cuestionario"
+                        name="fecha_cuestionario"
+                        selected={fecha_cuestionario}
      
                         dateFormat="dd/MM/yyyy"
                         onChange={(date) => {
-                            setFormulario({
-                                ...formulario,
-                                fecha_formulario : date,
+                            setCuestionario({
+                                ...cuestionario,
+                                fecha_cuestionario : date,
                             })
                         }}
                         customInput={
                             <CustomDateInput 
-                                label="Fecha Formulario"
-                                ref = {ref_fecha_formulario}
+                                label="Fecha cuestionario"
+                                ref = {ref_fecha_cuestionario}
                             />
                         }
                     />
@@ -133,9 +139,26 @@ const CargaRespuestasSugerencias = () => {
                         label="SELECCIONE MATERIA"
                         value={codigo_materia}
                         onChange={e => {
-                            setFormulario({
-                                ...formulario,
+                            setCuestionario({
+                                ...cuestionario,
                                 [e.target.name]: e.target.value 
+                            })
+                        }}
+                    />
+                </Col>
+            </Row>
+            <Row className="mb-1">
+                <Col>
+                    <Form.Control
+                        id="nombre_cuestionario"
+                        name="nombre_cuestionario"
+                        type="text" 
+                        placeholder="NOMBRE CUESTIONARIO" 
+                        value={nombre_cuestionario}
+                        onChange={e => {
+                            setCuestionario({
+                                ...cuestionario,
+                                [e.target.name]: e.target.value
                             })
                         }}
                     />
@@ -144,14 +167,14 @@ const CargaRespuestasSugerencias = () => {
             <Row>
                 <Col>
                     <Form.Control
-                        id="nombre_formulario"
-                        name="nombre_formulario"
+                        id="link_cuestionario"
+                        name="link_cuestionario"
                         type="text" 
-                        placeholder="NOMBRE FORMULARIO" 
-                        value={nombre_formulario}
+                        placeholder="LINK CUESTIONARIO" 
+                        value={link_cuestionario}
                         onChange={e => {
-                            setFormulario({
-                                ...formulario,
+                            setCuestionario({
+                                ...cuestionario,
                                 [e.target.name]: e.target.value
                             })
                         }}
@@ -187,8 +210,8 @@ const CargaRespuestasSugerencias = () => {
                                     right: -10,
                                     cursor: 'pointer'
                                 }}
-                                onClick={() => setFormulario({
-                                    ...formulario,
+                                onClick={() => setCuestionario({
+                                    ...cuestionario,
                                     archivo_base64: ''
                                 })}
                             />
@@ -225,46 +248,45 @@ const CargaRespuestasSugerencias = () => {
 
 }
 
-
-const EnviaRespuestas = () => {
+const EnviaRespuestasCuestionario = () => {
 
     const { usuario } = useContext(AuthContext)
-    const ref_fecha_formulario_desde = createRef()
-    const ref_fecha_formulario_hasta = createRef()
+    const ref_fecha_cuestionario_desde = createRef()
+    const ref_fecha_cuestionario_hasta = createRef()
 
     const [isLoading, setIsLoading] = useState(false)
 
-    const [formulario, setFormulario] = useState({
-        fecha_formulario_desde: new Date(),
-        fecha_formulario_hasta: new Date(),
+    const [cuestionario, setCuestionario] = useState({
+        fecha_cuestionario_desde: new Date(),
+        fecha_cuestionario_hasta: new Date(),
         codigo_materia: '0',
-        nombre_formulario: '0',
+        codigo_cuestionario: '0',
         archivo_base64: '',
     })
 
     const {
-        fecha_formulario_desde, 
-        fecha_formulario_hasta, 
+        fecha_cuestionario_desde, 
+        fecha_cuestionario_hasta, 
         codigo_materia, 
-        nombre_formulario, 
-        archivo_base64 } = formulario
+        codigo_cuestionario, 
+        archivo_base64 } = cuestionario
 
     const getArchivos = async archivos => {
     
         const base64 = await getBase64(archivos[0])
-        setFormulario({
-            ...formulario,
+        setCuestionario({
+            ...cuestionario,
             archivo_base64: base64
         })
 
     }
 
-    const reseteaFormulario = () => {
-        setFormulario({
-            fecha_formulario_desde: new Date(),
-            fecha_formulario_hasta: new Date(),
+    const reseteacuestionario = () => {
+        setCuestionario({
+            fecha_cuestionario_desde: new Date(),
+            fecha_cuestionario_hasta: new Date(),
             codigo_materia: '0',
-            nombre_formulario: '0',
+            codigo_cuestionario: '0',
             archivo_base64: '',
         })
     }
@@ -276,13 +298,13 @@ const EnviaRespuestas = () => {
             return
         }
 
-        if(nombre_formulario.trim() === '0'){
-            toast.error('Seleccione formulario', {containerId: 'sys_msg'})
+        if(codigo_cuestionario.trim() === '0'){
+            toast.error('Seleccione cuestionario', {containerId: 'sys_msg'})
             return
         }
 
         if(archivo_base64.trim() === ''){
-            toast.error('Seleccione archivo excel con resultados del formulario', {containerId: 'sys_msg'})
+            toast.error('Seleccione archivo excel con resultados del cuestionario', {containerId: 'sys_msg'})
             return
         }
 
@@ -291,15 +313,13 @@ const EnviaRespuestas = () => {
 
             try {
                 
-                const resp = await clienteAxios.post('/api/sugerencia-alternativa-pregunta/enviar-sugerencias', {
-                    rut_usuario: usuario.rut, 
-                    codigo_materia,
-                    nombre_formulario,
+                const resp = await clienteAxios.post('/api/cuestionario-respuestas/enviar', {
+                    codigo_cuestionario,
                     archivo_base64
                 })
                 setIsLoading(false)
-                toast.success('Sugerencias enviadas correctamente', {containerId: 'sys_msg'})
-                reseteaFormulario()
+                toast.success('Respuestas enviadas correctamente', {containerId: 'sys_msg'})
+                reseteacuestionario()
 
             } catch (e) {
                 setIsLoading(false)
@@ -315,42 +335,42 @@ const EnviaRespuestas = () => {
         <Row className="mb-1">
             <Col sm="auto">
                 <DatePicker
-                    id="fecha_formulario_desde"
-                    name="fecha_formulario_desde"
-                    selected={fecha_formulario_desde}
+                    id="fecha_cuestionario_desde"
+                    name="fecha_cuestionario_desde"
+                    selected={fecha_cuestionario_desde}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => {
-                        setFormulario({
-                            ...formulario,
-                            fecha_formulario_desde : date,
-                            nombre_formulario: '0',
+                        setCuestionario({
+                            ...cuestionario,
+                            fecha_cuestionario_desde : date,
+                            codigo_cuestionario: '0',
                         })
                     }}
                     customInput={
                         <CustomDateInput 
-                            label="Fecha Formulario Desde"
-                            ref = {ref_fecha_formulario_desde}
+                            label="Fecha cuestionario Desde"
+                            ref = {ref_fecha_cuestionario_desde}
                         />
                     }
                 />
             </Col>
             <Col>
                 <DatePicker
-                    id="fecha_formulario_hasta"
-                    name="fecha_formulario_hasta"
-                    selected={fecha_formulario_hasta}
+                    id="fecha_cuestionario_hasta"
+                    name="fecha_cuestionario_hasta"
+                    selected={fecha_cuestionario_hasta}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => {
-                        setFormulario({
-                            ...formulario,
-                            fecha_formulario_hasta : date,
-                            nombre_formulario: '0',
+                        setCuestionario({
+                            ...cuestionario,
+                            fecha_cuestionario_hasta : date,
+                            codigo_cuestionario: '0',
                         })
                     }}
                     customInput={
                         <CustomDateInput 
-                            label="Fecha Formulario Hasta"
-                            ref = {ref_fecha_formulario_hasta}
+                            label="Fecha cuestionario Hasta"
+                            ref = {ref_fecha_cuestionario_hasta}
                         />
                     }
                 />
@@ -365,10 +385,10 @@ const EnviaRespuestas = () => {
                     label="SELECCIONE MATERIA"
                     value={codigo_materia}
                     onChange={e => {
-                        setFormulario({
-                            ...formulario,
+                        setCuestionario({
+                            ...cuestionario,
                             [e.target.name]: e.target.value,
-                            nombre_formulario: '0', 
+                            codigo_cuestionario: '0', 
                         })
                     }}
                 />
@@ -377,17 +397,17 @@ const EnviaRespuestas = () => {
         <Row>
             <Col>
                 {usuario &&
-                    <InputSelectFormSugerencias
-                        id="nombre_formulario"
-                        name="nombre_formulario"
+                    <InputSelectCuestionario
+                        id="codigo_cuestionario"
+                        name="codigo_cuestionario"
                         rut_usuario={usuario.rut}
                         codigo_materia={codigo_materia}
-                        fecha_formulario_desde={fecha_formulario_desde}
-                        fecha_formulario_hasta={fecha_formulario_hasta}
+                        fecha_cuestionario_desde={fecha_cuestionario_desde}
+                        fecha_cuestionario_hasta={fecha_cuestionario_hasta}
                         as="select"
-                        value={nombre_formulario}
-                        onChange={e => setFormulario({
-                            ...formulario,
+                        value={codigo_cuestionario}
+                        onChange={e => setCuestionario({
+                            ...cuestionario,
                             [e.target.name]: e.target.value
                         })}
                     
@@ -424,8 +444,8 @@ const EnviaRespuestas = () => {
                                     right: -10,
                                     cursor: 'pointer'
                                 }}
-                                onClick={() => setFormulario({
-                                    ...formulario,
+                                onClick={() => setCuestionario({
+                                    ...cuestionario,
                                     archivo_base64: ''
                                 })}
                             />
@@ -460,8 +480,7 @@ const EnviaRespuestas = () => {
 
 }
 
-
-const FormSugerencias = () => {
+const Cuestionario = () => {
 
     return ( 
         <Layout>
@@ -473,10 +492,13 @@ const FormSugerencias = () => {
                             <Card.Body>
                                 <Tabs defaultActiveKey="carga-respuestas-sugerencias" id="forms-tab" className="mb-3">
                                 <Tab eventKey="carga-respuestas-sugerencias" title="Respuestas correctas y sugerencias">
-                                    <CargaRespuestasSugerencias />
+                                    <CargaCuestionarioSugerencias />
                                 </Tab>
                                 <Tab eventKey="respuesta-alumnos" title="Respuesta alumnos">
-                                    <EnviaRespuestas />
+                                    <EnviaRespuestasCuestionario />
+                                </Tab>
+                                <Tab eventKey="estadistica" title="Estadísticas">
+                                    <EstadisticaCuestionario />
                                 </Tab>
                                 </Tabs>
                             </Card.Body>
@@ -488,4 +510,4 @@ const FormSugerencias = () => {
      );
 }
  
-export default FormSugerencias;
+export default Cuestionario
