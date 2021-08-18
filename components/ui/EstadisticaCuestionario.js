@@ -1,5 +1,5 @@
 
-import React, { createRef, useContext, useState } from 'react'
+import React, { createRef, useContext, useState, useEffect } from 'react'
 import { Container, Col, Row } from 'react-bootstrap'
 import CustomDateInput from './CustomDateInput'
 import InputSelectMateria from './InputSelectMateria'
@@ -16,7 +16,7 @@ import TableCuestionarioPreguntasErradas from './TableCuestionarioPreguntasErrad
 import TableCuestionarioPreguntasOmitidas from './TableCuestionarioPreguntasOmitidas'
 
 
-const EstadisticaCuestionario = () => {
+const EstadisticaCuestionario = ({activeTab}) => {
 
     const { usuario } = useContext(AuthContext)
     const ref_fecha_cuestionario_desde = createRef()
@@ -34,7 +34,21 @@ const EstadisticaCuestionario = () => {
         fecha_cuestionario_hasta, 
         codigo_materia, 
         codigo_cuestionario } = cuestionario
-        
+    
+    useEffect(() => {
+        reseteaFiltros()
+    }, [activeTab])    
+
+
+    const reseteaFiltros = () => {
+        setCuestionario({
+            fecha_cuestionario_desde: new Date(),
+            fecha_cuestionario_hasta: new Date(),
+            codigo_materia: '0',
+            codigo_cuestionario: '0',
+        })
+    }
+
     return(
         
         <>

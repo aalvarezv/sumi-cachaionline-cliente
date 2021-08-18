@@ -1,9 +1,9 @@
-import React, { createRef, useContext, useState } from 'react'
+import React, { createRef, useContext, useState, useEffect } from 'react'
 import { Button,Card, Col, Container, Form, Row, Tabs, Tab } from 'react-bootstrap'
 import CustomDateInput from '../components/ui/CustomDateInput'
 import InputSelectMateria from '../components/ui/InputSelectMateria'
 import Uploader from '../components/ui/Uploader'
-import { getBase64, handleError } from '../helpers'
+import { getBase64, handleError, validURL } from '../helpers'
 import DatePicker from 'react-datepicker'
 import clienteAxios from '../config/axios'
 import AuthContext from '../context/auth/AuthContext'
@@ -17,7 +17,7 @@ import EstadisticaCuestionario from '../components/ui/EstadisticaCuestionario'
 
 
 
-const CargaCuestionarioSugerencias = () => {
+const CargaCuestionarioSugerencias = ({activeTab}) => {
 
     const { usuario } = useContext(AuthContext)
     const ref_fecha_cuestionario = createRef()
@@ -40,6 +40,9 @@ const CargaCuestionarioSugerencias = () => {
         archivo_base64
     } = cuestionario
 
+    useEffect(() => {
+        reseteaFiltros()
+    }, [activeTab])
 
     //funcion que recibe el componente Uploader donde retorna los archivos a subir.
     const getArchivos = async archivos => {
@@ -52,7 +55,7 @@ const CargaCuestionarioSugerencias = () => {
 
     }
 
-    const reseteacuestionario = () => {
+    const reseteaFiltros = () => {
         setCuestionario({
             codigo_materia: '0',
             nombre_cuestionario: '',
@@ -74,6 +77,13 @@ const CargaCuestionarioSugerencias = () => {
             return
         }
 
+        if(link_cuestionario.trim() !== ''){
+            if(!validURL(link_cuestionario)){
+                toast.error('Ingrese una url valida', {containerId: 'sys_msg'})
+                return
+            }
+        }
+      
         if(archivo_base64.trim() === ''){
             toast.error('Seleccione archivo excel para cargar las sugerencias', {containerId: 'sys_msg'})
             return
@@ -170,7 +180,7 @@ const CargaCuestionarioSugerencias = () => {
                         id="link_cuestionario"
                         name="link_cuestionario"
                         type="text" 
-                        placeholder="LINK CUESTIONARIO" 
+                        placeholder="LINK CUESTIONARIO EJEMPLO: https://www.cachaionline.com" 
                         value={link_cuestionario}
                         onChange={e => {
                             setCuestionario({
@@ -248,7 +258,7 @@ const CargaCuestionarioSugerencias = () => {
 
 }
 
-const EnviaRespuestasCuestionario = () => {
+const EnviaRespuestasCuestionario = ({activeTab}) => {
 
     const { usuario } = useContext(AuthContext)
     const ref_fecha_cuestionario_desde = createRef()
@@ -271,6 +281,10 @@ const EnviaRespuestasCuestionario = () => {
         codigo_cuestionario, 
         archivo_base64 } = cuestionario
 
+    useEffect(() => {
+        reseteaFiltros()
+    }, [activeTab])
+
     const getArchivos = async archivos => {
     
         const base64 = await getBase64(archivos[0])
@@ -281,7 +295,7 @@ const EnviaRespuestasCuestionario = () => {
 
     }
 
-    const reseteacuestionario = () => {
+    const reseteaFiltros = () => {
         setCuestionario({
             fecha_cuestionario_desde: new Date(),
             fecha_cuestionario_hasta: new Date(),
@@ -482,6 +496,8 @@ const EnviaRespuestasCuestionario = () => {
 
 const Cuestionario = () => {
 
+    const [tabKey, setTabKey] = useState('carga-respuestas-sugerencias');
+
     return ( 
         <Layout>
             <Container className="mt-5">
@@ -490,15 +506,27 @@ const Cuestionario = () => {
                     <Col>
                         <Card>
                             <Card.Body>
-                                <Tabs defaultActiveKey="carga-respuestas-sugerencias" id="forms-tab" className="mb-3">
+                                <Tabs 
+                                    defaultActiveKey="carga-respuestas-sugerencias" 
+                                    id="quest-tab" 
+                                    className="mb-3"
+                                    activeKey={tabKey}
+                                    onSelect={(k) => setTabKey(k)}
+                                >
                                 <Tab eventKey="carga-respuestas-sugerencias" title="Respuestas correctas y sugerencias">
-                                    <CargaCuestionarioSugerencias />
+                                    <CargaCuestionarioSugerencias 
+                                        activeTab={tabKey}
+                                    />
                                 </Tab>
                                 <Tab eventKey="respuesta-alumnos" title="Respuesta alumnos">
-                                    <EnviaRespuestasCuestionario />
+                                    <EnviaRespuestasCuestionario 
+                                        activeTab={tabKey}
+                                    />
                                 </Tab>
                                 <Tab eventKey="estadistica" title="Estadísticas">
-                                    <EstadisticaCuestionario />
+                                    <EstadisticaCuestionario 
+                                        activeTab={tabKey}
+                                    />
                                 </Tab>
                                 </Tabs>
                             </Card.Body>
