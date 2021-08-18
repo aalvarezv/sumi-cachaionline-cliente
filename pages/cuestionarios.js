@@ -104,7 +104,7 @@ const CargaCuestionarioSugerencias = ({activeTab}) => {
                 })
                 setIsLoading(false)
                 toast.success('Sugerencias cargadas correctamente', {containerId: 'sys_msg'})
-                reseteacuestionario()
+                reseteaFiltros()
 
             } catch (e) {
                 setIsLoading(false)
@@ -333,7 +333,7 @@ const EnviaRespuestasCuestionario = ({activeTab}) => {
                 })
                 setIsLoading(false)
                 toast.success('Respuestas enviadas correctamente', {containerId: 'sys_msg'})
-                reseteacuestionario()
+                reseteaFiltros()
 
             } catch (e) {
                 setIsLoading(false)
