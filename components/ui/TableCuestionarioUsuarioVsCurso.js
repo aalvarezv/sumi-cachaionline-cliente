@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Form, Table } from 'react-bootstrap';
 import clienteAxios from '../../config/axios';
 import { handleError } from '../../helpers';
 
@@ -7,6 +7,12 @@ import { handleError } from '../../helpers';
 const TableCuestionarioUsuarioVsCurso = ({codigo_cuestionario}) => {
     
     const [puntajeUsuarios, setPuntajeUsuarios] = useState([])
+    const [filtros, setFiltros] = useState({
+        email: ''
+    })
+
+    const { email } = filtros
+
     const [promedioCurso, setPromedioCurso] = useState({
         total_alumnos: 0, 
         total_preguntas: 0,
@@ -51,6 +57,11 @@ const TableCuestionarioUsuarioVsCurso = ({codigo_cuestionario}) => {
 
     if (puntajeUsuarios.length === 0) return null
 
+    let newPuntajeUsuarios = [...puntajeUsuarios]
+    if(email.trim() !== ''){
+        newPuntajeUsuarios = newPuntajeUsuarios.filter(usuario => usuario.email.includes(email))
+    }
+
     return ( 
         <>
         <h6 className="font-weight-bold text-muted">Puntajes usuarios vs curso</h6>
@@ -91,7 +102,22 @@ const TableCuestionarioUsuarioVsCurso = ({codigo_cuestionario}) => {
                 <tr>
                     <th></th>
                     <th><small className="font-weight-bold">Nombre</small></th>
-                    <th><small className="font-weight-bold">Email</small></th>
+                    <th>
+                        <Form.Control
+                            id="email"
+                            name="email"
+                            type="text" 
+                            size="sm"
+                            placeholder="Email"
+                            value={email}
+                            onChange={e => {
+                                setFiltros({
+                                    ...filtros,
+                                    [e.target.name]: e.target.value,
+                                })        
+                            }}
+                        />
+                    </th>
                     <th className="text-center"><small className="font-weight-bold">Respuestas correctas</small></th>
                     <th className="text-center"><small className="font-weight-bold">%</small></th>
                     <th className="text-center"><small className="font-weight-bold">Incorrectas</small></th>
@@ -101,7 +127,7 @@ const TableCuestionarioUsuarioVsCurso = ({codigo_cuestionario}) => {
                 </tr>
             </thead>
             <tbody>
-                {puntajeUsuarios.map((usuario, index) =>{
+                {newPuntajeUsuarios.map((usuario, index) =>{
                         
                     const {nombre, email, 
                             correctas_alumno_cant, correctas_alumno_porcent,
