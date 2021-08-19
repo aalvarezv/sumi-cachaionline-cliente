@@ -109,6 +109,7 @@ const TableCuestionarioUsuarioVsCurso = ({codigo_cuestionario}) => {
                             type="text" 
                             size="sm"
                             placeholder="Email"
+                            autoComplete="off"
                             value={email}
                             onChange={e => {
                                 setFiltros({

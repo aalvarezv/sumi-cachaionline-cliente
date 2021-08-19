@@ -14,7 +14,7 @@ import InfoCuestionario from './InfoCuestionario'
 import TableCuestionarioPreguntasAcertadas from './TableCuestionarioPreguntasAcertadas'
 import TableCuestionarioPreguntasErradas from './TableCuestionarioPreguntasErradas'
 import TableCuestionarioPreguntasOmitidas from './TableCuestionarioPreguntasOmitidas'
-
+import TableCuestionarioPreguntasEstaditica from './TableCuestionarioPreguntasEstadistica'
 
 const EstadisticaCuestionario = ({activeTab}) => {
 
@@ -48,7 +48,7 @@ const EstadisticaCuestionario = ({activeTab}) => {
             codigo_cuestionario: '0',
         })
     }
-
+    
     return(
         
         <>
@@ -168,6 +168,13 @@ const EstadisticaCuestionario = ({activeTab}) => {
             <Row>
                 <Col>
                     <TableCuestionarioUsuarioVsCurso
+                        codigo_cuestionario={codigo_cuestionario}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <TableCuestionarioPreguntasEstaditica
                         codigo_cuestionario={codigo_cuestionario}
                     />
                 </Col>

@@ -40,7 +40,7 @@ const TableCuestionarioPreguntasErradas = ({codigo_cuestionario}) => {
             <thead>
                 <tr>
                     <th>#</th>
-                    <th><small className="font-weight-bold">Código</small></th>
+                    <th><small className="font-weight-bold">Código pregunta</small></th>
                     <th className="text-center"><small className="font-weight-bold">Errores</small></th>
                 </tr>
             </thead>
