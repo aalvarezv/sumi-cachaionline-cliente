@@ -23,14 +23,15 @@ const ChartPieCuestionarioPromedioGeneral = ({codigo_cuestionario}) => {
                     codigo_cuestionario,
                 }
             })
-            const { correctas_cant, correctas_porcent, 
+            console.log(resp.data.promedioGeneral)
+            const { total_respuestas, correctas_cant, correctas_porcent, 
                     incorrectas_cant, incorrectas_porcent, 
                     omitidas_cant, omitidas_porcent } = resp.data.promedioGeneral
 
             setPromedioGeneral([
-              {name: `${correctas_cant} correctas`, value: Number(correctas_porcent)},
-              {name:`${incorrectas_cant} incorrectas`, value: Number(incorrectas_porcent)},
-              {name: `${omitidas_cant} omitidas`, value: Number(omitidas_porcent)}
+              {name: `De un total de ${total_respuestas} respuestas, ${correctas_cant === 1 ? '1 fue correcta' : `${correctas_cant} fueron correctas`}`, value: Number(correctas_porcent)},
+              {name:`De un total de ${total_respuestas} respuestas, ${incorrectas_cant === 1 ? '1 fue incorrecta': `${incorrectas_cant} fueron incorrectas`}`, value: Number(incorrectas_porcent)},
+              {name: `De un total de ${total_respuestas} respuestas, ${omitidas_cant === 1 ? '1 fue omitida' : `${omitidas_cant} fueron omitidas`}`, value: Number(omitidas_porcent)}
             ])
 
         } catch (e) {

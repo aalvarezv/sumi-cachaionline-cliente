@@ -11,11 +11,12 @@ const InfoCuestionario = ({codigo_cuestionario}) => {
     const [cuestionarioInfo, setCuestionarioInfo] = useState({
         total_alumnos: 0,
         total_preguntas: 0,
+        total_respuestas: 0,
         fecha_cuestionario: moment().format('DD-MM-YYYY'),
         link_cuestionario: ''
     })
 
-    const {fecha_cuestionario, link_cuestionario, total_alumnos, total_preguntas} = cuestionarioInfo
+    const {fecha_cuestionario, link_cuestionario, total_alumnos, total_preguntas, total_respuestas} = cuestionarioInfo
 
     useEffect(() => {
         if(codigo_cuestionario !== '0'){
@@ -57,6 +58,9 @@ const InfoCuestionario = ({codigo_cuestionario}) => {
             </h5>
             <h4 className="m-0">
                 <Badge variant="secondary">Total Preguntas: {total_preguntas}</Badge>
+            </h4>
+            <h4 className="m-0">
+                <Badge variant="info">Total Respuestas: {total_respuestas}</Badge>
             </h4>
             
         </>

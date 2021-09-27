@@ -9,6 +9,7 @@ const PopOverPuntajesPregunta = ({ring, pregunta}) => {
 
     const [show, setShow] = useState(false)
     const [puntajes, setPuntajes] = useState({
+        puntos_factor: 0,
         puntos_respuesta_correcta: 0,
         puntos_respuesta_incorrecta: 0,
         puntos_respuesta_omitida: 0,
@@ -16,6 +17,7 @@ const PopOverPuntajesPregunta = ({ring, pregunta}) => {
     })
 
     const {
+        puntos_factor,
         puntos_respuesta_correcta, 
         puntos_respuesta_incorrecta, 
         puntos_respuesta_omitida, 
@@ -38,6 +40,7 @@ const PopOverPuntajesPregunta = ({ring, pregunta}) => {
                 const { puntajesPreguntaRing } = resp.data
 
                 setPuntajes({
+                    puntos_factor: puntajesPreguntaRing.puntos_factor,
                     puntos_respuesta_correcta: puntajesPreguntaRing.puntos_respuesta_correcta,
                     puntos_respuesta_incorrecta: puntajesPreguntaRing.puntos_respuesta_incorrecta,
                     puntos_respuesta_omitida: puntajesPreguntaRing.puntos_respuesta_omitida,
@@ -61,6 +64,7 @@ const PopOverPuntajesPregunta = ({ring, pregunta}) => {
             const resp = await clienteAxios.put('/api/ring-preguntas/puntajes-pregunta', {
                 codigo_ring: ring.codigo,
                 codigo_pregunta: pregunta.codigo,
+                puntos_factor,
                 puntos_respuesta_correcta, 
                 puntos_respuesta_incorrecta, 
                 puntos_respuesta_omitida, 
@@ -88,6 +92,20 @@ const PopOverPuntajesPregunta = ({ring, pregunta}) => {
                 <Popover id={`popover-positioned-${"bottom"}`}>
                 <Popover.Title as="h3">Configurar Puntajes</Popover.Title>
                 <Popover.Content>
+                        <Form.Label>Factor</Form.Label>
+                        <Form.Control
+                            id="puntos_factor"
+                            name="puntos_factor"
+                            type="number" 
+                            size="sm"
+                            value={puntos_factor}
+                            onChange={e => {
+                                setPuntajes({
+                                    ...puntajes,
+                                    [e.target.name]: e.target.value
+                                })
+                            }}
+                        />
                         <Form.Label>Respuesta correcta</Form.Label>
                         <Form.Control
                             id="puntos_respuesta_correcta"

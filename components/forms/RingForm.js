@@ -1,7 +1,7 @@
 import React, { useState, useContext, createRef, useEffect} from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
-import { Card, Accordion, Container, Form, Button, Row, Col, ButtonGroup, ToggleButton } from 'react-bootstrap'
+import { Card, Accordion, Container, Form, Button, Row, Col, ButtonGroup, ToggleButton, Alert } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import clienteAxios from '../../config/axios'
 import CustomDateInput from '../ui/CustomDateInput'
@@ -40,10 +40,17 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
         nota_media_mensaje: 'Sigue así y nadie te parará',
         nota_baja: 40,
         nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
+        puntos_factor: 1,   
         puntos_respuesta_correcta: 1,
         puntos_respuesta_incorrecta: -1,
         puntos_respuesta_omitida: 0,
         puntos_respuesta_timeout: 0,
+        recordar_porcent: 0,
+        comprender_porcent: 0,
+        aplicar_porcent: 0,
+        analizar_porcent: 0,
+        evaluar_porcent: 0,
+        crear_porcent: 0,
         retroceder: false,
         pistas: false,
         mostrar_cantidad_usuarios: true,
@@ -96,10 +103,17 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                 nota_media_mensaje: ringEnProceso.nota_media_mensaje,
                 nota_baja: ringEnProceso.nota_baja,
                 nota_baja_mensaje: ringEnProceso.nota_baja_mensaje,
+                puntos_factor: ringEnProceso.puntos_factor,
                 puntos_respuesta_correcta: ringEnProceso.puntos_respuesta_correcta,
                 puntos_respuesta_incorrecta: ringEnProceso.puntos_respuesta_incorrecta,
                 puntos_respuesta_omitida: ringEnProceso.puntos_respuesta_omitida,
                 puntos_respuesta_timeout: ringEnProceso.puntos_respuesta_timeout,
+                recordar_porcent: ringEnProceso.recordar_porcent,
+                comprender_porcent: ringEnProceso.comprender_porcent,
+                aplicar_porcent: ringEnProceso.aplicar_porcent,
+                analizar_porcent: ringEnProceso.analizar_porcent,
+                evaluar_porcent: ringEnProceso.evaluar_porcent,
+                crear_porcent: ringEnProceso.crear_porcent,
                 retroceder: ringEnProceso.retroceder,
                 pistas: ringEnProceso.pistas,
                 mostrar_cantidad_usuarios: ringEnProceso.mostrar_cantidad_usuarios,
@@ -165,6 +179,41 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
             return false
         }
 
+        if(formulario.puntos_factor < 1){
+            toast.error('Factor en los puntajes no puede menor que 1', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.recordar_porcent < 0 || formulario.recordar_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad recordar debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.comprender_porcent < 0 || formulario.comprender_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad comprender debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.aplicar_porcent < 0 || formulario.aplicar_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad aplicar debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.analizar_porcent < 0 || formulario.analizar_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad analizar debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.evaluar_porcent < 0 || formulario.evaluar_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad evaluar debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
+        if(formulario.crear_porcent < 0 || formulario.crear_porcent > 100){
+            toast.error('El porcentaje requerido de la habilidad crear debe ser entre 0% y 100%', {containerId: 'sys_msg'})
+            return false
+        }
+
         if(formulario.tipo_duracion_pregunta === '0'){
             toast.error('Seleccione tipo de duración de preguntas', {containerId: 'sys_msg'})
             return false
@@ -210,10 +259,17 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
             nota_media_mensaje: 'Sigue así y nadie te parará',
             nota_baja: 40,
             nota_baja_mensaje: 'Te invitamos a que revises el material de Cachai Online para seguir mejorando',
+            puntos_factor: 1,
             puntos_respuesta_correcta: 1,
             puntos_respuesta_incorrecta: -1,
             puntos_respuesta_omitida: 0,
             puntos_respuesta_timeout: 0,
+            recordar_porcent: 0,
+            comprender_porcent: 0,
+            aplicar_porcent: 0,
+            analizar_porcent: 0,
+            evaluar_porcent: 0,
+            crear_porcent: 0,
             retroceder: false,
             pistas: false,
             mostrar_cantidad_usuarios: true,
@@ -566,12 +622,35 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                             <Accordion.Collapse eventKey="0">
                                 <Card.Body>
                                     <Row>
+                                        <Col>
+                                            <Alert variant="warning">Los puntajes son configurables sólo al momento de crear el ring, una vez creado no se podrán editar.</Alert>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={"auto"}>
+                                            <Form.Label>Factor</Form.Label>
+                                            <Form.Control
+                                                id="puntos_factor"
+                                                name="puntos_factor"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="Factor" 
+                                                value={formulario.puntos_factor}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                                readOnly={ringEnProceso}
+                                            />
+                                        </Col>
                                         <Col xs={"auto"}>
                                             <Form.Label>Ptos. Correcta</Form.Label>
                                             <Form.Control
                                                 id="puntos_respuesta_correcta"
                                                 name="puntos_respuesta_correcta"
                                                 type="number" 
+                                                size="sm"
                                                 placeholder="Ptos. Correcta" 
                                                 value={formulario.puntos_respuesta_correcta}
                                                 onChange={e => {setFormulario({
@@ -579,6 +658,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                         [e.target.name]: e.target.value
                                                     })
                                                 }}
+                                                readOnly={ringEnProceso}
                                             />
                                         </Col>
                                         <Col xs={"auto"}>
@@ -587,6 +667,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                 id="puntos_respuesta_incorrecta"
                                                 name="puntos_respuesta_incorrecta"
                                                 type="number" 
+                                                size="sm"
                                                 placeholder="Ptos. Incorrecta" 
                                                 value={formulario.puntos_respuesta_incorrecta}
                                                 onChange={e => {setFormulario({
@@ -594,6 +675,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                         [e.target.name]: e.target.value
                                                     })
                                                 }}
+                                                readOnly={ringEnProceso}
                                             />
                                         </Col>
                                         <Col xs={"auto"}>
@@ -602,6 +684,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                 id="puntos_respuesta_omitida"
                                                 name="puntos_respuesta_omitida"
                                                 type="number" 
+                                                size="sm"
                                                 placeholder="Ptos. Omitida" 
                                                 value={formulario.puntos_respuesta_omitida}
                                                 onChange={e => {setFormulario({
@@ -609,6 +692,7 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                         [e.target.name]: e.target.value
                                                     })
                                                 }}
+                                                readOnly={ringEnProceso}
                                             />
                                         </Col>
                                         <Col xs={"auto"}>
@@ -617,8 +701,125 @@ const RingForm = ({ ringEnProceso, setRingEnProceso }) => {
                                                 id="puntos_respuesta_timeout"
                                                 name="puntos_respuesta_timeout"
                                                 type="number" 
+                                                size="sm"
                                                 placeholder="Ptos. Fuera de Tiempo" 
                                                 value={formulario.puntos_respuesta_timeout}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                                readOnly={ringEnProceso}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                </Col>
+            </Row>
+            <Row>
+                <Col className="mb-2">
+                    <Accordion defaultActiveKey="1">
+                        <Card>
+                            <Card.Header>
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                    Haga clic el porcentaje de habilidades requeridas en el ring.
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <Row>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Recordar</Form.Label>
+                                            <Form.Control
+                                                id="recordar_porcent"
+                                                name="recordar_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Recordar" 
+                                                value={formulario.recordar_porcent}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Comprender</Form.Label>
+                                            <Form.Control
+                                                id="comprender_porcent"
+                                                name="comprender_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Comprender" 
+                                                value={formulario.comprender_porcent}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Aplicar</Form.Label>
+                                            <Form.Control
+                                                id="aplicar_porcent"
+                                                name="aplicar_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Aplicar" 
+                                                value={formulario.aplicar_porcent}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Analizar</Form.Label>
+                                            <Form.Control
+                                                id="analizar_porcent"
+                                                name="analizar_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Analizar" 
+                                                value={formulario.analizar_porcent}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Evaluar</Form.Label>
+                                            <Form.Control
+                                                id="evaluar_porcent"
+                                                name="evaluar_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Evaluar" 
+                                                value={formulario.evaluar_porcent}
+                                                onChange={e => {setFormulario({
+                                                        ...formulario,
+                                                        [e.target.name]: e.target.value
+                                                    })
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col xs={4} lg={2}>
+                                            <Form.Label>% Crear</Form.Label>
+                                            <Form.Control
+                                                id="crear_porcent"
+                                                name="crear_porcent"
+                                                type="number" 
+                                                size="sm"
+                                                placeholder="% Crear" 
+                                                value={formulario.crear_porcent}
                                                 onChange={e => {setFormulario({
                                                         ...formulario,
                                                         [e.target.name]: e.target.value

@@ -9,7 +9,7 @@ const FiltrosBusquedaRing = ({filtros, setFiltros, setRingEnProceso, setMostrarB
 
     const { fecha_desde, fecha_hasta, codigo_materia, 
             nombre_ring, privado } = filtros
-
+    
     const ref_custom_date_desde = React.createRef()
     const ref_custom_date_hasta = React.createRef()
  
@@ -114,10 +114,10 @@ const FiltrosBusquedaRing = ({filtros, setFiltros, setRingEnProceso, setMostrarB
                         size="sm"
                         value={codigo_materia}
                         onChange={e => {
-                        setFiltros({
-                            ...filtros,
-                            [e.target.name]: e.target.value,
-                        })
+                            setFiltros({
+                                ...filtros,
+                                [e.target.name]: e.target.value,
+                            })
                         }}
                     />
                 </Col>

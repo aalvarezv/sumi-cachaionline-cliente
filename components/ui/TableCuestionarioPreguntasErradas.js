@@ -39,8 +39,7 @@ const TableCuestionarioPreguntasErradas = ({codigo_cuestionario}) => {
         <Table size="sm" striped borderless hover variant="danger" responsive> 
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th><small className="font-weight-bold">Código pregunta</small></th>
+                    <th><small className="font-weight-bold">Nº pregunta</small></th>
                     <th className="text-center"><small className="font-weight-bold">Errores</small></th>
                 </tr>
             </thead>
@@ -51,7 +50,6 @@ const TableCuestionarioPreguntasErradas = ({codigo_cuestionario}) => {
                     
                     return(
                         <tr key={index}>
-                            <td><small>{index + 1}</small></td>
                             <td><small>{codigo_pregunta}</small></td>        
                             <td className="text-center"><small>{incorrectas}</small></td>
                         </tr>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Container, Row, Col, Badge, Form, Button } from 'react-bootstrap'
+import { Alert, Container, Row, Col, Badge, Form, Button, Accordion, Card } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import TableRingPreguntas from './TableRingPreguntas'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
@@ -13,6 +13,8 @@ import clienteAxios from '../../config/axios'
 import AlertText from './AlertText'
 import Paginador from './Paginador'
 import PreguntaInfo from './PreguntaInfo'
+import FiltrosBusquedaClasificacionPregunta from '../forms/FiltrosBusquedaClasificacionPregunta'
+import FiltrosBusquedaHabilidadesPregunta from '../forms/FiltrosBusquedaHabilidadesPregunta'
 
 
 export const RingPregunta = ({ring}) => {
@@ -23,19 +25,23 @@ export const RingPregunta = ({ring}) => {
     const [pregunta, setPregunta] = useState(null)
     
     const [textAlert, setTextAlert] = useState('')
-    const [filtros, setFiltros] = useState({
-        codigo_materia: '0',
-        codigo_unidad: '0',
-        codigo_modulo: '0',
-        codigo_modulo_contenido: '0',
-        codigo_modulo_contenido_tema: '0',
-        codigo_modulo_contenido_tema_concepto: '0',
-        nombre_usuario_creador: ''
-    })
-
-    const { codigo_materia, codigo_unidad, codigo_modulo, codigo_modulo_contenido,
-        codigo_modulo_contenido_tema, codigo_modulo_contenido_tema_concepto,
-        nombre_usuario_creador } = filtros
+    
+    const [filtrosClasificacion, setFiltrosClasificacion] = useState({
+        materias: [],
+        unidades: [],
+        modulos: [],
+        contenidos: [],
+        temas: [],
+        conceptos: [],
+     })
+     const [filtrosHabilidades, setFiltrosHabilidades] = useState({
+        recordar: 0,
+        comprender: 0,
+        aplicar: 0,
+        analizar: 0,
+        evaluar: 0,
+        crear: 0
+     })
 
     /**** Variables para paginación *****/
     const [pagina_actual, setPaginaActual] = useState(1)
@@ -63,14 +69,19 @@ export const RingPregunta = ({ring}) => {
         try{
             const resp = await clienteAxios.get('/api/preguntas/listar/ring', {
                     params: {
-                        codigo_materia: filtros.codigo_materia,
-                        codigo_unidad: filtros.codigo_unidad,
-                        codigo_modulo: filtros.codigo_modulo,
-                        codigo_modulo_contenido: filtros.codigo_modulo_contenido,
-                        codigo_modulo_contenido_tema: filtros.codigo_modulo_contenido_tema,
-                        codigo_modulo_contenido_tema_concepto: filtros.codigo_modulo_contenido_tema_concepto,
-                        nombre_usuario_creador: filtros.nombre_usuario_creador,
                         codigo_ring: ring.codigo,
+                        materias: filtrosClasificacion.materias,
+                        unidades: filtrosClasificacion.unidades,
+                        modulos: filtrosClasificacion.modulos,
+                        contenidos: filtrosClasificacion.contenidos,
+                        temas: filtrosClasificacion.temas,
+                        conceptos: filtrosClasificacion.conceptos,
+                        recordar: filtrosHabilidades.recordar, 
+                        comprender: filtrosHabilidades.comprender,
+                        aplicar: filtrosHabilidades.aplicar, 
+                        analizar: filtrosHabilidades.analizar, 
+                        evaluar: filtrosHabilidades.evaluar, 
+                        crear: filtrosHabilidades.crear,
                         page: 1, 
                         limit: 1, 
                     }
@@ -98,6 +109,7 @@ export const RingPregunta = ({ring}) => {
             const resp = await clienteAxios.post('/api/ring-preguntas/crear',{
                 codigo_ring: ring.codigo,
                 codigo_pregunta: codigo,
+                puntos_factor: ring.puntos_factor,
                 puntos_respuesta_correcta: ring.puntos_respuesta_correcta, 
                 puntos_respuesta_incorrecta: ring.puntos_respuesta_incorrecta, 
                 puntos_respuesta_omitida: ring.puntos_respuesta_omitida, 
@@ -254,7 +266,14 @@ export const RingPregunta = ({ring}) => {
         setPregunta(null)
     }    
 
-
+    const handleFiltrosClasificacion = value => {
+        setFiltrosClasificacion(value)
+    }
+  
+    const handleFiltrosHabilidades = value => {
+        setFiltrosHabilidades(value)
+    }
+    
     return (
         <Container>
             {pregunta 
@@ -282,166 +301,54 @@ export const RingPregunta = ({ring}) => {
                 </>
             :
                 <>  
-                <Row> 
-                    <Col className="font-weight-bold mb-2 ml-3">
-                        <h5>Filtros de búsqueda preguntas</h5>
-                    </Col>
-                </Row> 
-                <Row className="d-flex justify-content-center">
-                    <Col className="mb-2 mb-lg-0" xs={12} lg={10}>
-                        <Row className="mb-2">
-                            <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
-                                <InputSelectMateria
-                                id="codigo_materia"
-                                name="codigo_materia"
-                                as="select"
-                                size="sm"
-                                label="TODAS LAS MATERIAS"
-                                value={codigo_materia}
-                                onChange={e => setFiltros({
-                                        ...filtros,
-                                        codigo_unidad: '0',
-                                        codigo_modulo: '0',
-                                        codigo_modulo_contenido: '0',
-                                        codigo_modulo_contenido_tema: '0',
-                                        codigo_modulo_contenido_tema_concepto: '0',
-                                        [e.target.name]: e.target.value,
-                                })}
-                                />
-                            </Col>
-                            <Col>
-                                <InputSelectUnidadesMateria
-                                id="codigo_unidad"
-                                name="codigo_unidad"
-                                /*codigo materia se le pasa a las props del componente
-                                para filtrar las unidades de la materia seleccionada.*/
-                                codigo_materia= {codigo_materia}
-                                as="select"
-                                size="sm"
-                                label="TODAS LAS UNIDADES"
-                                value={codigo_unidad}
-                                onChange={e => setFiltros({
-                                        ...filtros,
-                                        codigo_modulo: '0',
-                                        codigo_modulo_contenido: '0',
-                                        codigo_modulo_contenido_tema: '0',
-                                        codigo_modulo_contenido_tema_concepto: '0',
-                                        [e.target.name]: e.target.value,
-                                })}
-                                />
-                            </Col>
-                        </Row>
-                        <Row className="mb-2">
-                            <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
-                                <InputSelectModulosUnidad
-                                id="codigo_modulo"
-                                name="codigo_modulo"
-                                /*codigo unidad se le pasa a las props del componente
-                                para filtrar los modulos de la unidad seleccionada.*/
-                                codigo_unidad= {codigo_unidad}
-                                as="select"
-                                size="sm"
-                                label="TODOS LOS MÓDULOS"
-                                value={codigo_modulo}
-                                onChange={e => setFiltros({
-                                        ...filtros,
-                                        codigo_modulo_contenido: '0',
-                                        codigo_modulo_contenido_tema: '0',
-                                        codigo_modulo_contenido_tema_concepto: '0',
-                                        [e.target.name]: e.target.value
-                                })}
-                                /> 
-                            </Col>
-                            <Col>
-                                <InputSelectModulosContenido
-                                    id="codigo_modulo_contenido"
-                                    name="codigo_modulo_contenido"
-                                    
-                                    /*codigo modulo se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo={codigo_modulo}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS CONTENIDOS"
-                                    value={codigo_modulo_contenido}
-                                    onChange={e => setFiltros({
-                                            ...filtros,
-                                            codigo_modulo_contenido_tema: '0',
-                                            codigo_modulo_contenido_tema_concepto: '0',
-                                            [e.target.name]: e.target.value
-                                    })}
-                                />
-                            </Col>
-                        </Row>
-                        <Row className="mb-2">
-                            <Col className="mb-2 mb-lg-0" xs={12} lg={6}>
-                                <InputSelectModulosContenidoTema
-                                    id="codigo_modulo_contenido_tema"
-                                    name="codigo_modulo_contenido_tema"
-                                    
-                                    /*codigo contenido se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo_contenido={codigo_modulo_contenido}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS TEMAS"
-                                    value={codigo_modulo_contenido_tema}
-                                    onChange={e => setFiltros({
-                                            ...filtros,
-                                            codigo_modulo_contenido_tema_concepto: '0',
-                                            [e.target.name]: e.target.value
-                                    })}
-                                />
-                            </Col>
-                            <Col>
-                                <InputSelectModulosContenidoTemaConcepto
-                                    id="codigo_modulo_contenido_tema_concepto"
-                                    name="codigo_modulo_contenido_tema_concepto"
-
-                                    /*codigo contenido se le pasa a las props del componente
-                                    para filtrar las propiedades del modulo seleccionado.*/
-                                    codigo_modulo_contenido_tema={codigo_modulo_contenido_tema}
-                                    as="select"
-                                    size="sm"
-                                    label="TODOS LOS CONCEPTOS"
-                                    value={codigo_modulo_contenido_tema_concepto}
-                                    onChange={e => setFiltros({
-                                    ...filtros,
-                                    [e.target.name]: e.target.value
-                                    })}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Form.Control
-                                    id="nombre_usuario_creador"
-                                    name="nombre_usuario_creador"
-                                    type="text" 
-                                    size="sm"
-                                    placeholder="CREADA POR USUARIO..." 
-                                    value={nombre_usuario_creador}
-                                    onChange={e => {
-                                        setFiltros({
-                                                ...filtros,
-                                                [e.target.name]: e.target.value
-                                        })
-                                    }} 
-                                />
-                            </Col>
-                        </Row>
-                    </Col>  
-                    <Col className="d-flex align-items-end mb-2 mb-lg-0" xs={12} lg="auto">
-                        <Button
-                            variant="info"
-                            className="align-self-end"
-                            onClick={handleClickBuscarPreguntas}
-                            block
-                        >
-                            Buscar
-                        </Button>
-                    </Col>
-                </Row>
+                <Accordion defaultActiveKey="0">
+                    <Card>
+                        <Card.Header>
+                        <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                Mostrar u ocultar filtros...
+                        </Accordion.Toggle>
+                        </Card.Header>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <Row>
+                                    <Col>
+                                        <h6 className="text-muted">Clasificación</h6>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <FiltrosBusquedaClasificacionPregunta
+                                            handleClasificacion={handleFiltrosClasificacion}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row className="mt-3">
+                                    <Col>
+                                        <h6 className="text-muted">Habilidades</h6>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <FiltrosBusquedaHabilidadesPregunta
+                                            handleHabilidades={handleFiltrosHabilidades}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row className="mt-3"> 
+                                    <Col className="d-flex justify-content-end">
+                                        <Button
+                                            variant="info"
+                                            onClick={handleClickBuscarPreguntas}
+                                        >
+                                            Buscar
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
+                
                 <Row className="mx-0 mb-5">
                     {preguntas_ring.length > 0
                     ?
@@ -462,14 +369,14 @@ export const RingPregunta = ({ring}) => {
                             />
                         </div>
                         <TableRingPreguntas
-                                ring={ring}
-                                preguntas={resultados_pagina}
-                                pagina_actual = {pagina_actual}
-                                resultados_por_pagina = {resultados_por_pagina}
-                                handleAgregarPreguntaRing = {handleAgregarPreguntaRing}
-                                handleQuitarPreguntaRing = {handleQuitarPreguntaRing}
-                                handleAgregarQuitarPreguntasRingMasivo = {handleAgregarQuitarPreguntasRingMasivo}
-                                handleShowPreguntaInfo={handleShowPreguntaInfo}
+                            ring={ring}
+                            preguntas={resultados_pagina}
+                            pagina_actual = {pagina_actual}
+                            resultados_por_pagina = {resultados_por_pagina}
+                            handleAgregarPreguntaRing = {handleAgregarPreguntaRing}
+                            handleQuitarPreguntaRing = {handleQuitarPreguntaRing}
+                            handleAgregarQuitarPreguntasRingMasivo = {handleAgregarQuitarPreguntasRingMasivo}
+                            handleShowPreguntaInfo={handleShowPreguntaInfo}
                         /> 
                     </Col>
                     :

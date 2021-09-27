@@ -6,7 +6,7 @@ import { handleError } from '../../helpers'
 const InputSelectMateria = props => {
 
     const [materias, setMaterias] = useState([])
-
+   
     useEffect(() => {
       
         const listarMaterias = async () => {
@@ -16,10 +16,15 @@ const InputSelectMateria = props => {
             }catch(e){
                 handleError(e)
             }
+
+            return () => {
+                setMaterias([])
+            }
         }
         listarMaterias()
 
     }, [])
+    
     return (
         <Form.Control
             {...props}
@@ -30,4 +35,4 @@ const InputSelectMateria = props => {
       )
 }
 
-export default React.memo(InputSelectMateria)
+export default InputSelectMateria
