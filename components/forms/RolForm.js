@@ -22,6 +22,9 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
         ver_submenu_unidades:false,
         ver_submenu_modulos:false,
         ver_submenu_contenidos:false,
+        ver_menu_carga_masiva:false,
+        ver_submenu_carga_masiva_unidades:false,
+        ver_submenu_carga_masiva_usuarios:false,
         ver_submenu_temas:false,
         ver_submenu_conceptos:false,
         ver_menu_rings: false,
@@ -50,6 +53,9 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
                 ver_submenu_contenidos: rolEnProceso.ver_submenu_contenidos,
                 ver_submenu_temas: rolEnProceso.ver_submenu_temas,
                 ver_submenu_conceptos: rolEnProceso.ver_submenu_conceptos,
+                ver_menu_carga_masiva: rolEnProceso.ver_menu_carga_masiva,
+                ver_submenu_carga_masiva_unidades: rolEnProceso.ver_submenu_carga_masiva_unidades,
+                ver_submenu_carga_masiva_usuarios: rolEnProceso.ver_submenu_carga_masiva_usuarios,
                 ver_menu_rings: rolEnProceso.ver_menu_rings,
                 ver_menu_preguntas: rolEnProceso.ver_menu_preguntas,
                 ver_menu_cuestionarios: rolEnProceso.ver_menu_cuestionarios,
@@ -90,6 +96,9 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
             ver_submenu_contenidos:false,
             ver_submenu_temas:false,
             ver_submenu_conceptos:false,
+            ver_menu_carga_masiva:false,
+            ver_submenu_carga_masiva_unidades:false,
+            ver_submenu_carga_masiva_usuarios:false,
             ver_menu_rings: false,
             ver_menu_preguntas: false,
             ver_menu_cuestionarios: false,
@@ -370,6 +379,56 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
                                     type="checkbox"
                                     label="Conceptos"
                                     checked={formulario.ver_submenu_conceptos}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={12} className="mb-1">
+                                <Form.Check 
+                                    id="ver_menu_carga_masiva"
+                                    name="ver_menu_carga_masiva"
+                                    type="checkbox"
+                                    label="Menú Carga Masiva"
+                                    className="font-weight-bold text-info"
+                                    checked={formulario.ver_menu_carga_masiva}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs={12} sm="auto">
+                                <Form.Check 
+                                    id="ver_submenu_carga_masiva_unidades"
+                                    name="ver_submenu_carga_masiva_unidades"
+                                    type="checkbox"
+                                    label="Unidades"
+                                    checked={formulario.ver_submenu_carga_masiva_unidades}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                            <Col xs={12} sm="auto">
+                                <Form.Check 
+                                    id="ver_submenu_carga_masiva_usuarios"
+                                    name="ver_submenu_carga_masiva_usuarios"
+                                    type="checkbox"
+                                    label="Usuarios"
+                                    checked={formulario.ver_submenu_carga_masiva_usuarios}
                                     onChange={e => {
                                         setFormulario({
                                             ...formulario,

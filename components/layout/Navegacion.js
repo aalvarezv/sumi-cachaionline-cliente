@@ -59,7 +59,7 @@ const Navegacion = () => {
     if(windowDimensions.width > 989 && windowDimensions.width < 991 && !navbarExpand){
         setNavbarExpand(true)
     }
-
+    
     return (
         <>
         <ModalCargaMasivaUsuario
@@ -193,11 +193,30 @@ const Navegacion = () => {
                         :
                             null
                         }
-                        {/* <NavDropdown title="Carga masiva" id="cargaMasiva-nav-dropdown">
-                            <Link href="#" passHref>
-                                <Nav.Link onClick={() => {setShowCargaMasivaUsuarios(true)}}>Usuarios</Nav.Link>
-                            </Link>
-                        </NavDropdown> */}
+                        {rol_select.ver_menu_carga_masiva
+                        ?
+                            <NavDropdown title="Carga masiva" id="cargaMasiva-nav-dropdown">
+                                {rol_select.ver_submenu_carga_masiva_unidades
+                                ?
+                                    <Link href="/carga-masiva/unidades" passHref>
+                                        <Nav.Link>Unidades</Nav.Link>
+                                    </Link>
+                                :
+                                    null
+                                }
+                                {rol_select.ver_submenu_carga_masiva_usuarios
+                                ?
+                                    <Link href="/carga-masiva/usuarios" passHref>
+                                        <Nav.Link>Usuarios</Nav.Link>
+                                    </Link>
+                                :
+                                    null
+                                }
+                            </NavDropdown>
+                        :
+                            null
+                        }
+                        
                         {rol_select.ver_menu_preguntas 
                         ?
                             <Link href="/administrar/preguntas" passHref>
