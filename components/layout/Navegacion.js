@@ -249,6 +249,11 @@ const Navegacion = () => {
                             null
                         }
                         
+                       
+                        <Link href="/unidades" passHref>
+                            <Nav.Link>Unidades</Nav.Link>
+                        </Link>
+                       
                     </>
                     }
                 </Nav> 

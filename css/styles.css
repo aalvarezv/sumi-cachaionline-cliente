@@ -1,0 +1,17 @@
+.dropable-pendiente{
+    background-color:rgba(226, 227, 229, 1);
+    padding: 30px;
+    border-radius: 5px;
+}
+
+.dropable-en-proceso{
+    background-color: rgba(207, 226, 253, 1);
+    padding: 30px;
+    border-radius: 5px;
+}
+
+.dropable-finalizado{
+    background-color: rgba(209, 231, 221, 1);
+    padding: 30px;
+    border-radius: 5px;
+}

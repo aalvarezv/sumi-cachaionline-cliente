@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Container, Row, Col, Badge, Form, Button, Accordion, Card } from 'react-bootstrap'
+import { Alert, Container, Row, Col, Badge, Form, Button, Accordion, Card, Tab, Tabs } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import TableRingPreguntas from './TableRingPreguntas'
 import InputSelectMateria from '../../components/ui/InputSelectMateria'
@@ -15,6 +15,7 @@ import Paginador from './Paginador'
 import PreguntaInfo from './PreguntaInfo'
 import FiltrosBusquedaClasificacionPregunta from '../forms/FiltrosBusquedaClasificacionPregunta'
 import FiltrosBusquedaHabilidadesPregunta from '../forms/FiltrosBusquedaHabilidadesPregunta'
+import TablePreguntasInscritasRing from '../ui/TablePreguntasInscritasRing'
 
 
 export const RingPregunta = ({ring}) => {
@@ -301,92 +302,102 @@ export const RingPregunta = ({ring}) => {
                 </>
             :
                 <>  
-                <Accordion defaultActiveKey="0">
-                    <Card>
-                        <Card.Header>
-                        <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                                Mostrar u ocultar filtros...
-                        </Accordion.Toggle>
-                        </Card.Header>
-                        <Accordion.Collapse eventKey="0">
-                            <Card.Body>
-                                <Row>
-                                    <Col>
-                                        <h6 className="text-muted">Clasificación</h6>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <FiltrosBusquedaClasificacionPregunta
-                                            handleClasificacion={handleFiltrosClasificacion}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3">
-                                    <Col>
-                                        <h6 className="text-muted">Habilidades</h6>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <FiltrosBusquedaHabilidadesPregunta
-                                            handleHabilidades={handleFiltrosHabilidades}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3"> 
-                                    <Col className="d-flex justify-content-end">
-                                        <Button
-                                            variant="info"
-                                            onClick={handleClickBuscarPreguntas}
-                                        >
-                                            Buscar
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Accordion.Collapse>
-                    </Card>
-                </Accordion>
                 
-                <Row className="mx-0 mb-5">
-                    {preguntas_ring.length > 0
-                    ?
-                    <Col className="mt-4 d-flex flex-column">
-                        <div className="align-self-end">
-                                <h5>
-                                    <Badge variant="info">
-                                        {`Preguntas Ring ${cantPreguntasRing}`}
-                                    </Badge>
-                                </h5>    
-                        </div>
-                        <div className="align-self-end">
-                            <Paginador
-                                resultados_por_pagina = {resultados_por_pagina}
-                                total_resultados = {preguntas_ring.length}
-                                handleSetPaginaActual = {handleSetPaginaActual}
-                                pagina_activa = {pagina_actual}
-                            />
-                        </div>
-                        <TableRingPreguntas
+                <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+                    <Tab eventKey="agregarPreguntas" title="Agregar Preguntas">
+                    <Accordion defaultActiveKey="0">
+                            <Card>
+                                <Card.Header>
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                        Mostrar u ocultar filtros...
+                                </Accordion.Toggle>
+                                </Card.Header>
+                                <Accordion.Collapse eventKey="0">
+                                    <Card.Body>
+                                        <Row>
+                                            <Col>
+                                                <h6 className="text-muted">Clasificación</h6>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <FiltrosBusquedaClasificacionPregunta
+                                                    handleClasificacion={handleFiltrosClasificacion}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row className="mt-3">
+                                            <Col>
+                                                <h6 className="text-muted">Habilidades</h6>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <FiltrosBusquedaHabilidadesPregunta
+                                                    handleHabilidades={handleFiltrosHabilidades}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row className="mt-3"> 
+                                            <Col className="d-flex justify-content-end">
+                                                <Button
+                                                    variant="info"
+                                                    onClick={handleClickBuscarPreguntas}
+                                                >
+                                                    Buscar
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                        </Accordion>
+                        
+                        <Row className="mx-0 mb-5">
+                            {preguntas_ring.length > 0
+                            ?
+                            <Col className="mt-4 d-flex flex-column">
+                                <div className="align-self-end">
+                                        <h5>
+                                            <Badge variant="info">
+                                                {`Preguntas Ring ${cantPreguntasRing}`}
+                                            </Badge>
+                                        </h5>    
+                                </div>
+                                <div className="align-self-end">
+                                    <Paginador
+                                        resultados_por_pagina = {resultados_por_pagina}
+                                        total_resultados = {preguntas_ring.length}
+                                        handleSetPaginaActual = {handleSetPaginaActual}
+                                        pagina_activa = {pagina_actual}
+                                    />
+                                </div>
+                                <TableRingPreguntas
+                                    ring={ring}
+                                    preguntas={resultados_pagina}
+                                    pagina_actual = {pagina_actual}
+                                    resultados_por_pagina = {resultados_por_pagina}
+                                    handleAgregarPreguntaRing = {handleAgregarPreguntaRing}
+                                    handleQuitarPreguntaRing = {handleQuitarPreguntaRing}
+                                    handleAgregarQuitarPreguntasRingMasivo = {handleAgregarQuitarPreguntasRingMasivo}
+                                    handleShowPreguntaInfo={handleShowPreguntaInfo}
+                                /> 
+                            </Col>
+                            :
+                            <Col className="mt-5">
+                                <AlertText  
+                                    text={textAlert}
+                                /> 
+                            </Col>
+                            }   
+                        </Row>
+                    </Tab>
+                    <Tab eventKey="preguntasInscritas" title="Preguntas Inscritas">
+                        <TablePreguntasInscritasRing
                             ring={ring}
-                            preguntas={resultados_pagina}
-                            pagina_actual = {pagina_actual}
-                            resultados_por_pagina = {resultados_por_pagina}
-                            handleAgregarPreguntaRing = {handleAgregarPreguntaRing}
-                            handleQuitarPreguntaRing = {handleQuitarPreguntaRing}
-                            handleAgregarQuitarPreguntasRingMasivo = {handleAgregarQuitarPreguntasRingMasivo}
-                            handleShowPreguntaInfo={handleShowPreguntaInfo}
-                        /> 
-                    </Col>
-                    :
-                    <Col className="mt-5">
-                        <AlertText  
-                            text={textAlert}
-                        /> 
-                    </Col>
-                    }   
-                </Row> 
+                        />
+                    </Tab>
+                </Tabs>
                 </>
             }    
         </Container>
