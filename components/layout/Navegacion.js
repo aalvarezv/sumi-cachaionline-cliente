@@ -74,14 +74,19 @@ const Navegacion = () => {
             onToggle={next => setNavbarExpand(next)}
             //className="d-block"
         >
-            <Navbar.Brand>
+            <Navbar.Brand className="d-flex flex-row mt-1">
                 <img
                     src="/static/logo.png"
                     width="30"
                     height="24"
-                    className="d-inline-block align-top mr-1"
+                    className="mr-3"
                     alt="CachaiOnline"
-                />{' '}<span className="text-info">CachaiOnline</span>
+                />
+                
+                <NavDropdown.Item as={Link} href="/"> 
+                    <h4 className="text-info" style={{cursor: 'pointer'}}>CachaiOnline</h4>
+                </NavDropdown.Item>
+                
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
