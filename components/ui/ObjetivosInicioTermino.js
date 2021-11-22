@@ -6,7 +6,7 @@ import { handleError } from '../../helpers';
 
 
 
-const ObjetivosInicioTermino = ({codigoObjetivo, fechaInicio, fechaTermino}) => {
+const ObjetivosInicioTermino = ({codigoObjetivo, fechaInicio, fechaTermino, estadoObjetivo, setObjetivos}) => {
     
     const [fechaInicioSelect, setFechaInicioSelect] = useState(fechaInicio)
     const [fechaTerminoSelect, setFechaTerminoSelect] = useState(fechaTermino)
@@ -20,6 +20,35 @@ const ObjetivosInicioTermino = ({codigoObjetivo, fechaInicio, fechaTermino}) => 
                 fecha_inicio: fechaInicioSelected,
                 fecha_termino: fechaTerminoSelected,
             })
+
+            if(fechaInicioSelected !== undefined){
+                setObjetivos(objetivos => {
+                    return objetivos.map(objetivo => {
+                        if(objetivo.codigo === codigoObjetivo){
+                            return {
+                                ...objetivo,
+                                fecha_inicio: fechaInicioSelected
+                            }
+                        }else{
+                            return objetivo
+                        }
+                    })
+                })
+            }
+            if(fechaTerminoSelected !== undefined){
+                setObjetivos(objetivos => {
+                    return objetivos.map(objetivo => {
+                        if(objetivo.codigo === codigoObjetivo){
+                            return {
+                                ...objetivo,
+                                fecha_termino: fechaTerminoSelected
+                            }
+                        }else{
+                            return objetivo
+                        }
+                    })
+                })
+            }
             
         }catch(e){
             handleError(e)
@@ -28,7 +57,9 @@ const ObjetivosInicioTermino = ({codigoObjetivo, fechaInicio, fechaTermino}) => 
 
     }   
 
-    console.log()
+    if(estadoObjetivo === 2){
+        console.log(new Date().toISOString().split('T')[0], fechaTerminoSelect, fechaTerminoSelect <= new Date().toISOString().split('T')[0])
+    }
 
     return ( 
         <Row className="mb-1">
@@ -67,11 +98,10 @@ const ObjetivosInicioTermino = ({codigoObjetivo, fechaInicio, fechaTermino}) => 
                 />
             </Col>
             <Col className="d-flex align-items-end justify-content-end">
-                    {new Date().toISOString().split('T')[0] <= fechaTerminoSelect &&
+                    {(estadoObjetivo !== 3 && fechaTerminoSelect <= new Date().toISOString().split('T')[0]) &&
                         <AiFillAlert 
                             className="alert-icon"
                             size={"2.4rem"} 
-                            //color={"red"}
                         />
                     }
             </Col>

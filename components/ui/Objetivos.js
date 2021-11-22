@@ -171,6 +171,8 @@ function Objetivos(props) {
                                         fechaInicio={fecha_inicio}
                                         fechaTermino={fecha_termino}
                                         codigoObjetivo={codigo}
+                                        estadoObjetivo={1}
+                                        setObjetivos={setObjetivos}
                                     />
                                     <Alert
                                         variant="light"
@@ -235,6 +237,8 @@ function Objetivos(props) {
                                           fechaInicio={fecha_inicio}
                                           fechaTermino={fecha_termino}
                                           codigoObjetivo={codigo}
+                                          estadoObjetivo={2}
+                                          setObjetivos={setObjetivos}
                                       />
                                       <Alert
                                           variant="light"
@@ -297,6 +301,8 @@ function Objetivos(props) {
                                             fechaInicio={fecha_inicio}
                                             fechaTermino={fecha_termino}
                                             codigoObjetivo={codigo}
+                                            estadoObjetivo={3}
+                                            setObjetivos={setObjetivos}
                                         />
                                         <Alert
                                             variant="light"

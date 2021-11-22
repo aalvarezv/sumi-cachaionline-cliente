@@ -5,7 +5,7 @@ import clienteAxios from '../../config/axios';
 import { handleError } from '../../helpers';
 
 
-const HabilidadesInicioTermino = ({codigoHabilidad, fechaInicio, fechaTermino}) => {
+const HabilidadesInicioTermino = ({codigoHabilidad, fechaInicio, fechaTermino, estadoHabilidad, setHabilidades}) => {
     
     const [fechaInicioSelect, setFechaInicioSelect] = useState(fechaInicio)
     const [fechaTerminoSelect, setFechaTerminoSelect] = useState(fechaTermino)
@@ -19,6 +19,35 @@ const HabilidadesInicioTermino = ({codigoHabilidad, fechaInicio, fechaTermino}) 
                 fecha_inicio: fechaInicioSelected,
                 fecha_termino: fechaTerminoSelected,
             })
+
+            if(fechaInicioSelected !== undefined){
+                setHabilidades(habilidades => {
+                    return habilidades.map(habilidad => {
+                        if(habilidad.codigo === codigoHabilidad){
+                            return {
+                                ...habilidad,
+                                fecha_inicio: fechaInicioSelected
+                            }
+                        }else{
+                            return habilidad
+                        }
+                    })
+                })
+            }
+            if(fechaTerminoSelected !== undefined){
+                setHabilidades(habilidades => {
+                    return habilidades.map(habilidad => {
+                        if(habilidad.codigo === codigoHabilidad){
+                            return {
+                                ...habilidad,
+                                fecha_termino: fechaTerminoSelected
+                            }
+                        }else{
+                            return habilidad
+                        }
+                    })
+                })
+            }
             
         }catch(e){
             handleError(e)
@@ -62,11 +91,10 @@ const HabilidadesInicioTermino = ({codigoHabilidad, fechaInicio, fechaTermino}) 
                 />
             </Col>
             <Col className="d-flex align-items-end justify-content-end">
-                    {new Date().toISOString().split('T')[0] >= fechaTerminoSelect &&
+                    {(estadoHabilidad !== 3 && fechaTerminoSelect <= new Date().toISOString().split('T')[0]) &&
                         <AiFillAlert 
                             className="alert-icon"
                             size={"2.4rem"} 
-                            //color={"red"}
                         />
                     }
             </Col>

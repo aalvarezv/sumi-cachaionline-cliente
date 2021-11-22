@@ -164,6 +164,8 @@ function Habilidades(props) {
                                             fechaInicio={fecha_inicio}
                                             fechaTermino={fecha_termino}
                                             codigoHabilidad={codigo}
+                                            estadoHabilidad={1}
+                                            setHabilidades={setHabilidades}
                                       />
                                       <Alert
                                           variant="light"
@@ -224,6 +226,8 @@ function Habilidades(props) {
                                             fechaInicio={fecha_inicio}
                                             fechaTermino={fecha_termino}
                                             codigoHabilidad={codigo}
+                                            estadoHabilidad={2}
+                                            setHabilidades={setHabilidades}
                                       />
                                       <Alert
                                           variant="light"
@@ -284,6 +288,8 @@ function Habilidades(props) {
                                               fechaInicio={fecha_inicio}
                                               fechaTermino={fecha_termino}
                                               codigoHabilidad={codigo}
+                                              estadoHabilidad={3}
+                                              setHabilidades={setHabilidades}
                                         />
                                         <Alert
                                             variant="light"
