@@ -1,51 +1,24 @@
-import React, { useContext, useEffect } from 'react'
-import Link from 'next/link'
-import MateriaContext from '../context/materias/MateriaContext'
+import React, { useContext } from 'react'
 import Layout from '../components/layout/Layout'
-import { Container, Row, Col, Card, Image } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
+import UnidadesMineduc from '../components/ui/UnidadesMineduc'
+import AuthContext from '../context/auth/AuthContext'
 
 
 const Home = () => {
 
-    const { materias, listarMaterias, seleccionarMateria } = useContext(MateriaContext)
- 
-    useEffect(()=> {
-      listarMaterias()
-    }, [])
+    const { rol_select } = useContext(AuthContext)
 
+    console.log(rol_select)
     return ( 
     <Layout>
       <Container className="mt-3">
-
-        {materias && materias.map(materia => (
-          <Card className="border-bottom-0" key={materia.codigo}>
-            <Container className="px-4 py-4">
-                <Row>
-                    <Col lg={3}>
-                      <Row>
-                         <Image className= "img-fluid mx-auto" style={{ width: '300px' }} variant="top" src={materia.imagen}/>
-                      </Row>
-                    </Col>
-                    <Col className="mt-3 mt-lg-0" lg={6}>
-                      <Row>
-                         <Card.Title className="text-info">
-                            <Link href="/evaluacion/[materia_cod]" as={`/evaluacion/${materia.codigo}`}>
-                              <a onClick={() => seleccionarMateria(materia.codigo)}>{materia.nombre}</a>
-                            </Link>
-                         </Card.Title>
-                      </Row>
-                      <Row>
-                        <Card.Text>{materia.descripcion}</Card.Text>
-                      </Row>
-                    </Col>
-                    <Col lg={3}>
-                      <Row>1</Row>
-                      <Row>2</Row>
-                    </Col>
-                </Row>
-            </Container>
-          </Card>
-          ))}     
+        {rol_select && rol_select.ver_inicio_unidades_mineduc
+        ?
+         <UnidadesMineduc/> 
+        :
+          null
+        }  
       </Container>
     </Layout>   
     )

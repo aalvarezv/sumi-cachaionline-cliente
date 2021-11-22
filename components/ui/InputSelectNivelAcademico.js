@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import { Form } from 'react-bootstrap'
 import  clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
-import InputSelectMateria from './InputSelectMateria'
 
 const InputSelectNivelAcademico = props => {
 

@@ -3,7 +3,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import AuthContext from '../../context/auth/AuthContext';
 import  clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
-import { Alert } from 'react-bootstrap';
+import { Alert, Col, Row } from 'react-bootstrap';
+import HabilidadesInicioTermino from './HabilidadesInicioTermino';
 
 
 const reorder = (list, startIndex, endIndex) => {
@@ -15,7 +16,6 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 function Habilidades(props) {
-
  
   const { usuario } = useContext(AuthContext)
   const [habilidades, setHabilidades] = useState([])
@@ -37,10 +37,9 @@ function Habilidades(props) {
         }
     }
     listarHabilidadesUnidadMineduc()
-    console.log(habilidades)
 
   }, [codigoCurso, codigoUnidad])
-
+  
   const cambiarEstadoHabilidad = async (codigoHabilidad, codigoEstado) => {
     
     try{
@@ -53,14 +52,13 @@ function Habilidades(props) {
     }catch(e){
         handleError(e)
     }
-  }
 
+  }
 
   return (
 
     <DragDropContext onDragEnd={(result) => {
       const {source, destination, draggableId} = result
-
       if(!destination){
         return
       }
@@ -75,7 +73,7 @@ function Habilidades(props) {
       if(source.index !== destination.index
         && source.droppableId === destination.droppableId
       ){
-        setHabilidades(prevHabilidades => reorder(prevHabilidades, source.index, destination.index))
+        //setHabilidades(prevHabilidades => reorder(prevHabilidades, source.index, destination.index))
         return
       }      
       //Si lo muevo a otra columna, obtengo la tarea de origen y la quito de la columna de origen
@@ -129,18 +127,25 @@ function Habilidades(props) {
     }}
     >  
       <div className="app">
-        <div className="dropable-pendiente">
+        <div className="droppable-pendiente">
           <h4>Pendiente</h4>
           <Droppable droppableId="pendiente">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {habilidades.filter(hab => hab.codigo_estado === "4").map((hab, index) => {
+              {habilidades.filter(hab => hab.codigo_estado === "4").length > 0
+              ?
+                habilidades.filter(hab => hab.codigo_estado === "4").map((hab, index) => {
                   
-                  const {codigo, descripcion_habilidad} = hab
+                  const {
+                    codigo, 
+                    descripcion_habilidad, 
+                    numero_habilidad, 
+                    fecha_inicio, 
+                    fecha_termino} = hab
 
                   return(
                       <Draggable key={codigo} draggableId={codigo} index={index}>
@@ -149,35 +154,58 @@ function Habilidades(props) {
                                   {...draggableProvided.draggableProps} 
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
-                              >
-                                  <Alert
-                                      variant="light"
-                                      style={{cursor: 'pointer'}}
-                                  >
-                                      {descripcion_habilidad}
-                                  </Alert>
+                              > 
+                                <Row>
+                                    <Col xs={1} className="px-0 text-right">
+                                      <h4 className="text-muted">#{numero_habilidad}</h4>
+                                    </Col>
+                                    <Col>
+                                      <HabilidadesInicioTermino
+                                            fechaInicio={fecha_inicio}
+                                            fechaTermino={fecha_termino}
+                                            codigoHabilidad={codigo}
+                                      />
+                                      <Alert
+                                          variant="light"
+                                          style={{cursor: 'pointer'}}
+                                      >
+                                          {descripcion_habilidad}
+                                      </Alert>
+                                    </Col>
+                                </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+                })
+              
+              :
+                <h5 className="text-muted text-center">Arrastre y suelte una habilidad</h5>
+              }
               {droppableProvided.placeholder}
             </ul>
             )}
           </Droppable>
         </div>
-        <div className="dropable-en-proceso">
-          <h4>En Proceso</h4>
+        <div className="droppable-en-proceso">
+          <h4 className="mb-4">En Proceso</h4>
           <Droppable droppableId="enProceso">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {habilidades.filter(hab => hab.codigo_estado === "5").map((hab, index) => {
+              {habilidades.filter(hab => hab.codigo_estado === "5").length > 0
+              ?
+                habilidades.filter(hab => hab.codigo_estado === "5").map((hab, index) => {
                   
-                  const {codigo, descripcion_habilidad} = hab
+                  const {
+                    codigo, 
+                    descripcion_habilidad, 
+                    numero_habilidad,
+                    fecha_inicio,
+                    fecha_termino} = hab
 
                   return(
                       <Draggable key={codigo} draggableId={codigo} index={index}>
@@ -187,35 +215,57 @@ function Habilidades(props) {
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
                               >   
-                                  <Alert
-                                      variant="light"
-                                      style={{cursor: 'pointer'}}
-                                  >
-                                      {descripcion_habilidad}
-                                  </Alert>
+                                <Row>
+                                  <Col xs={1} className="px-0 text-right">
+                                    <h4 className="text-muted">#{numero_habilidad}</h4>
+                                  </Col>
+                                  <Col>
+                                      <HabilidadesInicioTermino
+                                            fechaInicio={fecha_inicio}
+                                            fechaTermino={fecha_termino}
+                                            codigoHabilidad={codigo}
+                                      />
+                                      <Alert
+                                          variant="light"
+                                          style={{cursor: 'pointer'}}
+                                      >
+                                          {descripcion_habilidad}
+                                      </Alert>
+                                  </Col>
+                                </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+                })
+              :
+                <h5 className="text-muted text-center">Arrastre y suelte una habilidad</h5>
+              }
               {droppableProvided.placeholder}
             </ul>
             )}
           </Droppable>
         </div>
 
-        <div className="dropable-finalizado">
-          <h4>Finalizado</h4>
+        <div className="droppable-finalizado">
+          <h4 className="mb-4">Finalizado</h4>
           <Droppable droppableId="finalizado">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {habilidades.filter(hab => hab.codigo_estado === "6").map((hab, index) => {
+              {habilidades.filter(hab => hab.codigo_estado === "6").length > 0
+              ?
+                habilidades.filter(hab => hab.codigo_estado === "6").map((hab, index) => {
                   
-                  const {codigo, descripcion_habilidad} = hab
+                  const {
+                    codigo, 
+                    descripcion_habilidad, 
+                    numero_habilidad,
+                    fecha_inicio,
+                    fecha_termino} = hab
 
                   return(
                       <Draggable key={codigo} draggableId={codigo} index={index}>
@@ -225,17 +275,32 @@ function Habilidades(props) {
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
                               >
-                                  <Alert
-                                      variant="light"
-                                      style={{cursor: 'pointer'}}
-                                  >
-                                      {descripcion_habilidad}
-                                  </Alert>
+                                  <Row>
+                                    <Col xs={1} className="px-0 text-right">
+                                      <h4 className="text-muted">#{numero_habilidad}</h4>
+                                    </Col>
+                                    <Col>
+                                        <HabilidadesInicioTermino
+                                              fechaInicio={fecha_inicio}
+                                              fechaTermino={fecha_termino}
+                                              codigoHabilidad={codigo}
+                                        />
+                                        <Alert
+                                            variant="light"
+                                            style={{cursor: 'pointer'}}
+                                        >
+                                            {descripcion_habilidad}
+                                        </Alert>
+                                    </Col>
+                                  </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+                })
+              :
+                <h5 className="text-muted text-center">Arrastre y suelte una habilidad</h5>
+              }
               {droppableProvided.placeholder}
             </ul>
             )}

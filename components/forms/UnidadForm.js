@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'react-toastify'
-import { Container, Form, Button, Row, Col, Tab, Tabs } from 'react-bootstrap'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
 import {handleError } from '../../helpers'
 import  clienteAxios from '../../config/axios'
 import InputSelectMateria from '../ui/InputSelectMateria'
-import TablePreguntasInscritasRing from '../ui/TablePreguntasInscritasRing'
-import TabConfigRing from '../ui/TabConfigRing'
-
 
 
 
@@ -98,7 +95,6 @@ const UnidadForm = ({unidadEnProceso, setUnidadEnProceso}) => {
     return ( 
     <Container>
         <Form>
-            <TabConfigRing/>
             <Form.Group>
                 <Form.Label>Materia</Form.Label>
                 <InputSelectMateria

@@ -3,7 +3,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import AuthContext from '../../context/auth/AuthContext';
 import  clienteAxios from '../../config/axios'
 import { handleError } from '../../helpers'
-import { Alert } from 'react-bootstrap';
+import { Alert, Col, Row } from 'react-bootstrap';
+import ObjetivosInicioTermino from './ObjetivosInicioTermino';
 
 
 const reorder = (list, startIndex, endIndex) => {
@@ -38,12 +39,11 @@ function Objetivos(props) {
         }
     }
     listarObjetivosUnidadMineduc()
-    console.log(objetivos)
 
   }, [codigoCurso, codigoUnidad])
 
   const cambiarEstadoObjetivo = async (codigoObjetivo, codigoEstado) => {
-    console.log(codigoObjetivo)
+
     try{
         await clienteAxios.put('/api/mineduc-tablero-objetivo/cambiar-estado',{
                 codigo_objetivo: codigoObjetivo,
@@ -53,6 +53,7 @@ function Objetivos(props) {
     }catch(e){
         handleError(e)
     }
+
   }
 
   return (
@@ -63,7 +64,6 @@ function Objetivos(props) {
         return
       }
 
-      
       //Si lo estoy moviendo en la misma columna y en la misma posicion entonces no hago nada
       if(source.index === destination.index
         && source.droppableId === destination.droppableId
@@ -74,7 +74,7 @@ function Objetivos(props) {
       if(source.index !== destination.index
         && source.droppableId === destination.droppableId
       ){
-        setObjetivos(prevObjetivos => reorder(prevObjetivos, source.index, destination.index))
+        //setObjetivos(prevObjetivos => reorder(prevObjetivos, source.index, destination.index))
         return
       }      
       //Si lo muevo a otra columna, obtengo la tarea de origen y la quito de la columna de origen
@@ -128,96 +128,157 @@ function Objetivos(props) {
     }}
     >
        
-
       <div className="app">
-        <div className="dropable-pendiente">
-          <h4>Pendiente</h4>
+        <div className="droppable-pendiente">
+          <h4 className="mb-4">Pendiente</h4>
           <Droppable droppableId="pendiente">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {objetivos.filter(obj => obj.codigo_estado === "4").map((obj, index) => {
+              {objetivos.filter(obj => obj.codigo_estado === "4").length > 0
+              ?
+                objetivos.filter(obj => obj.codigo_estado === "4").map((obj, index) => {
                   
-                  const {codigo, descripcion_objetivo} = obj
-
+                  const {
+                    codigo, 
+                    descripcion_objetivo, 
+                    numero_objetivo, 
+                    fecha_inicio, 
+                    fecha_termino
+                  } = obj
+                  
                   return(
-                      <Draggable key={codigo} draggableId={codigo} index={index}>
+                      <Draggable 
+                        key={codigo} 
+                        draggableId={codigo} 
+                        index={index}
+                      >
                           {(draggableProvided) => (
                               <li 
                                   {...draggableProvided.draggableProps} 
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
                               >
-                                <Alert
-                                    variant="ligth"
-                                    style={{cursor: 'pointer'}}
-                                >
-                                  {descripcion_objetivo}
-                                </Alert>
+                                <Row>
+                                  <Col xs={1} className="px-0 text-right">
+                                    <h4 className="text-muted">#{numero_objetivo}</h4>
+                                  </Col>
+                                  <Col>
+                                    <ObjetivosInicioTermino
+                                        fechaInicio={fecha_inicio}
+                                        fechaTermino={fecha_termino}
+                                        codigoObjetivo={codigo}
+                                    />
+                                    <Alert
+                                        variant="light"
+                                        style={{cursor: 'pointer'}}
+                                    >
+                                        {descripcion_objetivo}
+                                    </Alert>
+                                  </Col>
+                                </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+              })
+              :
+                <h5 className="text-muted text-center">Arrastre y suelte un objetivo</h5>
+              }
               {droppableProvided.placeholder}
             </ul>
             )}
           </Droppable>
         </div>
 
-        <div className="dropable-en-proceso">
-          <h4>En Proceso</h4>
+        <div className="droppable-en-proceso">
+          <h4 className="mb-4">En Proceso</h4>
           <Droppable droppableId="enProceso">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {objetivos.filter(obj => obj.codigo_estado === "5").map((obj, index) => {
+              {objetivos.filter(obj => obj.codigo_estado === "5").length > 0
+              ?
+                objetivos.filter(obj => obj.codigo_estado === "5").map((obj, index) => {
                   
-                  const {codigo, descripcion_objetivo} = obj
+                  const {
+                    codigo, 
+                    descripcion_objetivo, 
+                    numero_objetivo,
+                    fecha_inicio,
+                    fecha_termino } = obj
 
                   return(
-                      <Draggable key={codigo} draggableId={codigo} index={index}>
+                      <Draggable 
+                        key={codigo} 
+                        draggableId={codigo} 
+                        index={index}
+                      >
                           {(draggableProvided) => (
                               <li 
                                   {...draggableProvided.draggableProps} 
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
                               >
-                                  <Alert
-                                    variant="light"
-                                    style={{cursor: 'pointer'}}
-                                >
-                                  {descripcion_objetivo}
-                                </Alert>
+                                <Row>
+                                  <Col xs={1} className="px-0 text-right">
+                                    <h4 className="text-muted">#{numero_objetivo}</h4>
+                                  </Col>
+                                  <Col>
+                                      <ObjetivosInicioTermino
+                                          fechaInicio={fecha_inicio}
+                                          fechaTermino={fecha_termino}
+                                          codigoObjetivo={codigo}
+                                      />
+                                      <Alert
+                                          variant="light"
+                                          style={{cursor: 'pointer'}}
+                                      >
+                                          {descripcion_objetivo}
+                                      </Alert>
+                                  </Col>
+                                </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+                })
+          
+              :
+                <h5 className="text-muted text-center">Arrastre y suelte un objetivo</h5>
+              }
               {droppableProvided.placeholder}
             </ul>
             )}
           </Droppable>
         </div>
 
-        <div className="dropable-finalizado">
-          <h4>Finalizado</h4>
+        <div className="droppable-finalizado">
+          <h4 className="mb-4">Finalizado</h4>
           <Droppable droppableId="finalizado">
             {(droppableProvided) => (
             <ul 
               {...droppableProvided.droppableProps} 
               ref={droppableProvided.innerRef}
-              className="task-content"
+              className="droppable-ul"
             >
-              {objetivos.filter(obj => obj.codigo_estado === "6").map((obj, index) => {
+              {objetivos.filter(obj => obj.codigo_estado === "6").length > 0
+              ?
+
+                objetivos.filter(obj => obj.codigo_estado === "6").map((obj, index) => {
                   
-                  const {codigo, descripcion_objetivo} = obj
+                  const {
+                    codigo, 
+                    descripcion_objetivo, 
+                    numero_objetivo, 
+                    fecha_inicio, 
+                    fecha_termino} = obj
 
                   return(
                       <Draggable key={codigo} draggableId={codigo} index={index}>
@@ -227,17 +288,35 @@ function Objetivos(props) {
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.dragHandleProps}
                               >
-                                  <Alert
-                                    variant="light"
-                                    style={{cursor: 'pointer'}}
-                                >
-                                  {descripcion_objetivo}
-                                </Alert>
+                                <Row>
+                                    <Col xs={1} className="px-0 text-right">
+                                      <h4 className="text-muted">#{numero_objetivo}</h4>
+                                    </Col>
+                                    <Col>
+                                        <ObjetivosInicioTermino
+                                            fechaInicio={fecha_inicio}
+                                            fechaTermino={fecha_termino}
+                                            codigoObjetivo={codigo}
+                                        />
+                                        <Alert
+                                            variant="light"
+                                            style={{cursor: 'pointer'}}
+                                        >
+                                            {descripcion_objetivo}
+                                        </Alert>
+                                    </Col>
+                                </Row> 
                               </li>
                           )}
                       </Draggable>
                   )
-              })}
+                })
+
+                :
+
+                <h5 className="text-muted text-center">Arrastre y suelte un objetivo</h5>
+              
+              }
               {droppableProvided.placeholder}
             </ul>
             )}

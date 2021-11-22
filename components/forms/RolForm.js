@@ -11,6 +11,7 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
         codigo: '',
         descripcion: '',
         sys_admin: false,
+        ver_inicio_unidades_mineduc: false,
         ver_menu_administrar: false,
         ver_submenu_instituciones:false,
         ver_submenu_niveles_academicos:false,
@@ -34,12 +35,13 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
     })
 
     useEffect(() => {
-
+      
         if(rolEnProceso){
             setFormulario({
                 codigo: rolEnProceso.codigo,
                 descripcion: rolEnProceso.descripcion,
                 sys_admin: rolEnProceso.sys_admin,
+                ver_inicio_unidades_mineduc: rolEnProceso.ver_inicio_unidades_mineduc,
                 ver_menu_administrar: rolEnProceso.ver_menu_administrar,
                 ver_submenu_instituciones: rolEnProceso.ver_submenu_instituciones,
                 ver_submenu_niveles_academicos: rolEnProceso.ver_submenu_niveles_academicos,
@@ -181,7 +183,31 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
                         eventKey="opciones-menu"
                         className="font-weight-bold"
                     >Opciones de menú que puede ver el rol</Nav.Link>
-                    <Container>                 
+                    <Container>  
+                        <Row className="mt-2">
+                            <Col xs={12}>
+                                <Form.Label
+                                    className="font-weight-bold text-info"
+                                >Página de inicio</Form.Label>
+                            </Col>
+                        </Row>
+                        <Row className="mb-3">
+                            <Col xs={12} sm="auto">
+                                <Form.Check 
+                                    id="ver_inicio_unidades_mineduc"
+                                    name="ver_inicio_unidades_mineduc"
+                                    type="checkbox"
+                                    label="Unidades Mineduc"
+                                    checked={formulario.ver_inicio_unidades_mineduc}
+                                    onChange={e => {
+                                        setFormulario({
+                                            ...formulario,
+                                            [e.target.name]: e.target.checked
+                                        })
+                                    }}
+                                />
+                            </Col>
+                        </Row>               
                         <Row className="mt-2">
                             <Col xs={12} className="mb-1">
                                 <Form.Check 
@@ -530,7 +556,7 @@ const RolForm = ({rolEnProceso, setRolEnProceso}) => {
                 </Col>
             </Row>
         </Form>
-     </Container> )
+        </Container> )
 }
  
 export default RolForm

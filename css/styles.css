@@ -1,17 +1,38 @@
-.dropable-pendiente{
+.droppable-pendiente{
     background-color:rgba(226, 227, 229, 1);
     padding: 30px;
     border-radius: 5px;
 }
 
-.dropable-en-proceso{
+.droppable-en-proceso{
     background-color: rgba(207, 226, 253, 1);
     padding: 30px;
     border-radius: 5px;
 }
 
-.dropable-finalizado{
+.droppable-finalizado{
     background-color: rgba(209, 231, 221, 1);
     padding: 30px;
     border-radius: 5px;
+}
+
+.droppable-ul{
+    list-style-type: none;
+    border-style: dashed;
+    border-color: lightgray;
+    min-height: 50px;
+    padding-top: 25px;
+    padding-bottom: 20px;
+    padding-right: 40px;
+}
+
+.alert-icon {
+    color: red;
+    animation:alertAnimation .8s infinite;
+}
+
+@keyframes alertAnimation {
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
 }

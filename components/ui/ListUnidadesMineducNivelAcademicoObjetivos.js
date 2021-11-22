@@ -6,36 +6,12 @@ import AuthContext from '../../context/auth/AuthContext';
 import Objetivos from './Objetivos'
 
 
-
-function ContextAwareToggle({ children, eventKey, getEventKey }) {
-
-    const currentEventKey = useContext(AccordionContext);
-    
-    const handleClickToggle = useAccordionToggle(
-      eventKey,
-      () => getEventKey && getEventKey(eventKey),
-    )
-
-    const isCurrentEventKey = currentEventKey === eventKey;
-    
-    return (
-      <Button
-        type="button"
-        variant={isCurrentEventKey ? 'info' : 'secondary'}
-        onClick={handleClickToggle}
-      >
-        {children}
-      </Button>
-    );
-}
-
 const ListUnidadesMineducNivelAcademicoObjetivos = props => {
 
     const [unidadesMineducNivelAcademico, setUnidadesMineducNivelAcademico] = useState([])
     const { codigoCurso } = props
     const [unidadSelect, setUnidadSelect] = useState("0")
     const { usuario } = useContext(AuthContext)
-
     
     useEffect(() => {
 
@@ -54,18 +30,17 @@ const ListUnidadesMineducNivelAcademicoObjetivos = props => {
                     }
                 })
                 setUnidadesMineducNivelAcademico(resp.data.unidadesMineduc)
-                setUnidadSelect("0")
+                console.log(resp.data.unidadesMineduc)
                
             }catch(e){
                 handleError(e)
             }
 
         }
+        
         listarUnidadesMineducNivelAcademico()
         
     }, [codigoCurso])
-
-    
 
     const getEventKey = async (eventKey)  => {
 
@@ -84,34 +59,35 @@ const ListUnidadesMineducNivelAcademicoObjetivos = props => {
         
     }
 
+    
     return (
-        <Accordion defaultActiveKey="0">
+        <Accordion>
             {unidadesMineducNivelAcademico.map(unidadMineducNivelAcademico =>
             {
                 const {codigo, descripcion} = unidadMineducNivelAcademico
                 return (
                     <Card key={codigo}>
                         <Card.Header>
-                            <ContextAwareToggle 
+                            <Accordion.Toggle 
+                                as={Button} 
+                                variant="link" 
                                 eventKey={codigo} 
-                                getEventKey={getEventKey}
+                                onClick={() => getEventKey(codigo)}
                             >
                                 {descripcion}
-                            </ContextAwareToggle>
+                            </Accordion.Toggle>
                         </Card.Header>
-                        {unidadSelect === codigo
-                        &&
-                            <Accordion.Collapse 
-                                eventKey={codigo}
-                            >
-                                <Card.Body>
-                                    <Objetivos
-                                        codigoUnidad={unidadSelect}
-                                        codigoCurso={codigoCurso}
-                                    />
-                                </Card.Body> 
-                            </Accordion.Collapse>
-                        }
+                       
+                        <Accordion.Collapse 
+                            eventKey={codigo}
+                        >
+                            <Card.Body>
+                                <Objetivos
+                                    codigoUnidad={unidadSelect}
+                                    codigoCurso={codigoCurso}
+                                />
+                            </Card.Body> 
+                        </Accordion.Collapse>
                     </Card>
                 )
             }

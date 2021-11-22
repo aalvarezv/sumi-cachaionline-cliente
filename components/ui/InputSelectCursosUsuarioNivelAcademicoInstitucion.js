@@ -13,6 +13,7 @@ const InputSelectCursosUsuarioNivelAcademicoInstitucion = props => {
         
         const listarCursosUsuarioNivelAcademicoInstitucion = async () => {
             try{
+
                 const resp = await clienteAxios.get('/api/cursos/listar/usuario-nivel-academico-institucion',{
                     params: {
                         rut_usuario,

@@ -49,7 +49,6 @@ const Login = () => {
                     <Col sm={8} md={6} lg={5} xl={4}>
                         <Card>
                         <Card.Body>
-                            
                             <Row className="mb-3">
                                 <Col className="d-flex justify-content-center">
                                     <Logo w={36} h={30} />
